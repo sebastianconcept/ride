@@ -16,7 +16,25 @@ RideDirectoryResolver class >> baseDirectory [
 ]
 
 { #category : #accessing }
-RideDirectoryResolver class >> getViewsDir [
+RideDirectoryResolver class >> getLayoutTemplatesDir [
+
+	^ self baseDirectory / 'templates' / 'layouts'
+]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> getSharedTemplatesDir [
+
+	^ self baseDirectory / 'templates' / 'shared'
+]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> getTemplatesDir [
+
+	^ self baseDirectory / 'templates'
+]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> getViewTemplatesDir [
 
 	^ self baseDirectory / 'templates' / 'views'
 ]

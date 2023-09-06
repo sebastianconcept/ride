@@ -75,13 +75,9 @@ RideController class >> newModelFrom: aRequest [
 ]
 
 { #category : #crud }
-RideController class >> showHtml: someMustacheTemplates [
+RideController class >> showHtml: someMustacheTemplate [
 
-	^ [ :req | 
-	  (someMustacheTemplates
-		   at: #show
-		   ifAbsent: [ RideMissingTemplateError signal: 'show not found' ]) 
-		  value: (self getModelFrom: req) ]
+	^ [ :req | someMustacheTemplate value: (self getModelFrom: req) ]
 ]
 
 { #category : #crud }

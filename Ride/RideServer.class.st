@@ -135,6 +135,18 @@ RideServer >> newHttpServer [
 	^ newServer
 ]
 
+{ #category : #actions }
+RideServer >> renderHtml404On: aRideNotFoundError [
+
+	self halt
+]
+
+{ #category : #actions }
+RideServer >> renderHtml500On: anError [
+
+	^ anError descriptionModel
+]
+
 { #category : #accessing }
 RideServer >> reset [
 	teapot
@@ -194,27 +206,31 @@ RideServer >> setExceptionHandlers [
 			yourself.
 		response ].
 
-	"	self teapot
-		exception: PRUserAlreadyExists -> [ :ex :req | 
-				response := TeaResponse badRequest.
-				Ride log: ex printString level: #WARNING.
+	self teapot
+		exception: RideNotFoundError -> [ :ex :req | 
+				response := TeaResponse serverError.
+				Ride log: ex printString level: #ERROR.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
-				response body: (ex describeOn:
-								 { (#status -> response code) } asDictionary asJsonObject).
+				response body: (ex
+							 renderHtmlWith:
+								 { (#status -> response code) } asDictionary asJsonObject
+							 on: (RideRouter templateForStatus: response code)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;
 					yourself.
 				response ];
-		output: #json."
+		output: #html.
 
 	self teapot
 		exception: Error -> [ :ex :req | 
 				response := TeaResponse serverError.
 				Ride log: ex printString level: #ERROR.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
-				response body: (ex describeOn:
-								 { (#status -> response code) } asDictionary asJsonObject).
+				response body: (ex
+							 renderHtmlWith:
+								 { (#status -> response code) } asDictionary asJsonObject
+							 on: (RideRouter templateForStatus: response code)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;

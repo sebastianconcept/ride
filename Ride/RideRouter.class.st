@@ -125,15 +125,33 @@ RideRouter class >> getTemplates [
 	"Returns a dictionary with keys being view names (view/ dsubirectory names) 
 	and as value, a dictionary with mustache templates for every file found."
 
-	| newTemplates |
+	| newTemplates newViewTemplates |
 	newTemplates := Dictionary new.
-	RideDirectoryResolver getViewsDir directories do: [ :path | 
-		(newTemplates
-			 at: path basenameWithoutExtension
-			 ifAbsentPut: Dictionary new)
+	newViewTemplates := Dictionary new.
+	RideDirectoryResolver getViewTemplatesDir directories do: [ :path | 
+		newViewTemplates
 			at: path basenameWithoutExtension
 			put: (self getTemplatesFrom: path) ].
-
+	newTemplates
+		at:
+		RideDirectoryResolver getViewTemplatesDir basenameWithoutExtension
+		put: newViewTemplates.
+	RideDirectoryResolver getLayoutTemplatesDir files do: [ :file | 
+		(newTemplates
+			 at:
+			 RideDirectoryResolver getLayoutTemplatesDir
+				 basenameWithoutExtension
+			 ifAbsentPut: Dictionary new)
+			at: file basenameWithoutExtension
+			put: file contents asMustacheTemplate ].
+	RideDirectoryResolver getSharedTemplatesDir files do: [ :file | 
+		(newTemplates
+			 at:
+			 RideDirectoryResolver getSharedTemplatesDir
+				 basenameWithoutExtension
+			 ifAbsentPut: Dictionary new)
+			at: file basenameWithoutExtension
+			put: file contents asMustacheTemplate ].
 	^ newTemplates
 ]
 
@@ -163,6 +181,15 @@ RideRouter class >> initializeControllers [
 RideRouter class >> initializeTemplates [
 
 	^ templates := self getTemplates
+]
+
+{ #category : #accessing }
+RideRouter class >> layouts [
+
+	^ self templates
+		  at: #layouts
+		  ifAbsent: [ 
+		  RideMissingTemplateError signal: 'No layout templates' ]
 ]
 
 { #category : #handler }
@@ -202,18 +229,44 @@ RideRouter class >> reset [
 RideRouter class >> setRoute: routeName with: someMustacheTemplates on: aRideServer [
 
 	someMustacheTemplates keysAndValuesDo: [ :route :mustacheTemplates | 
-		self basicSetRoute: route with: mustacheTemplates on: aRideServer ]
+		self
+			basicSetRoute: routeName
+			with: mustacheTemplates
+			on: aRideServer ]
 ]
 
 { #category : #actions }
 RideRouter class >> setRoutesOn: aRideServer [
 
-	self templates keysAndValuesDo: [ :key :value | 
+	(self templates at: #views) keysAndValuesDo: [ :key :value | 
 		self setRoute: key with: value on: aRideServer ]
+]
+
+{ #category : #accessing }
+RideRouter class >> shared [
+
+	^ self templates
+		  at: #shared
+		  ifAbsent: [ 
+		  RideMissingTemplateError signal: 'No shared templates' ]
+]
+
+{ #category : #accessing }
+RideRouter class >> templateForStatus: aStatusCode [
+
+	^ (self templates at: #shared) at: '500'
 ]
 
 { #category : #accessing }
 RideRouter class >> templates [
 
 	^ templates ifNil: [ self initializeTemplates ]
+]
+
+{ #category : #accessing }
+RideRouter class >> views [
+
+	^ self templates
+		  at: #views
+		  ifAbsent: [ RideMissingTemplateError signal: 'No view templates' ]
 ]
