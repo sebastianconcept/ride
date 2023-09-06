@@ -72,12 +72,6 @@ RideServer class >> version [
 	^ '1.0.1'
 ]
 
-{ #category : #accessing }
-RideServer >> baseUrl [
-
-	^ '/' , self class version
-]
-
 { #category : #initialization }
 RideServer >> initialize [
 
@@ -226,7 +220,13 @@ RideServer >> setExceptionHandlers [
 					at: 'Access-Control-Allow-Origin' put: origin;
 					yourself.
 				response ];
-		output: #json
+		output: #html
+]
+
+{ #category : #actions }
+RideServer >> setRoutes [
+
+	RideRouter setRoutesOn: self
 ]
 
 { #category : #accessing }

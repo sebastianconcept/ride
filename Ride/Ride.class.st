@@ -145,7 +145,7 @@ Ride class >> reset [
 		released := server.
 		server := nil.
 		released reset ].
-
+	RideRouter withAllSubclassesDo: [ :e | e reset ].
 	logLevelSymbols := nil
 ]
 

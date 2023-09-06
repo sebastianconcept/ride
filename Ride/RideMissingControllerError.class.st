@@ -1,5 +1,5 @@
 Class {
-	#name : #RideNoEmailService,
+	#name : #RideMissingControllerError,
 	#superclass : #RideError,
 	#category : #'Ride-Exceptions'
 }

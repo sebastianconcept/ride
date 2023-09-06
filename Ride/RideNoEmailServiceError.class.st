@@ -1,5 +1,5 @@
 Class {
-	#name : #RideUnauthorized,
+	#name : #RideNoEmailServiceError,
 	#superclass : #RideError,
 	#category : #'Ride-Exceptions'
 }
