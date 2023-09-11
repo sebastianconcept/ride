@@ -47,3 +47,18 @@ WelcomeController >> model: aModel [
 	self subcontrollers intro model: aModel.
 	self subcontrollers counter model: Counter new
 ]
+
+{ #category : #'as yet unclassified' }
+WelcomeController >> onUserFirstNameChanged [
+
+	(self childAt: #counter) model userFirstName:
+		self model userFirstName
+]
+
+{ #category : #initialization }
+WelcomeController >> setObservers [
+
+	super setObservers.
+
+	model when: #userFirstNameChanged send: #onUserFirstNameChanged to: self
+]

@@ -7,8 +7,7 @@ Class {
 	#instVars : [
 		'teapot',
 		'validator',
-		'maitre',
-		'viewLocator'
+		'maitre'
 	],
 	#category : #'Ride-REST'
 }
@@ -77,7 +76,6 @@ RideServer class >> version [
 RideServer >> initialize [
 
 	super initialize.
-	viewLocator := RideViewControllerLocator new.
 	RidePolyglot
 		reset;
 		loadLanguages.
@@ -276,16 +274,4 @@ RideServer >> stop [
 RideServer >> teapot [
 
 	^ teapot ifNil: [ self initializeTeapot ]
-]
-
-{ #category : #accessing }
-RideServer >> viewLocator [
-
-	^ viewLocator
-]
-
-{ #category : #accessing }
-RideServer >> viewLocator: anObject [
-
-	viewLocator := anObject
 ]

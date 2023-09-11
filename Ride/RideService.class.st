@@ -107,10 +107,22 @@ RideService >> repository: anObject [
 { #category : #actions }
 RideService >> reset [
 
+	server ifNotNil: [ 
+		| released |
+		released := server.
+		server := nil ].
 	router ifNotNil: [ 
 		| released |
 		released := router.
-		router := nil ]
+		router := nil ].
+	locator ifNotNil: [ 
+		| released |
+		released := locator.
+		locator := nil ].
+	sessions ifNotNil: [ 
+		| released |
+		released := sessions.
+		sessions := nil ]
 ]
 
 { #category : #accessing }

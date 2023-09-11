@@ -135,6 +135,12 @@ RideController >> applicationTemplate [
 ]
 
 { #category : #accessing }
+RideController >> childAt: aSymbol [
+
+	^ subcontrollers at: aSymbol
+]
+
+{ #category : #accessing }
 RideController >> children [
 
 	^ subcontrollers
@@ -179,13 +185,28 @@ RideController >> default [
 { #category : #'rest-html' }
 RideController >> htmlOnDELETE [
 
-	^ self controllerDeleteHtml
+	"If the current DELETE is part of an AJAX request, 
+	then use its value as a controller action to be performed."
+
+	RideCurrentRequest value headers
+		at: 'X-Ride-AJAX'
+		ifPresent: [ self perform: self ajaxAction asSymbol ].
+
+	"My subclasses are expected to answer a more sensible HTML content.
+	This answer is only intended as convenience for quick feedback loop to the developers."
+	^ self class name
 ]
 
-{ #category : #rendering }
+{ #category : #'rest-html' }
 RideController >> htmlOnGET [
 
-	"Answers the HTML exclusive of this controller."
+	"Answers the HTML exclusive of this controller.
+	If the current PUT is part of an AJAX request, 
+	then use its value as a controller action to be performed."
+
+	RideCurrentRequest value headers
+		at: 'X-Ride-AJAX'
+		ifPresent: [ self perform: self ajaxAction asSymbol ].
 
 	^ (views at: #index) value: model
 ]
@@ -193,21 +214,46 @@ RideController >> htmlOnGET [
 { #category : #'rest-html' }
 RideController >> htmlOnPATCH [
 
-	^ self controllerPatchHtml
+	"If the current PATCH is part of an AJAX request, 
+	then use its value as a controller action to be performed."
+
+	RideCurrentRequest value headers
+		at: 'X-Ride-AJAX'
+		ifPresent: [ self perform: self ajaxAction asSymbol ].
+
+	"My subclasses are expected to answer a more sensible HTML content.
+	This answer is only intended as convenience for quick feedback loop to the developers."
+	^ self class name
 ]
 
 { #category : #'rest-html' }
 RideController >> htmlOnPOST [
 
-	^ self controllerPostHtml
+	"If the current POST is part of an AJAX request, 
+	then use its value as a controller action to be performed."
+
+	RideCurrentRequest value headers
+		at: 'X-Ride-AJAX'
+		ifPresent: [ self perform: self ajaxAction asSymbol ].
+
+	"My subclasses are expected to answer a more sensible HTML content.
+	This answer is only intended as convenience for quick feedback loop to the developers."
+	^ self class name
 ]
 
-{ #category : #rendering }
+{ #category : #'rest-html' }
 RideController >> htmlOnPUT [
 
-	"Just an update is fine"
+	"If the current PUT is part of an AJAX request, 
+	then use its value as a controller action to be performed."
 
-	^ self htmlOnGET
+	RideCurrentRequest value headers
+		at: 'X-Ride-AJAX'
+		ifPresent: [ self perform: self ajaxAction asSymbol ].
+
+	"My subclasses are expected to answer a more sensible HTML content.
+	This answer is only intended as convenience for quick feedback loop to the developers."
+	^ self class name
 ]
 
 { #category : #rendering }
@@ -228,7 +274,7 @@ RideController >> initialize [
 	subcontrollers := JsonObject new.
 	self createSubControllers.
 	self createViews.
-	self setObservers
+
 ]
 
 { #category : #accessing }
@@ -246,7 +292,8 @@ RideController >> model [
 { #category : #initialization }
 RideController >> model: aModel [
 
-	model := aModel
+	model := aModel.
+	self setObservers	
 ]
 
 { #category : #accessing }

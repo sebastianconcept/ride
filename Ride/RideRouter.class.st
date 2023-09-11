@@ -15,7 +15,6 @@ Class {
 	#name : #RideRouter,
 	#superclass : #Object,
 	#instVars : [
-		'viewControllerLocator',
 		'sessionGetter',
 		'rootControllerGetter',
 		'domain'
@@ -235,12 +234,6 @@ RideRouter >> initializeSessionGetter [
 		                   RideSession newWith: sessionId on: Welcome new ] ]
 ]
 
-{ #category : #initialization }
-RideRouter >> initializeViewControllerLocator [
-
-	^ viewControllerLocator := RideViewControllerLocator new
-]
-
 { #category : #actions }
 RideRouter >> newSessionCookieFor: sessionId [
 
@@ -322,10 +315,4 @@ RideRouter >> setRoutesOn: aRideServer [
 		self setRoute: key with: value on: aRideServer ].
 
 	self setHomeRouteOn: aRideServer
-]
-
-{ #category : #accessing }
-RideRouter >> viewControllerLocator [
-
-	^ viewControllerLocator ifNil: [ self initializeViewControllerLocator ]
 ]

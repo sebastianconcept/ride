@@ -16,7 +16,9 @@ CounterController >> htmlOnGET [
 	"Answers the HTML exclusive of this controller."
 
 	^ (views at: #index)
-		  value: { (#count -> model count asString) } asDictionary
+		  value: { 
+				  (#count -> model count asString).
+				  (#userFirstName -> model userFirstName) } asDictionary
 		  partials: { (#result -> (views at: #result)) } asDictionary
 ]
 

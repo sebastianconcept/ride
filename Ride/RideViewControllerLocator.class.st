@@ -49,6 +49,7 @@ RideViewControllerLocator >> getTemplates [
 	and as value, a dictionary with mustache templates for every file found."
 
 	| newTemplates newViewTemplates |
+
 	newTemplates := JsonObject new.
 	newViewTemplates := JsonObject new.
 	RideDirectoryResolver getViewTemplatesDir directories do: [ :path | 

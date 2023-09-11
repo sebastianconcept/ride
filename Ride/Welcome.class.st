@@ -19,5 +19,6 @@ Welcome >> userFirstName [
 { #category : #accessing }
 Welcome >> userFirstName: anObject [
 
-	userFirstName := anObject
+	userFirstName := anObject.
+	self triggerEvent: #userFirstNameChanged
 ]

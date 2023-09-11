@@ -5,7 +5,8 @@ Class {
 	#name : #Counter,
 	#superclass : #RideModel,
 	#instVars : [
-		'count'
+		'count',
+		'userFirstName'
 	],
 	#category : #'Ride-Models'
 }
@@ -39,4 +40,17 @@ Counter >> initialize [
 
 	super initialize.
 	count := 0
+]
+
+{ #category : #accessing }
+Counter >> userFirstName [
+
+	^ userFirstName
+]
+
+{ #category : #accessing }
+Counter >> userFirstName: anObject [
+
+	userFirstName := anObject.
+	self changed
 ]
