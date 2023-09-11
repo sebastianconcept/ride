@@ -11,7 +11,7 @@ Class {
 		'subcontrollers',
 		'model',
 		'views',
-		'focused'
+		'focusedView'
 	],
 	#category : #'Ride-Controllers'
 }
@@ -174,12 +174,33 @@ RideController >> createSubControllers [
 { #category : #initialization }
 RideController >> createViews [
 
-	views := Ride service locate templatesFor: self
+	views := Ride service locate templatesFor: self.
+	focusedView := views at: #index
+]
+
+{ #category : #accessing }
+RideController >> currentRequest [
+
+	^ RideCurrentRequest value
 ]
 
 { #category : #actions }
 RideController >> default [
 	"The default action is doing nothing."
+]
+
+{ #category : #accessing }
+RideController >> focusedView [
+	"Answers the template that is the current view to be rendered for this controller.
+	It starts by being #index and after that it might be changed by ushow the controller
+	reactcs to user input."
+	^ focusedView
+]
+
+{ #category : #accessing }
+RideController >> focusedView: anObject [
+
+	focusedView := anObject
 ]
 
 { #category : #'rest-html' }
@@ -294,6 +315,15 @@ RideController >> model: aModel [
 
 	model := aModel.
 	self setObservers	
+]
+
+{ #category : #accessing }
+RideController >> partialOf: aSymbol [
+
+	"Answers the template of the subcontroller found at aSymbol 
+	ready to be sent as one of the partials for them to render."
+
+	^ aSymbol -> (self children at: aSymbol) focusedView
 ]
 
 { #category : #accessing }

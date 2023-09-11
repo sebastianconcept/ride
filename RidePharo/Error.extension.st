@@ -6,7 +6,7 @@ Error >> describeOn: aJsonObjectToRespond [
 	RideServer debugMode ifTrue: [ 
 		| walkback lines |
 		walkback := (String streamContents: [ :stream | 
-			             self signalerContext debugStack: 10 on: stream ])
+			             self signalerContext debugStack: 40 on: stream ])
 			            readStream.
 		lines := OrderedCollection new.
 		[ walkback atEnd ] whileFalse: [ lines add: walkback nextLine ].
@@ -24,7 +24,7 @@ Error >> htmlDescribeOn: aJsonObjectToRespond [
 	RideServer debugMode ifTrue: [ 
 		| walkback lines |
 		walkback := (String streamContents: [ :stream | 
-			             self signalerContext debugStack: 30 on: stream ])
+			             self signalerContext debugStack: 40 on: stream ])
 			            readStream.
 		lines := OrderedCollection new.
 		[ walkback atEnd ] whileFalse: [ lines add: walkback nextLine ].
@@ -43,7 +43,7 @@ Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
 		| walkback lines |
 		aJsonObject title: self printString.
 		walkback := (String streamContents: [ :stream | 
-			             self signalerContext debugStack: 10 on: stream ])
+			             self signalerContext debugStack: 40 on: stream ])
 			            readStream.
 		lines := OrderedCollection new.
 		[ walkback atEnd ] whileFalse: [ lines add: walkback nextLine ].

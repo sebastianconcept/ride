@@ -18,6 +18,12 @@ Class {
 	#category : #'Ride-Core'
 }
 
+{ #category : #accessing }
+RideService class >> install [
+
+	Ride service: self new
+]
+
 { #category : #initialization }
 RideService >> initializeLocator [
 

@@ -138,6 +138,22 @@ RideRouter >> handleHTMLHomePageGET [
 ]
 
 { #category : #handler }
+RideRouter >> handleHTMLHomePagePOST [
+
+	"Answers the html produced with the controller that is set as root."
+
+	| response session request sessionCookie |
+	^ self getBasicHandlerDo: [ 
+		  request := RideCurrentRequest value.
+		  session := RideCurrentSession value.
+		  response := TeaResponse ok.
+		  sessionCookie := self newSessionCookieFor: session id.
+		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
+		  response body: RideCurrentSession value rootController htmlOnPOST.
+		  response ]
+]
+
+{ #category : #handler }
 RideRouter >> handleHTMLOnDELETEFor: routeName [
 
 	^ self getBasicHandlerDo: [ 
@@ -153,11 +169,8 @@ RideRouter >> handleHTMLOnDELETEFor: routeName [
 RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
 
 	| response controller content |
-	^ self getBasicHandlerDo: [ "	^ self getBasicHandlerDo: [ 
-		  RideCurrentSession value rootController showHtml ]"
+	^ self getBasicHandlerDo: [ 
 		  response := TeaResponse ok.
-		  "Set a custom header in the response"
-		  response headers at: 'Custom-Header' put: 'Hello from Teapot!'.
 		  controller := RideCurrentSession value rootController 
 			                controllerForRoute: routeName.
 		  content := (RideCurrentRequest value headers includesKey:
