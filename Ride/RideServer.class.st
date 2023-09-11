@@ -7,7 +7,8 @@ Class {
 	#instVars : [
 		'teapot',
 		'validator',
-		'maitre'
+		'maitre',
+		'viewLocator'
 	],
 	#category : #'Ride-REST'
 }
@@ -76,6 +77,7 @@ RideServer class >> version [
 RideServer >> initialize [
 
 	super initialize.
+	viewLocator := RideViewControllerLocator new.
 	RidePolyglot
 		reset;
 		loadLanguages.
@@ -149,12 +151,13 @@ RideServer >> renderHtml500On: anError [
 
 { #category : #accessing }
 RideServer >> reset [
-	teapot
-		ifNotNil: [ | released |
-			released := teapot.
-			teapot := nil.
-			released stop ].
-	
+
+	teapot ifNotNil: [ 
+		| released |
+		released := teapot.
+		teapot := nil.
+		released stop ].
+
 ]
 
 { #category : #actions }
@@ -214,7 +217,9 @@ RideServer >> setExceptionHandlers [
 				response body: (ex
 							 renderHtmlWith:
 								 { (#status -> response code) } asDictionary asJsonObject
-							 on: (RideRouter templateForStatus: response code)).
+							 on:
+								 (Ride service locate sharedTemplates at:
+										  response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;
@@ -230,7 +235,9 @@ RideServer >> setExceptionHandlers [
 				response body: (ex
 							 renderHtmlWith:
 								 { (#status -> response code) } asDictionary asJsonObject
-							 on: (RideRouter templateForStatus: response code)).
+							 on:
+								 (Ride service locate sharedTemplates at:
+										  response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;
@@ -242,7 +249,7 @@ RideServer >> setExceptionHandlers [
 { #category : #actions }
 RideServer >> setRoutes [
 
-	RideRouter setRoutesOn: self
+	Ride service router setRoutesOn: self
 ]
 
 { #category : #accessing }
@@ -269,4 +276,16 @@ RideServer >> stop [
 RideServer >> teapot [
 
 	^ teapot ifNil: [ self initializeTeapot ]
+]
+
+{ #category : #accessing }
+RideServer >> viewLocator [
+
+	^ viewLocator
+]
+
+{ #category : #accessing }
+RideServer >> viewLocator: anObject [
+
+	viewLocator := anObject
 ]

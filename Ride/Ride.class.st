@@ -5,9 +5,8 @@ Class {
 	#name : #Ride,
 	#superclass : #Object,
 	#classInstVars : [
-		'server',
 		'logLevelSymbols',
-		'maitre'
+		'service'
 	],
 	#category : #'Ride-Core'
 }
@@ -42,18 +41,6 @@ Ride class >> initializeLogLevelSymbols [
 		                     (2 -> #WARNING).
 		                     (3 -> #INFO).
 		                     (4 -> #DEBUG) } asDictionary
-]
-
-{ #category : #initialization }
-Ride class >> initializeMaitre [
-
-	^ maitre := RideMaitre new
-]
-
-{ #category : #initialization }
-Ride class >> initializeServer [
-
-	^ server := RideServer new
 ]
 
 { #category : #testing }
@@ -109,18 +96,6 @@ Ride class >> logLevelSymbols: anObject [
 ]
 
 { #category : #accessing }
-Ride class >> maitre [
-
-	^ maitre ifNil: [ self initializeMaitre ]
-]
-
-{ #category : #accessing }
-Ride class >> maitre: anObject [
-
-	maitre := anObject
-]
-
-{ #category : #accessing }
 Ride class >> mode [
 
 	^ OSEnvironment current at: 'RIDE_MODE'
@@ -136,16 +111,9 @@ Ride class >> reportedError: aString [
 Ride class >> reset [
 
 	| released |
-	maitre ifNotNil: [ 
-		released := maitre.
-		maitre := nil.
-		released reset ].
-
-	server ifNotNil: [ 
-		released := server.
-		server := nil.
-		released reset ].
-	RideRouter withAllSubclassesDo: [ :e | e reset ].
+	service ifNotNil: [ 
+		released := service.
+		service := nil ].
 	logLevelSymbols := nil
 ]
 
@@ -154,7 +122,6 @@ Ride class >> restart [
 
 	self
 		stop;
-		reset;
 		start
 ]
 
@@ -165,15 +132,15 @@ Ride class >> scaffold [
 ]
 
 { #category : #accessing }
-Ride class >> server [
+Ride class >> service [
 
-	^ server ifNil: [ self initializeServer ]
+	^ service
 ]
 
 { #category : #accessing }
-Ride class >> server: anObject [
+Ride class >> service: anObject [
 
-	server := anObject
+	^ service := anObject
 ]
 
 { #category : #actions }
@@ -188,23 +155,7 @@ Ride class >> shutDown [
 { #category : #actions }
 Ride class >> start [
 
-	"self log: 'Warming up database pool...'.
-	self initializeRepository."
-
-	"[ 
-	self repository accessor start.
-	self log: 'Ensuring database indexes...'.
-	self ensureDatabaseIndexes ]
-		on: NetworkError
-		do: [ :x | 
-			self
-				log:
-				('Failed to reach the database {1}' format: { x printString })
-				level: #ERROR ]."
-
-	self log: 'Starting Raid REST service...'.
-	self server start.
-	self maitre start
+	service start
 ]
 
 { #category : #actions }
@@ -223,4 +174,6 @@ Ride class >> startUp [
 
 { #category : #actions }
 Ride class >> stop [
+
+	service ifNotNil: [ service stop ]
 ]

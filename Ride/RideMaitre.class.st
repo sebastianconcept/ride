@@ -18,23 +18,19 @@ RideMaitre class >> poolMaxSize [
 ]
 
 { #category : #initialization }
-RideMaitre >> initialize [
+RideMaitre >> initializeUserActions [
 
-	super initialize.
-
-	userActions := TKTWorkerPool new
-		               poolMaxSize: self class poolMaxSize;
-		               yourself.
-	Ride
-		log:
-		('Using {1} workers...' format: { self class poolMaxSize asString })
-		level: #INFO
+	^ userActions := TKTWorkerPool new
+		                 poolMaxSize: self class poolMaxSize;
+		                 yourself
 ]
 
 { #category : #actions }
 RideMaitre >> reset [
 
-	self initialize
+	userActions ifNotNil: [ 
+		userActions stop.
+		userActions := nil ]
 ]
 
 { #category : #actions }
@@ -42,13 +38,13 @@ RideMaitre >> scheduleAction: aBlock [
 
 	| locale |
 	locale := self auth normalizedLocale: RideLanguage value.
-	userActions schedule: [ RideLanguage value: locale during: aBlock ]
+	self userActions schedule: [ RideLanguage value: locale during: aBlock ]
 ]
 
 { #category : #actions }
 RideMaitre >> scheduleAction: aBlock for: aUser [
 
-	userActions schedule: [ 
+	self userActions schedule: [ 
 		RideLanguage
 			value: (self auth normalizedLocale: aUser locale)
 			during: aBlock ]
@@ -57,11 +53,22 @@ RideMaitre >> scheduleAction: aBlock for: aUser [
 { #category : #actions }
 RideMaitre >> start [
 
-	userActions start
+	self userActions start.
+	Ride
+		log: ('{1} prepared {2} workers...' format: { 
+					 self class name.
+					 self class poolMaxSize asString })
+		level: #INFO
 ]
 
 { #category : #actions }
 RideMaitre >> stop [
 
-	userActions stop
+	self reset
+]
+
+{ #category : #acccessing }
+RideMaitre >> userActions [
+
+	^ userActions ifNil: [ self initializeUserActions ]
 ]

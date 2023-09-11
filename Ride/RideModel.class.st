@@ -6,3 +6,9 @@ Class {
 	#superclass : #Object,
 	#category : #'Ride-Models'
 }
+
+{ #category : #querying }
+RideModel class >> findId: anId [
+
+	^ Ride repository find: self atId: anId
+]
