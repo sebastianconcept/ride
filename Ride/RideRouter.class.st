@@ -23,11 +23,25 @@ Class {
 }
 
 { #category : #accessing }
+RideRouter class >> baseFilePath [
+
+	^ Path from: (OSEnvironment current
+			   at: #RIDE_BASE_FILE_PATH
+			   ifAbsent: [ self defaultBaseFilePathString ])
+]
+
+{ #category : #accessing }
 RideRouter class >> baseUrl [
 
 	^ OSEnvironment current
 		  at: #RIDE_BASE_URL
 		  ifAbsent: [ self defaultBaseUrl ]
+]
+
+{ #category : #accessing }
+RideRouter class >> defaultBaseFilePathString [
+
+	^ (Smalltalk imageDirectory / 'templates') pathString
 ]
 
 { #category : #accessing }
@@ -57,6 +71,12 @@ RideRouter class >> views [
 ]
 
 { #category : #accessing }
+RideRouter >> baseFilePath [
+
+	^ self class baseFilePath
+]
+
+{ #category : #accessing }
 RideRouter >> baseUrl [
 
 	^ self class baseUrl
@@ -74,12 +94,17 @@ RideRouter >> basicSetRoute: routeName with: someMustacheTemplates on: aRideServ
 	5. The 'edit' view will also use the _form partial to render a form for the model."
 
 	aRideServer teapot
+		GET:
+			self baseUrl , '/<routeName>/*' -> [ :req | self fileServe: req ];
+		output: #html.
+	aRideServer teapot
 		GET: self baseUrl , '/' , routeName , '/*'
 			-> (self handleHTMLOnGETFor: routeName with: someMustacheTemplates);
 		output: #html.
 	aRideServer teapot
 		POST: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnPOSTFor: routeName with: someMustacheTemplates);
+			->
+				(self handleHTMLOnPOSTFor: routeName with: someMustacheTemplates);
 		output: #html.
 	aRideServer teapot
 		PUT: self baseUrl , '/' , routeName , '/*'
@@ -96,6 +121,26 @@ RideRouter >> basicSetRoute: routeName with: someMustacheTemplates on: aRideServ
 		output: #html
 ]
 
+{ #category : #actions }
+RideRouter >> fileServe: request [
+
+	| route targetedPath |
+	route := request at: #routeName.
+	targetedPath := self baseFilePath / 'views'.
+	('*.js' match: request uri segments last) ifFalse: [ 
+		request abort: TeaResponse notFound ].
+	request uri segments do: [ :path | 
+		targetedPath := targetedPath / path ].
+	targetedPath asFileReference exists ifFalse: [ 
+		RideNotFoundError signal:
+			('{1} not found' format: { request uri asString }) ].
+	"We should at least be caching this.
+	Not for dev tho."
+	^ targetedPath asFileReference contents
+	"^ '<script>{1}</script>' format:
+		  { targetedPath asFileReference contents }"
+]
+
 { #category : #accessing }
 RideRouter >> getBasicHandlerDo: aBlock [
 
@@ -103,7 +148,9 @@ RideRouter >> getBasicHandlerDo: aBlock [
 	^ [ :req | 
 	  RideCurrentRequest value: req during: [ 
 		  session := self getSessionFrom: req.
-		  RideCurrentSession value: session during: aBlock ] ]
+		  [ RideCurrentSession value: session during: aBlock ]
+			  on: RideMissingControllerError
+			  do: [ :x | "404" self halt ] ] ]
 ]
 
 { #category : #accessing }
@@ -126,14 +173,19 @@ RideRouter >> handleHTMLHomePageGET [
 
 	"Answers the html produced with the controller that is set as root."
 
-	| response session request sessionCookie |
+	| response session request sessionCookie controller content |
 	^ self getBasicHandlerDo: [ 
 		  request := RideCurrentRequest value.
 		  session := RideCurrentSession value.
 		  response := TeaResponse ok.
 		  sessionCookie := self newSessionCookieFor: session id.
 		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
-		  response body: RideCurrentSession value rootController htmlPageOnGET.
+		  controller := RideCurrentSession value rootController.
+		  content := (RideCurrentRequest value headers includesKey:
+			              'X-Ride-AJAX')
+			             ifTrue: [ controller htmlOnGET ]
+			             ifFalse: [ controller htmlPageOnGET ].
+		  response body: content.
 		  response ]
 ]
 
@@ -157,7 +209,7 @@ RideRouter >> handleHTMLHomePagePOST [
 RideRouter >> handleHTMLOnDELETEFor: routeName [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value rootController controllerForRoute:
+		  (RideCurrentSession value controllerForRoute:
 			   routeName) htmlOnDELETE ]
 
 "	^ (self locate controllers at: routeName ifAbsent: [ 
@@ -171,8 +223,8 @@ RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
 	| response controller content |
 	^ self getBasicHandlerDo: [ 
 		  response := TeaResponse ok.
-		  controller := RideCurrentSession value rootController 
-			                controllerForRoute: routeName.
+		  controller := RideCurrentSession value controllerForRoute:
+			                routeName.
 		  content := (RideCurrentRequest value headers includesKey:
 			              'X-Ride-AJAX')
 			             ifTrue: [ controller htmlOnGET ]
@@ -185,47 +237,35 @@ RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
 RideRouter >> handleHTMLOnPATCHFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value rootController controllerForRoute:
-			   routeName) htmlOnPATCH ]
-
-"	^ (self locate controllers at: routeName ifAbsent: [ 
-		   RideMissingControllerError signal: ('{1} not found' format:
-				    { (self locate controllerNameFor: routeName) }) ]) 
-		  patchHtmlWith: someMustacheTemplates"
+		  (RideCurrentSession value controllerForRoute: routeName)
+			  htmlOnPATCH ]
 ]
 
 { #category : #handler }
 RideRouter >> handleHTMLOnPOSTFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value rootController controllerForRoute:
-			   routeName) htmlOnPOST ]
+		  (RideCurrentSession value controllerForRoute: routeName)
+			  htmlOnPOST ]
 ]
 
 { #category : #handler }
 RideRouter >> handleHTMLOnPUTFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value rootController controllerForRoute:
-			   routeName) htmlOnPUT ]
-		
-		
-"	^ (self locate controllers at: routeName ifAbsent: [ 
-		   RideMissingControllerError signal: ('{1} not found' format:
-				    { (self locate controllerNameFor: routeName) }) ]) 
-		  putHtmlWith: someMustacheTemplates"
+		  (RideCurrentSession value controllerForRoute: routeName) htmlOnPUT ]
 ]
 
 { #category : #initialization }
 RideRouter >> initializeRootControllerGetter [
 
 	^ rootControllerGetter := [ :session | 
-	                          session
+	                          | controller |
+	                          controller := session rootController.
+	                          controller
 		                          ifNil: [ 
 		                          WelcomeController on: Welcome new ]
-		                          ifNotNil: [ 
-		                          WelcomeController on:
-			                          session rootModel ] ]
+		                          ifNotNil: [ controller ] ]
 ]
 
 { #category : #initialization }
@@ -244,7 +284,9 @@ RideRouter >> initializeSessionGetter [
 	                   Ride service sessions
 		                   at: sessionId
 		                   ifAbsentPut: [ 
-		                   RideSession newWith: sessionId on: Welcome new ] ]
+		                   RideSession
+			                   newWith: sessionId
+			                   on: WelcomeController new ] ]
 ]
 
 { #category : #actions }

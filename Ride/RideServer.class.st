@@ -209,7 +209,7 @@ RideServer >> setExceptionHandlers [
 
 	self teapot
 		exception: RideNotFoundError -> [ :ex :req | 
-				response := TeaResponse serverError.
+				response := TeaResponse notFound.
 				Ride log: ex printString level: #ERROR.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
 				response body: (ex

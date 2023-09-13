@@ -11,7 +11,8 @@ Class {
 		'subcontrollers',
 		'model',
 		'views',
-		'focusedView'
+		'focusedView',
+		'delegate'
 	],
 	#category : #'Ride-Controllers'
 }
@@ -115,7 +116,7 @@ RideController class >> updateWith: someMustacheTemplates [
 		  value: (self getModelFrom: req) ]
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 RideController >> ajaxAction [
 
 	"Answers the selector of the action specified from the AJAX request.
@@ -128,10 +129,28 @@ RideController >> ajaxAction [
 		  ifAbsent: [ #default ]
 ]
 
+{ #category : #'rest-html' }
+RideController >> ajaxReactionAndRender [
+
+	"If the current request is part of a Ride AJAX request, 
+	use the value sent and perform it as reaction in this controller."
+
+	^ RideCurrentRequest value headers
+		  at: 'X-Ride-AJAX'
+		  ifPresent: [ self perform: self ajaxAction asSymbol ]
+		  ifAbsent: [ self html ]
+]
+
 { #category : #accessing }
 RideController >> applicationTemplate [
 
 	^ Ride service locate templates layouts application
+]
+
+{ #category : #rendering }
+RideController >> basicHTML [
+
+	(views at: #index ifAbsent: [ ^ self class name ]) value: model
 ]
 
 { #category : #accessing }
@@ -146,24 +165,8 @@ RideController >> children [
 	^ subcontrollers
 ]
 
-{ #category : #accessing }
-RideController >> controllerForRoute: routeName [
-
-	^ subcontrollers at: routeName ifAbsent: [ 
-		  RideMissingControllerError signal: ('{1} not found' format:
-				   { (self locate controllerNameFor: routeName) }) ]
-]
-
-{ #category : #rendering }
-RideController >> controllerPutHtml [
-
-	"Answers the HTML exclusive of this controller."
-
-	^ (views at: #index) value: model
-]
-
 { #category : #initialization }
-RideController >> createSubControllers [
+RideController >> createSubcontrollers [
 
 	"Add the subcontrollers to this receiver.
 	Keys typically match the route name in snake_case."
@@ -190,6 +193,18 @@ RideController >> default [
 ]
 
 { #category : #accessing }
+RideController >> delegate [
+
+	^ delegate
+]
+
+{ #category : #accessing }
+RideController >> delegate: anObject [
+
+	delegate := anObject
+]
+
+{ #category : #accessing }
 RideController >> focusedView [
 	"Answers the template that is the current view to be rendered for this controller.
 	It starts by being #index and after that it might be changed by ushow the controller
@@ -203,78 +218,69 @@ RideController >> focusedView: anObject [
 	focusedView := anObject
 ]
 
+{ #category : #rendering }
+RideController >> html [
+
+	"Answers the HTML renderering of the model regarding to this controller.
+	It will return the class name if for any reason there is no template found at #index"
+
+	^ delegate ifNotNil: [ delegate html ] ifNil: [ self basicHTML ]
+]
+
 { #category : #'rest-html' }
 RideController >> htmlOnDELETE [
 
 	"If the current DELETE is part of an AJAX request, 
-	then use its value as a controller action to be performed."
+	then use its value as a controller action to be performed and 
+	answer whatever that action decided is the html to be send as response."
 
-	RideCurrentRequest value headers
-		at: 'X-Ride-AJAX'
-		ifPresent: [ self perform: self ajaxAction asSymbol ].
-
-	"My subclasses are expected to answer a more sensible HTML content.
-	This answer is only intended as convenience for quick feedback loop to the developers."
-	^ self class name
+	^ self ajaxReactionAndRender
 ]
 
 { #category : #'rest-html' }
 RideController >> htmlOnGET [
 
 	"Answers the HTML exclusive of this controller.
-	If the current PUT is part of an AJAX request, 
-	then use its value as a controller action to be performed."
+	If the current GET is part of an AJAX request, 
+	then use its value as a controller action to be performed.
+	If a delegate was assigned, then the reaction is still for this 
+	controller but the html is for the delegate to render instead."
 
-	RideCurrentRequest value headers
-		at: 'X-Ride-AJAX'
-		ifPresent: [ self perform: self ajaxAction asSymbol ].
+	"If the current GET is part of an AJAX request, 
+	then use its value as a controller action to be performed and 
+	answer whatever that action decided is the html to be send as response."
 
-	^ (views at: #index) value: model
+	^ self ajaxReactionAndRender
 ]
 
 { #category : #'rest-html' }
 RideController >> htmlOnPATCH [
 
 	"If the current PATCH is part of an AJAX request, 
-	then use its value as a controller action to be performed."
+	then use its value as a controller action to be performed and 
+	answer whatever that action decided is the html to be send as response."
 
-	RideCurrentRequest value headers
-		at: 'X-Ride-AJAX'
-		ifPresent: [ self perform: self ajaxAction asSymbol ].
-
-	"My subclasses are expected to answer a more sensible HTML content.
-	This answer is only intended as convenience for quick feedback loop to the developers."
-	^ self class name
+	^ self ajaxReactionAndRender
 ]
 
 { #category : #'rest-html' }
 RideController >> htmlOnPOST [
 
 	"If the current POST is part of an AJAX request, 
-	then use its value as a controller action to be performed."
+	then use its value as a controller action to be performed and 
+	answer whatever that action decided is the html to be send as response."
 
-	RideCurrentRequest value headers
-		at: 'X-Ride-AJAX'
-		ifPresent: [ self perform: self ajaxAction asSymbol ].
-
-	"My subclasses are expected to answer a more sensible HTML content.
-	This answer is only intended as convenience for quick feedback loop to the developers."
-	^ self class name
+	^ self ajaxReactionAndRender
 ]
 
 { #category : #'rest-html' }
 RideController >> htmlOnPUT [
 
 	"If the current PUT is part of an AJAX request, 
-	then use its value as a controller action to be performed."
+	then use its value as a controller action to be performed and 
+	answer whatever that action decided is the html to be send as response."
 
-	RideCurrentRequest value headers
-		at: 'X-Ride-AJAX'
-		ifPresent: [ self perform: self ajaxAction asSymbol ].
-
-	"My subclasses are expected to answer a more sensible HTML content.
-	This answer is only intended as convenience for quick feedback loop to the developers."
-	^ self class name
+	^ self ajaxReactionAndRender
 ]
 
 { #category : #rendering }
@@ -293,7 +299,7 @@ RideController >> initialize [
 
 	super initialize.
 	subcontrollers := JsonObject new.
-	self createSubControllers.
+	self createSubcontrollers.
 	self createViews.
 
 ]
@@ -324,6 +330,12 @@ RideController >> partialOf: aSymbol [
 	ready to be sent as one of the partials for them to render."
 
 	^ aSymbol -> (self children at: aSymbol) focusedView
+]
+
+{ #category : #actions }
+RideController >> resetDelegate [
+
+	delegate := nil
 ]
 
 { #category : #accessing }

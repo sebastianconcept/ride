@@ -7,14 +7,13 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'rootModel',
-		'rootController'
+		'controllers'
 	],
 	#category : #'Ride-Core'
 }
 
 { #category : #accessing }
-RideSession class >> defaultModel [
+RideSession class >> defaultController [
 
 	^ nil
 ]
@@ -22,21 +21,43 @@ RideSession class >> defaultModel [
 { #category : #'instance creation' }
 RideSession class >> newWith: anId [
 
-	^ self newWith: anId on: self defaultModel
+	^ self newWith: anId on: self defaultController
 ]
 
 { #category : #'instance creation' }
-RideSession class >> newWith: anId on: aModel [
+RideSession class >> newWith: anId on: aController [
 
-	^ self new initializeWith: anId on: aModel
+	^ self new initializeWith: anId on: aController
+]
+
+{ #category : #actions }
+RideSession >> add: routeKey controller: aRideController [
+
+	^ self controllers at: routeKey put: aRideController
 ]
 
 { #category : #accessing }
-RideSession >> getModelFor: aController [
+RideSession >> controllerForRoute: routeName [
 
-	"Answers the model meant to be used with the given controller."
+	^ self controllers at: routeName ifAbsentPut: [ 
+		  | controller |
+		  controller := self rootController children at: routeName.
+		  controller ifNil: [ 
+			  RideMissingControllerError signal:
+				  ('{1} not found' format: { routeName }) ].
+		  controller ]
+]
 
-	^ rootModel
+{ #category : #accessing }
+RideSession >> controllers [
+
+	^ controllers ifNil: [ self initializeControllers ]
+]
+
+{ #category : #initialization }
+RideSession >> htmlPageOnGET [
+
+self halt.
 ]
 
 { #category : #accessing }
@@ -52,34 +73,45 @@ RideSession >> id: anObject [
 ]
 
 { #category : #initialization }
-RideSession >> initializeRootController [
+RideSession >> initialize [
 
-	^ rootController := Ride service router rootControllerGetter value: self
+	super initialize.
+
+	"The minimal thing to do for the session of the app: add the root controller"
+	"self
+		add: #/
+		controller: (Ride service router rootControllerGetter value: self)"
 ]
 
 { #category : #initialization }
-RideSession >> initializeWith: anId on: aModel [
+RideSession >> initializeControllers [
+
+	^ controllers := Dictionary new
+]
+
+{ #category : #initialization }
+RideSession >> initializeWith: anId on: aController [
 
 	super initialize.
 
 	id := anId.
-	rootModel := aModel
+	self add: #/ controller: aController
+]
+
+{ #category : #accessing }
+RideSession >> locate [
+
+	^ Ride service locate
+]
+
+{ #category : #actions }
+RideSession >> remove: routeKey [
+
+	^ self controllers removeKey: routeKey ifAbsent: [ nil ]
 ]
 
 { #category : #accessing }
 RideSession >> rootController [
 
-	^ rootController ifNil: [ self initializeRootController ]
-]
-
-{ #category : #accessing }
-RideSession >> rootModel [
-
-	^ rootModel
-]
-
-{ #category : #accessing }
-RideSession >> rootModel: anObject [
-
-	rootModel := anObject
+	^ self controllers at: #/ ifAbsent: [ nil ]
 ]
