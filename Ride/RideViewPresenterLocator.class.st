@@ -2,48 +2,35 @@
 I help locating the templates that are meant to be views.
 "
 Class {
-	#name : #RideViewControllerLocator,
+	#name : #RideViewPresenterLocator,
 	#superclass : #Object,
 	#instVars : [
 		'templates',
-		'controllers'
+		'presenters'
 	],
 	#category : #'Ride-Core'
 }
 
 { #category : #accessing }
-RideViewControllerLocator >> controllerNameFor: routeName [
-
-	^ '{1}Controller' format: { ('' join:
-			   ((routeName substrings: '_') collect: [ :e | e capitalized ])) }
-]
-
-{ #category : #accessing }
-RideViewControllerLocator >> controllers [
-
-	^ controllers ifNil: [ self initializeControllers ]
-]
-
-{ #category : #accessing }
-RideViewControllerLocator >> getControllers [
+RideViewPresenterLocator >> getPresenters [
 
 	"Returns a dictionary with keys being view names (views/ subdirectory names) 
-	and as value, the corresponding controller classes expected to be found in the image."
+	and as value, the corresponding presenter classes expected to be found in the image."
 
 	| newPresenters |
 	newPresenters := Dictionary new.
 	self viewTemplates keys do: [ :routeName | 
 		newPresenters at: routeName put: (Smalltalk
-				 at: (self controllerNameFor: routeName) asSymbol
+				 at: (self presenterNameFor: routeName) asSymbol
 				 ifAbsent: [ 
-					 RideMissingControllerError signal:
+					 RideMissingPresenterError signal:
 						 ('{1} not found' format:
-							  { (self controllerNameFor: routeName) }) ]) ].
+							  { (self presenterNameFor: routeName) }) ]) ].
 	^ newPresenters
 ]
 
 { #category : #accessing }
-RideViewControllerLocator >> getTemplates [
+RideViewPresenterLocator >> getTemplates [
 
 	"Returns a dictionary with keys being view names (views/ dsubirectory names) 
 	and as value, a dictionary with mustache templates for every file found."
@@ -80,7 +67,7 @@ RideViewControllerLocator >> getTemplates [
 ]
 
 { #category : #accessing }
-RideViewControllerLocator >> getTemplatesFrom: aPath [
+RideViewPresenterLocator >> getTemplatesFrom: aPath [
 
 	"Returns a dictionary with keys being the filenames (without extension) of aPath
 	and as value, the mustache template based on its content."
@@ -96,19 +83,19 @@ RideViewControllerLocator >> getTemplatesFrom: aPath [
 ]
 
 { #category : #initialization }
-RideViewControllerLocator >> initializeControllers [
+RideViewPresenterLocator >> initializePresenters [
 
-	^ controllers := self getControllers
+	^ presenters := self getPresenters
 ]
 
 { #category : #initialization }
-RideViewControllerLocator >> initializeTemplates [
+RideViewPresenterLocator >> initializeTemplates [
 
 	^ templates := self getTemplates
 ]
 
 { #category : #accessing }
-RideViewControllerLocator >> layoutTemplates [
+RideViewPresenterLocator >> layoutTemplates [
 
 	^ self templates
 		  at: #layouts
@@ -117,7 +104,20 @@ RideViewControllerLocator >> layoutTemplates [
 ]
 
 { #category : #accessing }
-RideViewControllerLocator >> sharedTemplates [
+RideViewPresenterLocator >> presenterNameFor: routeName [
+
+	^ '{1}Controller' format: { ('' join:
+			   ((routeName substrings: '_') collect: [ :e | e capitalized ])) }
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> presenters [
+
+	^ presenters ifNil: [ self initializePresenters ]
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> sharedTemplates [
 
 	^ self templates
 		  at: #shared
@@ -126,19 +126,19 @@ RideViewControllerLocator >> sharedTemplates [
 ]
 
 { #category : #accessing }
-RideViewControllerLocator >> templates [
+RideViewPresenterLocator >> templates [
 
 	^ templates ifNil: [ self initializeTemplates ]
 ]
 
 { #category : #accessing }
-RideViewControllerLocator >> templatesFor: aController [
+RideViewPresenterLocator >> templatesFor: aPresenter [
 
-	^ (self templates at: #views) at: aController class basePath
+	^ (self templates at: #views) at: aPresenter class basePath
 ]
 
 { #category : #accessing }
-RideViewControllerLocator >> viewTemplates [
+RideViewPresenterLocator >> viewTemplates [
 
 	^ self templates
 		  at: #views

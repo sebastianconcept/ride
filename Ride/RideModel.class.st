@@ -12,3 +12,9 @@ RideModel class >> findId: anId [
 
 	^ Ride repository find: self atId: anId
 ]
+
+{ #category : #converting }
+RideModel >> asTemplateModel [
+
+	^ { (#name -> self class name) } asDictionary
+]

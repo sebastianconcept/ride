@@ -27,7 +27,7 @@ RideService class >> install [
 { #category : #initialization }
 RideService >> initializeLocator [
 
-	^ locator := RideViewControllerLocator new
+	^ locator := RideViewPresenterLocator new
 ]
 
 { #category : #initialization }

@@ -1,5 +1,5 @@
 Class {
-	#name : #RideMissingControllerError,
+	#name : #RideMissingPresenterError,
 	#superclass : #RideError,
 	#category : #'Ride-Exceptions'
 }

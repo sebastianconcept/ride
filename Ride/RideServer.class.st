@@ -7,12 +7,14 @@ Class {
 	#instVars : [
 		'teapot',
 		'validator',
-		'maitre'
+		'maitre',
+		'webSocket',
+		'webSocketReferences'
 	],
-	#category : #'Ride-REST'
+	#category : #'Ride-Core'
 }
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> bind [
 
 	^ OSEnvironment current
@@ -20,7 +22,7 @@ RideServer class >> bind [
 		  ifAbsent: [ self defaultBind ]
 ]
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> databaseName [
 
 	^ OSEnvironment current
@@ -28,7 +30,7 @@ RideServer class >> databaseName [
 		  ifAbsent: [ self defaultDatabaseName ]
 ]
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> debugMode [
 
 	^ (OSEnvironment current
@@ -36,40 +38,60 @@ RideServer class >> debugMode [
 		  ifAbsent: [ self defaultDebugMode ]) asInteger > 0
 ]
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> defaultBind [
 	^ '0.0.0.0'
 ]
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> defaultDatabaseName [
 
 	^ self subclassResponsibility
 ]
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> defaultDebugMode [
 
 	^ 0
 ]
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> defaultPort [
 	^ 3004
 ]
 
-{ #category : #versions }
-RideServer class >> port [
+{ #category : #accessing }
+RideServer class >> defaultWebSocketPort [
+	^ 3008
+]
+
+{ #category : #testing }
+RideServer class >> hasWebSocket [
+
+	^ (OSEnvironment current at: #WEB_SOCKET_PORT ifAbsent: [ 0 ])
+		  asInteger > 0
+]
+
+{ #category : #accessing }
+RideServer class >> httpPort [
 
 	^ (OSEnvironment current
-		  at: #PORT
+		  at: #HTTP_PORT
 		  ifAbsent: [ self defaultPort ]) asInteger
 ]
 
-{ #category : #versions }
+{ #category : #accessing }
 RideServer class >> version [
 
 	^ '1.0.1'
+]
+
+{ #category : #accessing }
+RideServer class >> webSockerPort [
+
+	^ (OSEnvironment current
+		  at: #WEB_SOCKET_PORT
+		  ifAbsent: [ self defaultWebSocketPort ]) asInteger
 ]
 
 { #category : #initialization }
@@ -86,6 +108,12 @@ RideServer >> initialize [
 RideServer >> initializeTeapot [
 
 	^ teapot := self newHttpServer
+]
+
+{ #category : #initialization }
+RideServer >> initializeWebSocket [
+
+	^ webSocket := self newWebSocketServer
 ]
 
 { #category : #initialization }
@@ -126,13 +154,48 @@ RideServer >> newHttpServer [
 	| newServer |
 	newServer := Teapot configure: { 
 			             (#defaultOutput -> #json).
-			             (#port -> self class port).
+			             (#port -> self class httpPort).
 			             (#debugMode -> self class debugMode).
 			             (#bindAddress
 			              -> (NetNameResolver addressForName: self class bind)) }.
 	((newServer instVarNamed: 'compositeRouter') instVarNamed:
 		 'errorhandlers') removeLast.
 	^ newServer
+]
+
+{ #category : #actions }
+RideServer >> newWebSocketServer [
+
+	| newServer |
+	newServer := (ZnServer startOn: self class webSockerPort)
+		             delegate:
+			             (ZnWebSocketDelegate handler: [ :ws | 
+					              self onWebSocketConnected: ws ]);
+		             yourself.
+
+	^ newServer
+]
+
+{ #category : #reactions }
+RideServer >> onMessage: message from: aWebSocket [
+
+	self halt
+]
+
+{ #category : #reactions }
+RideServer >> onSocketClosed: aWebSocket [
+
+	"Clean any related references."
+
+	"webSocketReferences removeKey: aWebSocket ifAbsent: [ nil ]"
+]
+
+{ #category : #reactions }
+RideServer >> onWebSocketConnected: aWebSocket [
+
+	^ self
+		  run: aWebSocket
+		  with: [ :message | self onMessage: message from: aWebSocket ]
 ]
 
 { #category : #actions }
@@ -147,15 +210,34 @@ RideServer >> renderHtml500On: anError [
 	^ anError descriptionModel
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 RideServer >> reset [
+
+	webSocket ifNotNil: [ 
+		| released |
+		released := webSocket.
+		webSocket := nil.
+		released stop ].
 
 	teapot ifNotNil: [ 
 		| released |
 		released := teapot.
 		teapot := nil.
-		released stop ].
+		released stop ]
+]
 
+{ #category : #actions }
+RideServer >> run: aWebSocket with: aBlock [
+	^ [ [ | message |
+	message := nil.
+	[ aWebSocket isConnected
+		ifTrue: [ message := aWebSocket readMessage ]
+		ifFalse: [ ConnectionClosed signal ] ]
+		on: ConnectionTimedOut
+		do: [ "Ignore & continue" aWebSocket ping ].
+	message ifNotNil: [ aBlock value: message ] ] repeat ]
+		on: ConnectionClosed
+		do: [ :x | self onSocketClosed: aWebSocket ]
 ]
 
 { #category : #actions }
@@ -250,23 +332,32 @@ RideServer >> setRoutes [
 	Ride service router setRoutesOn: self
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 RideServer >> start [
 
 	self setRoutes.
 	self setFilters.
 	self setExceptionHandlers.
+	self class hasWebSocket ifTrue: [ 
+		self webSocket start.
+		Ride log: ('WebSocket started at {1}:{2}' format: { 
+					 self class bind printString.
+					 self class webSockerPort asString }) ].
 	self teapot start.
-	Ride log: ('Teapot started at http server at {1}:{2}' format: { 
+	Ride log: ('Teapot started with http server at {1}:{2}' format: { 
 				 self class bind printString.
-				 self class port asString })
+				 self class httpPort asString })
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 RideServer >> stop [
 
+	webSocket ifNotNil: [ 
+		Ride log: 'Stoping WebSocket...'.
+		webSocket stop ].
 	Ride log: 'Stoping Teapot...'.
 	teapot ifNotNil: [ teapot stop ].
+
 	self reset
 ]
 
@@ -274,4 +365,10 @@ RideServer >> stop [
 RideServer >> teapot [
 
 	^ teapot ifNil: [ self initializeTeapot ]
+]
+
+{ #category : #accessing }
+RideServer >> webSocket [
+
+	^ webSocket ifNil: [ self initializeWebSocket ]
 ]

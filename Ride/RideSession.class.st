@@ -7,7 +7,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'controllers'
+		'presenters'
 	],
 	#category : #'Ride-Core'
 }
@@ -31,33 +31,9 @@ RideSession class >> newWith: anId on: aController [
 ]
 
 { #category : #actions }
-RideSession >> add: routeKey controller: aRideController [
+RideSession >> add: routeKey presenter: aRidePresenter [
 
-	^ self controllers at: routeKey put: aRideController
-]
-
-{ #category : #accessing }
-RideSession >> controllerForRoute: routeName [
-
-	^ self controllers at: routeName ifAbsentPut: [ 
-		  | controller |
-		  controller := self rootController children at: routeName.
-		  controller ifNil: [ 
-			  RideMissingControllerError signal:
-				  ('{1} not found' format: { routeName }) ].
-		  controller ]
-]
-
-{ #category : #accessing }
-RideSession >> controllers [
-
-	^ controllers ifNil: [ self initializeControllers ]
-]
-
-{ #category : #initialization }
-RideSession >> htmlPageOnGET [
-
-self halt.
+	^ self presenters at: routeKey put: aRidePresenter
 ]
 
 { #category : #accessing }
@@ -73,29 +49,18 @@ RideSession >> id: anObject [
 ]
 
 { #category : #initialization }
-RideSession >> initialize [
+RideSession >> initializePresenters [
 
-	super initialize.
-
-	"The minimal thing to do for the session of the app: add the root controller"
-	"self
-		add: #/
-		controller: (Ride service router rootControllerGetter value: self)"
+	^ presenters := Dictionary new
 ]
 
 { #category : #initialization }
-RideSession >> initializeControllers [
-
-	^ controllers := Dictionary new
-]
-
-{ #category : #initialization }
-RideSession >> initializeWith: anId on: aController [
+RideSession >> initializeWith: anId on: aPresenter [
 
 	super initialize.
 
 	id := anId.
-	self add: #/ controller: aController
+	self add: #/ presenter: aPresenter
 ]
 
 { #category : #accessing }
@@ -104,14 +69,32 @@ RideSession >> locate [
 	^ Ride service locate
 ]
 
-{ #category : #actions }
-RideSession >> remove: routeKey [
+{ #category : #accessing }
+RideSession >> presenterForRoute: routeName [
 
-	^ self controllers removeKey: routeKey ifAbsent: [ nil ]
+	^ self presenters at: routeName ifAbsentPut: [ 
+		  | presenter |
+		  presenter := self rootPresenter children at: routeName.
+		  presenter ifNil: [ 
+			  RideMissingPresenterError signal:
+				  ('{1} not found' format: { routeName }) ].
+		  presenter ]
 ]
 
 { #category : #accessing }
-RideSession >> rootController [
+RideSession >> presenters [
 
-	^ self controllers at: #/ ifAbsent: [ nil ]
+	^ presenters ifNil: [ self initializePresenters ]
+]
+
+{ #category : #actions }
+RideSession >> remove: routeKey [
+
+	^ self presenters removeKey: routeKey ifAbsent: [ nil ]
+]
+
+{ #category : #accessing }
+RideSession >> rootPresenter [
+
+	^ self presenters at: #/ ifAbsent: [ nil ]
 ]

@@ -16,15 +16,15 @@ RideTest >> testCamelCaseToSnakeCase [
 RideTest >> testSnakeCaseRouteToCamelCaseControllerName [
 
 	self
-		assert: (RideViewControllerLocator new controllerNameFor: 'some')
+		assert: (RideViewPresenterLocator new presenterNameFor: 'some')
 		equals: 'SomeController'.
 	self
 		assert:
-		(RideViewControllerLocator new controllerNameFor: 'some_thing')
+		(RideViewPresenterLocator new presenterNameFor: 'some_thing')
 		equals: 'SomeThingController'.
 	self
 		assert:
-		(RideViewControllerLocator new controllerNameFor:
+		(RideViewPresenterLocator new presenterNameFor:
 			 'some_thing_modeled')
 		equals: 'SomeThingModeledController'
 ]

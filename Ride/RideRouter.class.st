@@ -16,8 +16,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'sessionGetter',
-		'rootControllerGetter',
-		'domain'
+		'domain',
+		'rootPresenterGetter'
 	],
 	#category : #'Ride-Core'
 }
@@ -149,7 +149,7 @@ RideRouter >> getBasicHandlerDo: aBlock [
 	  RideCurrentRequest value: req during: [ 
 		  session := self getSessionFrom: req.
 		  [ RideCurrentSession value: session during: aBlock ]
-			  on: RideMissingControllerError
+			  on: RideMissingPresenterError
 			  do: [ :x | "404" self halt ] ] ]
 ]
 
@@ -171,20 +171,20 @@ RideRouter >> getSessionFrom: aRequest [
 { #category : #handler }
 RideRouter >> handleHTMLHomePageGET [
 
-	"Answers the html produced with the controller that is set as root."
+	"Answers the html produced with the presenter that is set as root."
 
-	| response session request sessionCookie controller content |
+	| response session request sessionCookie presenter content |
 	^ self getBasicHandlerDo: [ 
 		  request := RideCurrentRequest value.
 		  session := RideCurrentSession value.
 		  response := TeaResponse ok.
 		  sessionCookie := self newSessionCookieFor: session id.
 		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
-		  controller := RideCurrentSession value rootController.
+		  presenter := RideCurrentSession value rootPresenter.
 		  content := (RideCurrentRequest value headers includesKey:
 			              'X-Ride-AJAX')
-			             ifTrue: [ controller htmlOnGET ]
-			             ifFalse: [ controller htmlPageOnGET ].
+			             ifTrue: [ presenter htmlOnGET ]
+			             ifFalse: [ presenter htmlPageOnGET ].
 		  response body: content.
 		  response ]
 ]
@@ -201,7 +201,7 @@ RideRouter >> handleHTMLHomePagePOST [
 		  response := TeaResponse ok.
 		  sessionCookie := self newSessionCookieFor: session id.
 		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
-		  response body: RideCurrentSession value rootController htmlOnPOST.
+		  response body: RideCurrentSession value rootPresenter htmlOnPOST.
 		  response ]
 ]
 
@@ -209,26 +209,22 @@ RideRouter >> handleHTMLHomePagePOST [
 RideRouter >> handleHTMLOnDELETEFor: routeName [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value controllerForRoute:
-			   routeName) htmlOnDELETE ]
-
-"	^ (self locate controllers at: routeName ifAbsent: [ 
-		   RideMissingControllerError signal: ('{1} not found' format:
-				    { (self locate controllerNameFor: routeName) }) ]) deleteHtml"
+		  (RideCurrentSession value presenterForRoute: routeName)
+			  htmlOnDELETE ]
 ]
 
 { #category : #handler }
 RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
 
-	| response controller content |
+	| response presenter content |
 	^ self getBasicHandlerDo: [ 
 		  response := TeaResponse ok.
-		  controller := RideCurrentSession value controllerForRoute:
+		  presenter := RideCurrentSession value presenterForRoute:
 			                routeName.
 		  content := (RideCurrentRequest value headers includesKey:
 			              'X-Ride-AJAX')
-			             ifTrue: [ controller htmlOnGET ]
-			             ifFalse: [ controller htmlPageOnGET ].
+			             ifTrue: [ presenter htmlOnGET ]
+			             ifFalse: [ presenter htmlPageOnGET ].
 		  response body: content.
 		  response ]
 ]
@@ -237,7 +233,7 @@ RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
 RideRouter >> handleHTMLOnPATCHFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value controllerForRoute: routeName)
+		  (RideCurrentSession value presenterForRoute: routeName)
 			  htmlOnPATCH ]
 ]
 
@@ -245,7 +241,7 @@ RideRouter >> handleHTMLOnPATCHFor: routeName with: someMustacheTemplates [
 RideRouter >> handleHTMLOnPOSTFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value controllerForRoute: routeName)
+		  (RideCurrentSession value presenterForRoute: routeName)
 			  htmlOnPOST ]
 ]
 
@@ -253,19 +249,19 @@ RideRouter >> handleHTMLOnPOSTFor: routeName with: someMustacheTemplates [
 RideRouter >> handleHTMLOnPUTFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value controllerForRoute: routeName) htmlOnPUT ]
+		  (RideCurrentSession value presenterForRoute: routeName) htmlOnPUT ]
 ]
 
 { #category : #initialization }
-RideRouter >> initializeRootControllerGetter [
+RideRouter >> initializeRootPresenterGetter [
 
-	^ rootControllerGetter := [ :session | 
-	                          | controller |
-	                          controller := session rootController.
-	                          controller
+	^ rootPresenterGetter := [ :session | 
+	                          | presenter |
+	                          presenter := session rootPresenter.
+	                          presenter
 		                          ifNil: [ 
-		                          WelcomeController on: Welcome new ]
-		                          ifNotNil: [ controller ] ]
+		                          WelcomePresenter on: Welcome new ]
+		                          ifNotNil: [ presenter ] ]
 ]
 
 { #category : #initialization }
@@ -286,7 +282,7 @@ RideRouter >> initializeSessionGetter [
 		                   ifAbsentPut: [ 
 		                   RideSession
 			                   newWith: sessionId
-			                   on: WelcomeController new ] ]
+			                   on: WelcomePresenter new ] ]
 ]
 
 { #category : #actions }
@@ -298,15 +294,15 @@ RideRouter >> newSessionCookieFor: sessionId [
 ]
 
 { #category : #accessing }
-RideRouter >> rootControllerGetter [
+RideRouter >> rootPresenterGetter [
 
-	^ rootControllerGetter ifNil: [ self initializeRootControllerGetter ]
+	^ rootPresenterGetter ifNil: [ self initializeRootPresenterGetter ]
 ]
 
 { #category : #accessing }
-RideRouter >> rootControllerGetter: anObject [
+RideRouter >> rootPresenterGetter: anObject [
 
-	rootControllerGetter := anObject
+	rootPresenterGetter := anObject
 ]
 
 { #category : #handler }
@@ -363,8 +359,8 @@ RideRouter >> setRoutesOn: aRideServer [
 	1. Use the views/ directory and use each subdirectory 
 	name as snake_case and those are the default routes.
 	2. Set one route that is going to define who's 
-	the controller and template. 
-	Usually this would happen with the rootController showHtml method."
+	the presenter and template. 
+	Usually this would happen with the rootPresenter showHtml method."
 
 	Ride service locate viewTemplates keysAndValuesDo: [ :key :value | 
 		self setRoute: key with: value on: aRideServer ].
