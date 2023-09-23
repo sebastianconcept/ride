@@ -38,3 +38,33 @@ RideDirectoryResolver class >> getViewTemplatesDir [
 
 	^ self baseDirectory / 'templates' / 'views'
 ]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> layoutTemplatesDirectory [
+
+	^ self templatesDirectory / 'layouts'
+]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> sharedTemplatesDirectory [
+
+	^ self templatesDirectory / 'shared'
+]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> templatesDirectory [
+
+	^ self baseDirectory / 'app' / 'templates'
+]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> uploadsDirectory [
+
+	^ self baseDirectory / 'uploads'
+]
+
+{ #category : #accessing }
+RideDirectoryResolver class >> viewTemplatesDirectory [
+
+	^ self templatesDirectory / 'views'
+]

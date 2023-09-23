@@ -41,7 +41,7 @@ RideRouter class >> baseUrl [
 { #category : #accessing }
 RideRouter class >> defaultBaseFilePathString [
 
-	^ (Smalltalk imageDirectory / 'templates') pathString
+	^ (Smalltalk imageDirectory / 'app' / 'templates') pathString
 ]
 
 { #category : #accessing }
@@ -50,16 +50,70 @@ RideRouter class >> defaultBaseUrl [
 	^ ''
 ]
 
+{ #category : #accessing }
+RideRouter class >> defaultPublicBasePath [
+
+	^ (Smalltalk imageDirectory / 'public') pathString
+]
+
+{ #category : #accessing }
+RideRouter class >> defaultPublicBaseUrl [
+
+	^ '/'
+]
+
+{ #category : #accessing }
+RideRouter class >> defaultUploadsBasePath [
+
+	^ (Smalltalk imageDirectory / 'uploads') pathString
+]
+
 { #category : #actions }
 RideRouter class >> newSessionId [
 
 	^ UUID new asString36
 ]
 
+{ #category : #accessing }
+RideRouter class >> publicDirectory [
+
+	^ Path from: self publicDirectoryString
+]
+
+{ #category : #accessing }
+RideRouter class >> publicDirectoryString [
+
+	^ OSEnvironment current
+		  at: #RIDE_PUBLIC_BASE_PATH
+		  ifAbsent: [ self defaultPublicBasePath ]
+]
+
+{ #category : #accessing }
+RideRouter class >> publicPathString [
+
+	^ OSEnvironment current
+		  at: #RIDE_PUBLIC_BASE_URL
+		  ifAbsent: [ self defaultPublicBaseUrl ]
+]
+
 { #category : #handler }
 RideRouter class >> sessionHeaderKey [
 
 	^ 'X-Ride-SessionId'
+]
+
+{ #category : #accessing }
+RideRouter class >> uploadsBaseDirectory [
+
+	^ Path from: self uploadsBaseDirectoryString
+]
+
+{ #category : #accessing }
+RideRouter class >> uploadsBaseDirectoryString [
+
+	^ OSEnvironment current
+		  at: #RIDE_UPLOAD_BASE_PATH
+		  ifAbsent: [ self defaultUploadsBasePath ]
 ]
 
 { #category : #accessing }
@@ -83,7 +137,7 @@ RideRouter >> baseUrl [
 ]
 
 { #category : #actions }
-RideRouter >> basicSetRoute: routeName with: someMustacheTemplates on: aRideServer [
+RideRouter >> basicSetRoute: routeName with: someMustacheTemplate on: aRideServer [
 
 	"Set the endpoints accepted for routeName in aRideServer based the
 	given templates found and interpreted with the Ride convention:
@@ -94,26 +148,24 @@ RideRouter >> basicSetRoute: routeName with: someMustacheTemplates on: aRideServ
 	5. The 'edit' view will also use the _form partial to render a form for the model."
 
 	aRideServer teapot
-		GET:
-			self baseUrl , '/<routeName>/*' -> [ :req | self fileServe: req ];
+		GET: self baseUrl , '/<routeName>/*'
+			-> [ :req | self fileServeOrRenderPresenterFor: req ];
 		output: #html.
 	aRideServer teapot
 		GET: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnGETFor: routeName with: someMustacheTemplates);
+			-> (self handleHTMLOnGETFor: routeName);
 		output: #html.
 	aRideServer teapot
 		POST: self baseUrl , '/' , routeName , '/*'
-			->
-				(self handleHTMLOnPOSTFor: routeName with: someMustacheTemplates);
+			-> (self handleHTMLOnPOSTFor: routeName);
 		output: #html.
 	aRideServer teapot
 		PUT: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnPUTFor: routeName with: someMustacheTemplates);
+			-> (self handleHTMLOnPUTFor: routeName);
 		output: #html.
 	aRideServer teapot
 		PATCH: self baseUrl , '/' , routeName , '/*'
-			->
-				(self handleHTMLOnPATCHFor: routeName with: someMustacheTemplates);
+			-> (self handleHTMLOnPATCHFor: routeName);
 		output: #html.
 	aRideServer teapot
 		DELETE: self baseUrl , '/' , routeName , '/*'
@@ -139,6 +191,35 @@ RideRouter >> fileServe: request [
 	^ targetedPath asFileReference contents
 	"^ '<script>{1}</script>' format:
 		  { targetedPath asFileReference contents }"
+]
+
+{ #category : #actions }
+RideRouter >> fileServeOrRenderPresenterFor: request [
+
+	| route targetedPath |
+	route := request at: #routeName.
+
+	"1. Try to serve it as a presenter's main view (directory)"
+	(route = request uri segments last and: [ 
+		 self hasPresenterForRoute: route ]) ifTrue: [ 
+		^ (self handleHTMLOnGETFor: route) value: request ].
+
+	"2. Try to serve it as a resource local to the view directory"
+	targetedPath := self baseFilePath / 'views'.
+	request uri segments do: [ :path | 
+		targetedPath := targetedPath / path.
+		(targetedPath asFileReference exists and: [ 
+			 targetedPath asFileReference isFile ]) ifTrue: [ 
+			^ targetedPath asFileReference contents ] ].
+
+	"3. Try to serve it as a resource found in the public directory and 404 otherwise."
+	targetedPath := self class publicDirectory asFileReference
+	                / request uri segments last.
+	^ targetedPath exists
+		  ifTrue: [ targetedPath asFileReference contents ]
+		  ifFalse: [ 
+			  RideNotFoundError signal:
+				  ('{1} not found' format: { request uri asString }) ]
 ]
 
 { #category : #accessing }
@@ -174,6 +255,7 @@ RideRouter >> handleHTMLHomePageGET [
 	"Answers the html produced with the presenter that is set as root."
 
 	| response session request sessionCookie presenter content |
+
 	^ self getBasicHandlerDo: [ 
 		  request := RideCurrentRequest value.
 		  session := RideCurrentSession value.
@@ -214,6 +296,21 @@ RideRouter >> handleHTMLOnDELETEFor: routeName [
 ]
 
 { #category : #handler }
+RideRouter >> handleHTMLOnGETFor: routeName [
+
+	| response presenter content |
+	^ self getBasicHandlerDo: [ 
+		  response := TeaResponse ok.
+		  presenter := RideCurrentSession value presenterForRoute: routeName.
+		  content := (RideCurrentRequest value headers includesKey:
+			              'X-Ride-AJAX')
+			             ifTrue: [ presenter htmlOnGET ]
+			             ifFalse: [ presenter htmlPageOnGET ].
+		  response body: content.
+		  response ]
+]
+
+{ #category : #handler }
 RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
 
 	| response presenter content |
@@ -230,11 +327,26 @@ RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
 ]
 
 { #category : #handler }
+RideRouter >> handleHTMLOnPATCHFor: routeName [
+
+	^ self getBasicHandlerDo: [ 
+		  (RideCurrentSession value presenterForRoute: routeName)
+			  htmlOnPATCH ]
+]
+
+{ #category : #handler }
 RideRouter >> handleHTMLOnPATCHFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
 		  (RideCurrentSession value presenterForRoute: routeName)
 			  htmlOnPATCH ]
+]
+
+{ #category : #handler }
+RideRouter >> handleHTMLOnPOSTFor: routeName [
+
+	^ self getBasicHandlerDo: [ 
+		  (RideCurrentSession value presenterForRoute: routeName) htmlOnPOST ]
 ]
 
 { #category : #handler }
@@ -246,10 +358,28 @@ RideRouter >> handleHTMLOnPOSTFor: routeName with: someMustacheTemplates [
 ]
 
 { #category : #handler }
+RideRouter >> handleHTMLOnPUTFor: routeName [
+
+	^ self getBasicHandlerDo: [ 
+		  (RideCurrentSession value presenterForRoute: routeName) htmlOnPUT ]
+]
+
+{ #category : #handler }
 RideRouter >> handleHTMLOnPUTFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
 		  (RideCurrentSession value presenterForRoute: routeName) htmlOnPUT ]
+]
+
+{ #category : #testing }
+RideRouter >> hasPresenterForRoute: aString [
+
+	"Answers true if Ride finds a presenter defined for the given route.
+	The convention in Ride is that views/ subdirectories are:
+	1. routes and
+	2. their name defines the main view and other views of its presenter."
+
+	^ Ride service locator templates views keys includes: aString
 ]
 
 { #category : #initialization }
@@ -336,20 +466,31 @@ RideRouter >> sessionHeaderKey [
 
 { #category : #actions }
 RideRouter >> setHomeRouteOn: aRideServer [
+
 	"Sets the default handler for the home route."
+
 	aRideServer teapot
 		GET: self baseUrl , '/' -> self handleHTMLHomePageGET;
 		output: #html
 ]
 
 { #category : #actions }
+RideRouter >> setPublicRouteOn: aRideServer [
+
+	"Sets the default handler for the home route."
+
+	aRideServer teapot staticRouter delegate:
+		RideStaticFileServerDelegate new.
+	aRideServer teapot staticRouter
+		urlPrefix: self class publicPathString
+		path: self class publicDirectory
+]
+
+{ #category : #actions }
 RideRouter >> setRoute: routeName with: someMustacheTemplates on: aRideServer [
 
-	someMustacheTemplates keysAndValuesDo: [ :route :mustacheTemplates | 
-		self
-			basicSetRoute: routeName
-			with: mustacheTemplates
-			on: aRideServer ]
+	someMustacheTemplates keysAndValuesDo: [ :route :mustacheTemplate | 
+		self basicSetRoute: routeName with: mustacheTemplate on: aRideServer ]
 ]
 
 { #category : #actions }
@@ -362,8 +503,16 @@ RideRouter >> setRoutesOn: aRideServer [
 	the presenter and template. 
 	Usually this would happen with the rootPresenter showHtml method."
 
+	self setPublicRouteOn: aRideServer.
+	
 	Ride service locate viewTemplates keysAndValuesDo: [ :key :value | 
 		self setRoute: key with: value on: aRideServer ].
 
-	self setHomeRouteOn: aRideServer
+	self setHomeRouteOn: aRideServer.
+]
+
+{ #category : #accessing }
+RideRouter >> uploadsBaseDirectory [
+
+	^ self class uploadsBaseDirectory
 ]

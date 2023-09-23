@@ -10,6 +10,9 @@ See my child classes for concrete examples.
 4. Set observations on the models and their respective reaction methods.
 5. Define any other method that will return HTML upon the frontend action messages.
 6. These additional HTML methods will get the HTML rendered by relying on their own dedicated partials and template models.
+7. I have a factory that allows me to create subpresenters lazily i.e.: when I try a `presenterForRoute:`.
+8. I can change my `focusedView` and with that render the model in different aspects.
+9. I might use a child as my delegate and it will respond in my place.
 "
 Class {
 	#name : #RidePresenter,
@@ -19,7 +22,8 @@ Class {
 		'views',
 		'focusedView',
 		'delegate',
-		'subpresenters'
+		'subpresenters',
+		'factory'
 	],
 	#category : #'Ride-Presenters'
 }
@@ -114,7 +118,20 @@ RidePresenter >> basicHTML [
 { #category : #accessing }
 RidePresenter >> childAt: aSymbol [
 
-	^ subpresenters at: aSymbol
+	"Answers the current child presenter found at aSymbol.
+	If not found, try to find a factory block to create it.
+	If a new one was created, add it and return it.
+	If that didn't work, return nil."
+
+	| newSubpresenter |
+	^ (subpresenters includesKey: aSymbol)
+		  ifTrue: [ subpresenters at: aSymbol ]
+		  ifFalse: [ 
+			  newSubpresenter := self factory
+				                     at: aSymbol
+				                     ifPresent: [ :aBlock | aBlock value ]
+				                     ifAbsent: [ ^ nil ].
+			  subpresenters at: aSymbol put: newSubpresenter ]
 ]
 
 { #category : #accessing }
@@ -154,6 +171,12 @@ RidePresenter >> delegate [
 RidePresenter >> delegate: anObject [
 
 	delegate := anObject
+]
+
+{ #category : #accessing }
+RidePresenter >> factory [
+
+	^ factory ifNil: [ self initializeFactory ]
 ]
 
 { #category : #accessing }
@@ -253,6 +276,12 @@ RidePresenter >> initialize [
 	subpresenters := JsonObject new.
 	self createViews.
 
+]
+
+{ #category : #initialization }
+RidePresenter >> initializeFactory [
+
+	^ factory := Dictionary new
 ]
 
 { #category : #accessing }

@@ -1,5 +1,12 @@
 "
 I'm orchestrating the HTTP server for this Ride web application.
+
+See setRoutes comments to understand my default convention.
+
+Applications might be interested in subclassing me and implement their own custom:
+- setFilters
+- setRoutes
+
 "
 Class {
 	#name : #RideServer,
@@ -92,6 +99,12 @@ RideServer class >> webSockerPort [
 	^ (OSEnvironment current
 		  at: #WEB_SOCKET_PORT
 		  ifAbsent: [ self defaultWebSocketPort ]) asInteger
+]
+
+{ #category : #accessing }
+RideServer >> debugMode [
+
+	^ self class debugMode
 ]
 
 { #category : #initialization }
@@ -312,6 +325,7 @@ RideServer >> setExceptionHandlers [
 				response := TeaResponse serverError.
 				Ride log: ex printString level: #ERROR.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
+
 				response body: (ex
 							 renderHtmlWith:
 								 { (#status -> response code) } asDictionary asJsonObject
@@ -324,6 +338,12 @@ RideServer >> setExceptionHandlers [
 					yourself.
 				response ];
 		output: #html
+]
+
+{ #category : #actions }
+RideServer >> setFilters [
+
+	"Nothing to add"
 ]
 
 { #category : #actions }

@@ -102,6 +102,15 @@ Ride class >> mode [
 ]
 
 { #category : #actions }
+Ride class >> purgeUploadsDirectory [
+
+	"Removes all files from the uploads directory"
+
+	RideDirectoryResolver uploadsDirectory files do: [ :each | 
+		each delete ]
+]
+
+{ #category : #actions }
 Ride class >> reportedError: aString [
 
 	self log: aString level: #ERROR

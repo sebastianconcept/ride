@@ -7,6 +7,12 @@ Class {
 	#category : #'Ride-Core'
 }
 
+{ #category : #'instance creation' }
+RideWelcomeApp class >> newSessionWith: sessionId [
+
+	^ RideSession newWith: sessionId on: WelcomePresenter new
+]
+
 { #category : #initialization }
 RideWelcomeApp >> initializeServer [
 

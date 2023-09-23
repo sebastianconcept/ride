@@ -38,8 +38,10 @@ Error >> htmlDescribeOn: aJsonObjectToRespond [
 
 { #category : #'*RidePharo' }
 Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
+	"Answers the rendered template using the given aJsonObject as model and
+	loading it with the properties of the walkback and error message."
 
-	RideServer debugMode ifTrue: [ 
+	Ride service server debugMode ifTrue: [ 
 		| walkback lines |
 		aJsonObject title: self printString.
 		walkback := (String streamContents: [ :stream | 

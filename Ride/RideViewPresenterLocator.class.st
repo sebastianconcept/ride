@@ -39,26 +39,26 @@ RideViewPresenterLocator >> getTemplates [
 
 	newTemplates := JsonObject new.
 	newViewTemplates := JsonObject new.
-	RideDirectoryResolver getViewTemplatesDir directories do: [ :path | 
+	RideDirectoryResolver viewTemplatesDirectory directories do: [ :path | 
 		newViewTemplates
 			at: path basenameWithoutExtension
 			put: (self getTemplatesFrom: path) ].
 	newTemplates
 		at:
-		RideDirectoryResolver getViewTemplatesDir basenameWithoutExtension
+		RideDirectoryResolver viewTemplatesDirectory basenameWithoutExtension
 		put: newViewTemplates.
-	RideDirectoryResolver getLayoutTemplatesDir files do: [ :file | 
+	RideDirectoryResolver layoutTemplatesDirectory files do: [ :file | 
 		(newTemplates
 			 at:
-			 RideDirectoryResolver getLayoutTemplatesDir
+			 RideDirectoryResolver layoutTemplatesDirectory
 				 basenameWithoutExtension
 			 ifAbsentPut: [ JsonObject new ])
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].
-	RideDirectoryResolver getSharedTemplatesDir files do: [ :file | 
+	RideDirectoryResolver sharedTemplatesDirectory files do: [ :file | 
 		(newTemplates
 			 at:
-			 RideDirectoryResolver getSharedTemplatesDir
+			 RideDirectoryResolver sharedTemplatesDirectory
 				 basenameWithoutExtension
 			 ifAbsentPut: [ JsonObject new ])
 			at: file basenameWithoutExtension
@@ -106,7 +106,7 @@ RideViewPresenterLocator >> layoutTemplates [
 { #category : #accessing }
 RideViewPresenterLocator >> presenterNameFor: routeName [
 
-	^ '{1}Controller' format: { ('' join:
+	^ '{1}Presenter' format: { ('' join:
 			   ((routeName substrings: '_') collect: [ :e | e capitalized ])) }
 ]
 
