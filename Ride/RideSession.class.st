@@ -74,7 +74,11 @@ RideSession >> presenterForRoute: routeName [
 
 	^ self presenters at: routeName ifAbsentPut: [ 
 		  | presenter |
-		  presenter := self rootPresenter childAt: routeName.
+		  self halt.
+		  presenter := routeName = '/'
+			               ifTrue: [ self rootPresenter ]
+			               ifFalse: [ self rootPresenter childAt: routeName ].
+
 		  presenter ifNil: [ 
 			  RideMissingPresenterError signal:
 				  ('{1} not found' format: { routeName }) ].

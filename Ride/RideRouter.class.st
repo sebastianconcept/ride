@@ -147,29 +147,28 @@ RideRouter >> basicSetRoute: routeName with: someMustacheTemplate on: aRideServe
 	4. The 'show' view will use _show partial to render the model.
 	5. The 'edit' view will also use the _form partial to render a form for the model."
 
+	| routePath |
+	self flag: #deprecated.
+	self halt.
+	routePath := self baseUrl , '/' , routeName , '/*'.
 	aRideServer teapot
 		GET: self baseUrl , '/<routeName>/*'
 			-> [ :req | self fileServeOrRenderPresenterFor: req ];
 		output: #html.
 	aRideServer teapot
-		GET: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnGETFor: routeName);
+		GET: routePath -> (self handleHTMLOnGETFor: routeName);
 		output: #html.
 	aRideServer teapot
-		POST: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnPOSTFor: routeName);
+		POST: routePath -> (self handleHTMLOnPOSTFor: routeName);
 		output: #html.
 	aRideServer teapot
-		PUT: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnPUTFor: routeName);
+		PUT: routePath -> (self handleHTMLOnPUTFor: routeName);
 		output: #html.
 	aRideServer teapot
-		PATCH: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnPATCHFor: routeName);
+		PATCH: routePath -> (self handleHTMLOnPATCHFor: routeName);
 		output: #html.
 	aRideServer teapot
-		DELETE: self baseUrl , '/' , routeName , '/*'
-			-> (self handleHTMLOnDELETEFor: routeName);
+		DELETE: routePath -> (self handleHTMLOnDELETEFor: routeName);
 		output: #html
 ]
 
@@ -215,8 +214,14 @@ RideRouter >> fileServeOrRenderPresenterFor: request [
 	"3. Try to serve it as a resource found in the public directory and 404 otherwise."
 	targetedPath := self class publicDirectory asFileReference
 	                / request uri segments last.
+
 	^ targetedPath exists
-		  ifTrue: [ targetedPath asFileReference contents ]
+		  ifTrue: [ 
+			  Ride service server teapot staticRouter
+				  handleRequest: request
+				  ifUnhandled: [ 
+					  RideNotFoundError signal:
+						  ('{1} not found' format: { request uri asString }) ] ]
 		  ifFalse: [ 
 			  RideNotFoundError signal:
 				  ('{1} not found' format: { request uri asString }) ]
@@ -254,21 +259,20 @@ RideRouter >> handleHTMLHomePageGET [
 
 	"Answers the html produced with the presenter that is set as root."
 
-	| response session request sessionCookie presenter content |
-
-	^ self getBasicHandlerDo: [ 
+	^ self handleHTMLOnGETFor: '/'
+	"^ self getBasicHandlerDo: [ 
 		  request := RideCurrentRequest value.
 		  session := RideCurrentSession value.
 		  response := TeaResponse ok.
 		  sessionCookie := self newSessionCookieFor: session id.
 		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
-		  presenter := RideCurrentSession value rootPresenter.
-		  content := (RideCurrentRequest value headers includesKey:
+		  presenter := session rootPresenter.
+		  content := (request headers includesKey:
 			              'X-Ride-AJAX')
 			             ifTrue: [ presenter htmlOnGET ]
 			             ifFalse: [ presenter htmlPageOnGET ].
 		  response body: content.
-		  response ]
+		  response ]"
 ]
 
 { #category : #handler }
@@ -283,7 +287,7 @@ RideRouter >> handleHTMLHomePagePOST [
 		  response := TeaResponse ok.
 		  sessionCookie := self newSessionCookieFor: session id.
 		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
-		  response body: RideCurrentSession value rootPresenter htmlOnPOST.
+		  response body: session rootPresenter htmlOnPOST.
 		  response ]
 ]
 
@@ -298,28 +302,18 @@ RideRouter >> handleHTMLOnDELETEFor: routeName [
 { #category : #handler }
 RideRouter >> handleHTMLOnGETFor: routeName [
 
-	| response presenter content |
+	| response presenter content request session sessionCookie |
 	^ self getBasicHandlerDo: [ 
+		  request := RideCurrentRequest value.
+		  session := RideCurrentSession value.
 		  response := TeaResponse ok.
-		  presenter := RideCurrentSession value presenterForRoute: routeName.
-		  content := (RideCurrentRequest value headers includesKey:
-			              'X-Ride-AJAX')
-			             ifTrue: [ presenter htmlOnGET ]
-			             ifFalse: [ presenter htmlPageOnGET ].
-		  response body: content.
-		  response ]
-]
 
-{ #category : #handler }
-RideRouter >> handleHTMLOnGETFor: routeName with: someMustacheTemplates [
+		  (self hasSessionCookie: request) ifFalse: [ 
+			  sessionCookie := self newSessionCookieFor: session id.
+			  response headers at: 'Set-Cookie' put: sessionCookie fullString ].
 
-	| response presenter content |
-	^ self getBasicHandlerDo: [ 
-		  response := TeaResponse ok.
-		  presenter := RideCurrentSession value presenterForRoute:
-			                routeName.
-		  content := (RideCurrentRequest value headers includesKey:
-			              'X-Ride-AJAX')
+		  presenter := session presenterForRoute: routeName.
+		  content := (request headers includesKey: 'X-Ride-AJAX')
 			             ifTrue: [ presenter htmlOnGET ]
 			             ifFalse: [ presenter htmlPageOnGET ].
 		  response body: content.
@@ -335,14 +329,6 @@ RideRouter >> handleHTMLOnPATCHFor: routeName [
 ]
 
 { #category : #handler }
-RideRouter >> handleHTMLOnPATCHFor: routeName with: someMustacheTemplates [
-
-	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value presenterForRoute: routeName)
-			  htmlOnPATCH ]
-]
-
-{ #category : #handler }
 RideRouter >> handleHTMLOnPOSTFor: routeName [
 
 	^ self getBasicHandlerDo: [ 
@@ -350,22 +336,7 @@ RideRouter >> handleHTMLOnPOSTFor: routeName [
 ]
 
 { #category : #handler }
-RideRouter >> handleHTMLOnPOSTFor: routeName with: someMustacheTemplates [
-
-	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value presenterForRoute: routeName)
-			  htmlOnPOST ]
-]
-
-{ #category : #handler }
 RideRouter >> handleHTMLOnPUTFor: routeName [
-
-	^ self getBasicHandlerDo: [ 
-		  (RideCurrentSession value presenterForRoute: routeName) htmlOnPUT ]
-]
-
-{ #category : #handler }
-RideRouter >> handleHTMLOnPUTFor: routeName with: someMustacheTemplates [
 
 	^ self getBasicHandlerDo: [ 
 		  (RideCurrentSession value presenterForRoute: routeName) htmlOnPUT ]
@@ -380,6 +351,14 @@ RideRouter >> hasPresenterForRoute: aString [
 	2. their name defines the main view and other views of its presenter."
 
 	^ Ride service locator templates views keys includes: aString
+]
+
+{ #category : #testing }
+RideRouter >> hasSessionCookie: request [
+
+	^ (request cookies
+		   detect: [ :each | each name = 'id' ]
+		   ifNone: [ nil ]) notNil
 ]
 
 { #category : #initialization }
@@ -487,6 +466,42 @@ RideRouter >> setPublicRouteOn: aRideServer [
 ]
 
 { #category : #actions }
+RideRouter >> setRoute: routeName on: aRideServer [
+
+	"Set the endpoints accepted for routeName in aRideServer based the
+	given templates found and interpreted with the Ride convention:
+	1. Templates under file names starting with underscore are partials.
+	2. The '_form' partial is the default used for editing a model.
+	3. The 'new' view also uses the _form partial (on a new model).
+	4. The 'show' view will use _show partial to render the model.
+	5. The 'edit' view will also use the _form partial to render a form for the model."
+
+	| routePath |
+	routePath := self baseUrl , '/' , routeName , '/*'.
+
+	routeName ~= '/' ifTrue: [ 
+		aRideServer teapot
+			GET: self baseUrl , '/<routeName>/*'
+				-> [ :req | self fileServeOrRenderPresenterFor: req ];
+			output: #html ].
+	aRideServer teapot
+		GET: routePath -> (self handleHTMLOnGETFor: routeName);
+		output: #html.
+	aRideServer teapot
+		POST: routePath -> (self handleHTMLOnPOSTFor: routeName);
+		output: #html.
+	aRideServer teapot
+		PUT: routePath -> (self handleHTMLOnPUTFor: routeName);
+		output: #html.
+	aRideServer teapot
+		PATCH: routePath -> (self handleHTMLOnPATCHFor: routeName);
+		output: #html.
+	aRideServer teapot
+		DELETE: routePath -> (self handleHTMLOnDELETEFor: routeName);
+		output: #html
+]
+
+{ #category : #actions }
 RideRouter >> setRoute: routeName with: someMustacheTemplates on: aRideServer [
 
 	someMustacheTemplates keysAndValuesDo: [ :route :mustacheTemplate | 
@@ -504,11 +519,12 @@ RideRouter >> setRoutesOn: aRideServer [
 	Usually this would happen with the rootPresenter showHtml method."
 
 	self setPublicRouteOn: aRideServer.
-	
-	Ride service locate viewTemplates keysAndValuesDo: [ :key :value | 
-		self setRoute: key with: value on: aRideServer ].
 
-	self setHomeRouteOn: aRideServer.
+	Ride service locate viewTemplates keysDo: [ :key | 
+		self setRoute: key on: aRideServer ].
+
+	"self setHomeRouteOn: aRideServer."
+	self setRoute: '/' on: aRideServer
 ]
 
 { #category : #accessing }
