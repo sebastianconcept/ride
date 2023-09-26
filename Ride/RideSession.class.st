@@ -74,7 +74,6 @@ RideSession >> presenterForRoute: routeName [
 
 	^ self presenters at: routeName ifAbsentPut: [ 
 		  | presenter |
-		  self halt.
 		  presenter := routeName = '/'
 			               ifTrue: [ self rootPresenter ]
 			               ifFalse: [ self rootPresenter childAt: routeName ].
