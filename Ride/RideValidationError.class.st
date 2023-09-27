@@ -7,6 +7,14 @@ Class {
 	#category : #'Ride-Exceptions'
 }
 
+{ #category : #'instance creation' }
+RideValidationError class >> for: aSymbol signal: aString [
+
+	^ self new
+		  fieldName: aSymbol;
+		  signal: aString
+]
+
 { #category : #'as yet unclassified' }
 RideValidationError >> describeOn: aJsonObjectToRespond [
 
