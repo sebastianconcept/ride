@@ -137,42 +137,6 @@ RideRouter >> baseUrl [
 ]
 
 { #category : #actions }
-RideRouter >> basicSetRoute: routeName with: someMustacheTemplate on: aRideServer [
-
-	"Set the endpoints accepted for routeName in aRideServer based the
-	given templates found and interpreted with the Ride convention:
-	1. Templates under file names starting with underscore are partials.
-	2. The '_form' partial is the default used for editing a model.
-	3. The 'new' view also uses the _form partial (on a new model).
-	4. The 'show' view will use _show partial to render the model.
-	5. The 'edit' view will also use the _form partial to render a form for the model."
-
-	| routePath |
-	self flag: #deprecated.
-	self halt.
-	routePath := self baseUrl , '/' , routeName , '/*'.
-	aRideServer teapot
-		GET: self baseUrl , '/<routeName>/*'
-			-> [ :req | self fileServeOrRenderPresenterFor: req ];
-		output: #html.
-	aRideServer teapot
-		GET: routePath -> (self handleHTMLOnGETFor: routeName);
-		output: #html.
-	aRideServer teapot
-		POST: routePath -> (self handleHTMLOnPOSTFor: routeName);
-		output: #html.
-	aRideServer teapot
-		PUT: routePath -> (self handleHTMLOnPUTFor: routeName);
-		output: #html.
-	aRideServer teapot
-		PATCH: routePath -> (self handleHTMLOnPATCHFor: routeName);
-		output: #html.
-	aRideServer teapot
-		DELETE: routePath -> (self handleHTMLOnDELETEFor: routeName);
-		output: #html
-]
-
-{ #category : #actions }
 RideRouter >> fileServe: request [
 
 	| route targetedPath |
@@ -499,13 +463,6 @@ RideRouter >> setRoute: routeName on: aRideServer [
 	aRideServer teapot
 		DELETE: routePath -> (self handleHTMLOnDELETEFor: routeName);
 		output: #html
-]
-
-{ #category : #actions }
-RideRouter >> setRoute: routeName with: someMustacheTemplates on: aRideServer [
-
-	someMustacheTemplates keysAndValuesDo: [ :route :mustacheTemplate | 
-		self basicSetRoute: routeName with: mustacheTemplate on: aRideServer ]
 ]
 
 { #category : #actions }
