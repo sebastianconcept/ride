@@ -156,6 +156,12 @@ RidePresenter >> currentRequest [
 	^ RideCurrentRequest value
 ]
 
+{ #category : #accessing }
+RidePresenter >> currentSession [
+
+	^ RideCurrentSession value
+]
+
 { #category : #actions }
 RidePresenter >> default [
 	"The default action is doing nothing."
