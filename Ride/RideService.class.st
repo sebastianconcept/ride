@@ -117,6 +117,18 @@ RideService >> initializeSessions [
 	^ sessions := TTLCache new
 ]
 
+{ #category : #actions }
+RideService >> invalidateSession: aRideSession [
+
+	"Remove the given session from the cache"
+	sessions removeKey: aRideSession id ifAbsent: [  ].
+
+	"Reset the session cookie"
+	RideCurrentResponse value headers
+		at: 'Set-Cookie'
+		put: Ride service router newResetSessionCookie fullString
+]
+
 { #category : #accessing }
 RideService >> locate [
 

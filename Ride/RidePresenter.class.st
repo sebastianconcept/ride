@@ -359,6 +359,12 @@ RidePresenter >> resetDelegate [
 	delegate := nil
 ]
 
+{ #category : #actions }
+RidePresenter >> resetSession [
+
+	Ride service invalidateSession: self currentSession
+]
+
 { #category : #accessing }
 RidePresenter >> router [
 

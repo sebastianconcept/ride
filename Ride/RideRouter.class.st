@@ -224,19 +224,6 @@ RideRouter >> handleHTMLHomePageGET [
 	"Answers the html produced with the presenter that is set as root."
 
 	^ self handleHTMLOnGETFor: '/'
-	"^ self getBasicHandlerDo: [ 
-		  request := RideCurrentRequest value.
-		  session := RideCurrentSession value.
-		  response := TeaResponse ok.
-		  sessionCookie := self newSessionCookieFor: session id.
-		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
-		  presenter := session rootPresenter.
-		  content := (request headers includesKey:
-			              'X-Ride-AJAX')
-			             ifTrue: [ presenter htmlOnGET ]
-			             ifFalse: [ presenter htmlPageOnGET ].
-		  response body: content.
-		  response ]"
 ]
 
 { #category : #handler }
@@ -251,7 +238,9 @@ RideRouter >> handleHTMLHomePagePOST [
 		  response := TeaResponse ok.
 		  sessionCookie := self newSessionCookieFor: session id.
 		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
-		  response body: session rootPresenter htmlOnPOST.
+		  RideCurrentResponse
+			  value: response
+			  during: [ response body: session rootPresenter htmlOnPOST ].
 		  response ]
 ]
 
@@ -276,11 +265,12 @@ RideRouter >> handleHTMLOnGETFor: routeName [
 			  sessionCookie := self newSessionCookieFor: session id.
 			  response headers at: 'Set-Cookie' put: sessionCookie fullString ].
 
-		  presenter := session presenterForRoute: routeName.
-		  content := (request headers includesKey: 'X-Ride-AJAX')
-			             ifTrue: [ presenter htmlOnGET ]
-			             ifFalse: [ presenter htmlPageOnGET ].
-		  response body: content.
+		  RideCurrentResponse value: response during: [ 
+			  presenter := session presenterForRoute: routeName.
+			  content := (request headers includesKey: 'X-Ride-AJAX')
+				             ifTrue: [ presenter htmlOnGET ]
+				             ifFalse: [ presenter htmlPageOnGET ].
+			  response body: content ].
 		  response ]
 ]
 
@@ -359,6 +349,21 @@ RideRouter >> initializeSessionGetter [
 ]
 
 { #category : #actions }
+RideRouter >> newResetSessionCookie [
+
+	| expires cookieString |
+	expires := ZnUtils httpDate: DateAndTime now - 10 years.
+	cookieString := 'id={1}; expires={2}; path=/; domain={3}' format: { 
+			                String new.
+			                expires.
+			                self getDomain }.
+
+	^ ZnCookie
+		  fromString: cookieString
+		  for: ('http://' , self getDomain) asZnUrl
+]
+
+{ #category : #actions }
 RideRouter >> newSessionCookieFor: sessionId [
 
 	^ ZnCookie
@@ -378,7 +383,7 @@ RideRouter >> rootPresenterGetter: anObject [
 	rootPresenterGetter := anObject
 ]
 
-{ #category : #handler }
+{ #category : #accessing }
 RideRouter >> sessionCookiePathFor: anId [
 
 	| expires |
