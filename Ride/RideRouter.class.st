@@ -194,13 +194,12 @@ RideRouter >> fileServeOrRenderPresenterFor: request [
 { #category : #accessing }
 RideRouter >> getBasicHandlerDo: aBlock [
 
-	| session |
 	^ [ :req | 
-	  RideCurrentRequest value: req during: [ 
-		  session := self getSessionFrom: req.
-		  [ RideCurrentSession value: session during: aBlock ]
-			  on: RideMissingPresenterError
-			  do: [ :x | "404" self halt ] ] ]
+	  | session |
+	  session := self getSessionFrom: req.
+	  [ RideCurrentSession value: session during: aBlock ]
+		  on: RideMissingPresenterError
+		  do: [ :x | "404" self halt ] ]
 ]
 
 { #category : #accessing }

@@ -1,7 +1,7 @@
 Class {
 	#name : #RideStaticFileServerDelegate,
 	#superclass : #ZnStaticFileServerDelegate,
-	#category : #Ride
+	#category : #'Ride-Core'
 }
 
 { #category : #public }

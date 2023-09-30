@@ -22,16 +22,6 @@ WelcomePresenter >> edit [
 	^ self html
 ]
 
-{ #category : #rendering }
-WelcomePresenter >> htmlOnGET [ 
-self halt.
-]
-
-{ #category : #rendering }
-WelcomePresenter >> htmlPageOnGET [ 
-self halt.
-]
-
 { #category : #reactions }
 WelcomePresenter >> onUserFirstNameChanged [
 
@@ -57,7 +47,6 @@ WelcomePresenter >> openCounter [
 		            CounterPresenter on: (Counter new
 				             userFirstName: model userFirstName;
 				             yourself) ].
-
 	^ self html
 ]
 

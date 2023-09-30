@@ -182,7 +182,7 @@ RideServer >> newWebSocketServer [
 	| newServer |
 	newServer := (ZnServer startOn: self class webSockerPort)
 		             delegate:
-			             (ZnWebSocketDelegate handler: [ :ws | 
+			             (RideWebSocketDelegate handler: [ :ws | 
 					              self onWebSocketConnected: ws ]);
 		             yourself.
 
@@ -192,7 +192,8 @@ RideServer >> newWebSocketServer [
 { #category : #reactions }
 RideServer >> onMessage: message from: aWebSocket [
 
-	self halt
+	Ride log: 'onMessage' , message asString.
+
 ]
 
 { #category : #reactions }
@@ -205,6 +206,10 @@ RideServer >> onSocketClosed: aWebSocket [
 
 { #category : #reactions }
 RideServer >> onWebSocketConnected: aWebSocket [
+
+	| request |
+	request := RideCurrentRequest value.
+	Ride log: 'onWebSocketConnected', request cookies asString.
 
 	^ self
 		  run: aWebSocket
