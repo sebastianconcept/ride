@@ -190,14 +190,7 @@ RideServer >> newWebSocketServer [
 ]
 
 { #category : #reactions }
-RideServer >> onMessage: message from: aWebSocket [
-
-	Ride log: 'onMessage' , message asString.
-
-]
-
-{ #category : #reactions }
-RideServer >> onSocketClosed: aWebSocket [
+RideServer >> onWebSocketClosed: aWebSocket [
 
 	"Clean any related references."
 
@@ -207,13 +200,21 @@ RideServer >> onSocketClosed: aWebSocket [
 { #category : #reactions }
 RideServer >> onWebSocketConnected: aWebSocket [
 
-	| request |
-	request := RideCurrentRequest value.
-	Ride log: 'onWebSocketConnected', request cookies asString.
-
+	| session |
+	session := Ride service router getSessionFrom:
+		           RideCurrentRequest value.
+	Ride log: 'onWebSocketConnected id: ' , session id.
+	session webSocket: aWebSocket.
 	^ self
 		  run: aWebSocket
-		  with: [ :message | self onMessage: message from: aWebSocket ]
+		  with: [ :message | self onWebSocketMessage: message for: session ]
+]
+
+{ #category : #reactions }
+RideServer >> onWebSocketMessage: message for: aRideSession [
+
+	Ride log: 'onMessage' , message asString level: #DEBUG.
+	aRideSession onWebSocketMessage: (Json readFrom: message readStream)
 ]
 
 { #category : #actions }
@@ -255,7 +256,7 @@ RideServer >> run: aWebSocket with: aBlock [
 		do: [ "Ignore & continue" aWebSocket ping ].
 	message ifNotNil: [ aBlock value: message ] ] repeat ]
 		on: ConnectionClosed
-		do: [ :x | self onSocketClosed: aWebSocket ]
+		do: [ :x | self onWebSocketClosed: aWebSocket ]
 ]
 
 { #category : #actions }

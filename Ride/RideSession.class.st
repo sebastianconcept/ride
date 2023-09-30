@@ -7,7 +7,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'presenters'
+		'presenters',
+		'webSocket'
 	],
 	#category : #'Ride-Core'
 }
@@ -34,6 +35,12 @@ RideSession class >> newWith: anId on: aController [
 RideSession >> add: routeKey presenter: aRidePresenter [
 
 	^ self presenters at: routeKey put: aRidePresenter
+]
+
+{ #category : #testing }
+RideSession >> hasWebSocket [
+
+	^ webSocket notNil
 ]
 
 { #category : #accessing }
@@ -69,6 +76,12 @@ RideSession >> locate [
 	^ Ride service locate
 ]
 
+{ #category : #handlers }
+RideSession >> onWebSocketMessage: aJsonObject [
+
+	
+]
+
 { #category : #accessing }
 RideSession >> presenterForRoute: routeName [
 
@@ -100,4 +113,18 @@ RideSession >> remove: routeKey [
 RideSession >> rootPresenter [
 
 	^ self presenters at: #/ ifAbsent: [ nil ]
+]
+
+{ #category : #accessing }
+RideSession >> webSocket [
+
+	^ webSocket
+]
+
+{ #category : #accessing }
+RideSession >> webSocket: aWebSocket [
+
+	webSocket ifNotNil: [ 
+		webSocket isConnected ifTrue: [ webSocket close ] ].
+	webSocket := aWebSocket
 ]
