@@ -297,6 +297,14 @@ RidePresenter >> locate [
 ]
 
 { #category : #accessing }
+RidePresenter >> maitre [
+
+	"Answers the maitre of the service"
+
+	^ Ride service maitre
+]
+
+{ #category : #accessing }
 RidePresenter >> model [
 
 	^ model

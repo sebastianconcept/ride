@@ -8,7 +8,7 @@ Class {
 	#instVars : [
 		'storage'
 	],
-	#category : #'Ride-Models'
+	#category : #'Ride-Core'
 }
 
 { #category : #accessing }
