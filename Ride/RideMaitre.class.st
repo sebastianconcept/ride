@@ -36,18 +36,7 @@ RideMaitre >> reset [
 { #category : #actions }
 RideMaitre >> scheduleAction: aBlock [
 
-	| locale |
-	locale := self auth normalizedLocale: RideLanguage value.
-	self userActions schedule: [ RideLanguage value: locale during: aBlock ]
-]
-
-{ #category : #actions }
-RideMaitre >> scheduleAction: aBlock for: aUser [
-
-	self userActions schedule: [ 
-		RideLanguage
-			value: (self auth normalizedLocale: aUser locale)
-			during: aBlock ]
+	self userActions schedule: aBlock
 ]
 
 { #category : #actions }
