@@ -1,3 +1,6 @@
+"
+Project loader
+"
 Class {
 	#name : #BaselineOfRide,
 	#superclass : #BaselineOf,
@@ -51,7 +54,7 @@ BaselineOfRide >> setUpPackages: spec [
 
 	spec
 		package: 'Ride'
-		with: [ spec requires: #( 'Mustache' 'Teapot' ) ].
+		with: [ spec requires: #( 'Mustache' 'ZincHTTPComponents' 'Teapot' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 
