@@ -15,7 +15,7 @@ BaselineOfRide >> baseline: spec [
 		self setUpDependencies: spec.
 		self setUpPackages: spec.
 		spec
-			group: 'Core' with: #( 'RidePharo' 'Ride' );
+			group: 'Core' with: #( 'Ride' );
 			group: 'Tests' with: #( 'Ride-Tests' );
 			group: 'Tools' with: #( 'Ride-Tools' );
 			group: 'default' with: #( 'Core' ) ]
@@ -46,7 +46,11 @@ BaselineOfRide >> setUpDependencies: spec [
 	self zinc: spec.
 	self mustache: spec.
 	self teapot: spec.
-	spec postLoadDoIt: #loadTaskIt
+	spec postLoadDoIt: #loadTaskIt.
+
+	spec
+		repository: 'tonel://Ride';
+		loads: #( 'RidePharo' )
 ]
 
 { #category : #actions }
@@ -54,7 +58,7 @@ BaselineOfRide >> setUpPackages: spec [
 
 	spec package: 'Ride' with: [ 
 		spec requires:
-			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' ) ].
+			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'RidePharo' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 
