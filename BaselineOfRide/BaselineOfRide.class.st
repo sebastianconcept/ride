@@ -15,7 +15,7 @@ BaselineOfRide >> baseline: spec [
 		self setUpDependencies: spec.
 		self setUpPackages: spec.
 		spec
-			group: 'Core' with: #( 'Ride' );
+			group: 'Core' with: #( 'RidePharo' 'Ride' );
 			group: 'Tests' with: #( 'Ride-Tests' );
 			group: 'Tools' with: #( 'Ride-Tools' );
 			group: 'default' with: #( 'Core' ) ]
@@ -54,7 +54,7 @@ BaselineOfRide >> setUpPackages: spec [
 
 	spec package: 'Ride' with: [ 
 		spec requires:
-			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'RidePharo' ) ].
+			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 
