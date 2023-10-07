@@ -22,14 +22,6 @@ Class {
 }
 
 { #category : #accessing }
-RideServer class >> bind [
-
-	^ OSEnvironment current
-		  at: #BIND
-		  ifAbsent: [ self defaultBind ]
-]
-
-{ #category : #accessing }
 RideServer class >> databaseName [
 
 	^ OSEnvironment current
@@ -46,11 +38,6 @@ RideServer class >> debugMode [
 ]
 
 { #category : #accessing }
-RideServer class >> defaultBind [
-	^ '0.0.0.0'
-]
-
-{ #category : #accessing }
 RideServer class >> defaultDatabaseName [
 
 	^ self subclassResponsibility
@@ -63,7 +50,12 @@ RideServer class >> defaultDebugMode [
 ]
 
 { #category : #accessing }
-RideServer class >> defaultPort [
+RideServer class >> defaultHttpBind [
+	^ '0.0.0.0'
+]
+
+{ #category : #accessing }
+RideServer class >> defaultHttpPort [
 	^ 3004
 ]
 
@@ -80,11 +72,19 @@ RideServer class >> hasWebSocket [
 ]
 
 { #category : #accessing }
+RideServer class >> httpBind [
+
+	^ OSEnvironment current
+		  at: #HTTP_BIND
+		  ifAbsent: [ self defaultHttpBind ]
+]
+
+{ #category : #accessing }
 RideServer class >> httpPort [
 
 	^ (OSEnvironment current
 		  at: #HTTP_PORT
-		  ifAbsent: [ self defaultPort ]) asInteger
+		  ifAbsent: [ self defaultHttpPort ]) asInteger
 ]
 
 { #category : #accessing }
@@ -170,7 +170,7 @@ RideServer >> newHttpServer [
 			             (#port -> self class httpPort).
 			             (#debugMode -> self class debugMode).
 			             (#bindAddress
-			              -> (NetNameResolver addressForName: self class bind)) }.
+			              -> (NetNameResolver addressForName: self class httpBind)) }.
 	((newServer instVarNamed: 'compositeRouter') instVarNamed:
 		 'errorhandlers') removeLast.
 	^ newServer
@@ -367,11 +367,11 @@ RideServer >> start [
 	self class hasWebSocket ifTrue: [ 
 		self webSocket start.
 		Ride log: ('WebSocket started at {1}:{2}' format: { 
-					 self class bind printString.
+					 self class httpBind printString.
 					 self class webSockerPort asString }) ].
 	self teapot start.
 	Ride log: ('Teapot started with http server at {1}:{2}' format: { 
-				 self class bind printString.
+				 self class httpBind printString.
 				 self class httpPort asString })
 ]
 
