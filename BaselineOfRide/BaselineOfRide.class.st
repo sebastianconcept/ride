@@ -46,11 +46,11 @@ BaselineOfRide >> setUpDependencies: spec [
 	self zinc: spec.
 	self mustache: spec.
 	self teapot: spec.
+	
+	"In RidePharo we install some general extensions 
+	needed and the ones in Zinc and Teapot."
+	spec package: 'RidePharo'.
 	spec postLoadDoIt: #loadTaskIt.
-
-	spec
-		repository: 'tonel://Ride';
-		loads: #( 'RidePharo' )
 ]
 
 { #category : #actions }
