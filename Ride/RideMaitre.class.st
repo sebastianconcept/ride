@@ -11,9 +11,9 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-RideMaitre class >> poolMaxSize [
+RideMaitre class >> workersPoolSize [
 
-	^ (OSEnvironment current at: 'RIDE_WORKER_POOL_SIZE' ifAbsent: [ 2 ])
+	^ (OSEnvironment current at: 'WORKER_POOL_SIZE' ifAbsent: [ 2 ])
 		  asInteger
 ]
 
@@ -21,7 +21,7 @@ RideMaitre class >> poolMaxSize [
 RideMaitre >> initializeUserActions [
 
 	^ userActions := TKTWorkerPool new
-		                 poolMaxSize: self class poolMaxSize;
+		                 poolMaxSize: self class workersPoolSize;
 		                 yourself
 ]
 
@@ -46,7 +46,7 @@ RideMaitre >> start [
 	Ride
 		log: ('{1} prepared {2} workers...' format: { 
 					 self class name.
-					 self class poolMaxSize asString })
+					 self class workersPoolSize asString })
 		level: #INFO
 ]
 

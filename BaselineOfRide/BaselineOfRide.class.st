@@ -52,9 +52,9 @@ BaselineOfRide >> setUpDependencies: spec [
 { #category : #actions }
 BaselineOfRide >> setUpPackages: spec [
 
-	spec
-		package: 'Ride'
-		with: [ spec requires: #( 'Mustache' 'ZincHTTPComponents' 'Teapot' ) ].
+	spec package: 'Ride' with: [ 
+		spec requires:
+			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'RidePharo' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 

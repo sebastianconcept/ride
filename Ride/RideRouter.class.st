@@ -207,7 +207,7 @@ RideRouter >> getDomain [
 
 	^ domain ifNil: [ 
 		  domain := OSEnvironment current
-			            at: 'RIDE_DOMAIN'
+			            at: 'DOMAIN'
 			            ifAbsent: [ 'localhost' ] ]
 ]
 
