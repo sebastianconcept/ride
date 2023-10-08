@@ -12,6 +12,16 @@ Class {
 }
 
 { #category : #accessing }
+RideViewPresenterLocator >> getMustacheTemplagesIn: aPath [
+
+	"Returns only the .mustache template files in aPath"
+
+	| accepted |
+	accepted := #( mustache mst ms tmpl ).
+	^ aPath files select: [ :file | accepted includes: file extension ]
+]
+
+{ #category : #accessing }
 RideViewPresenterLocator >> getPresenters [
 
 	"Returns a dictionary with keys being view names (views/ subdirectory names) 
@@ -74,7 +84,7 @@ RideViewPresenterLocator >> getTemplatesFrom: aPath [
 
 	| newTemplates |
 	newTemplates := JsonObject new.
-	aPath files do: [ :file | 
+	(self getMustacheTemplagesIn: aPath) do: [ :file | 
 		newTemplates
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].
