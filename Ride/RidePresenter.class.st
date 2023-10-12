@@ -366,7 +366,14 @@ RidePresenter >> partials [
 	except the main one. All mustache files that were found in the corresponding 
 	presenter directory except index.mustache is going to be a partial."
 
-	^ views associationsSelect: [ :assoc | assoc key ~= 'index' ]
+	| partials |
+	partials := views associationsSelect: [ :assoc | 
+		            assoc key ~= 'index' ].
+
+	"In addition to that, all shared partials are made available to the presenter"
+	^ partials
+		  addAll: self locate sharedTemplates;
+		  yourself
 ]
 
 { #category : #actions }
