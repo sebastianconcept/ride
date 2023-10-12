@@ -119,12 +119,12 @@ RidePresenter >> basicHTML [
 RidePresenter >> childAt: aSymbol [
 
 	"Answers the current child presenter found at aSymbol.
-	If not found, try to find a factory block to create it.
+	If not found, try to find a factory block to lazily create it.
 	If a new one was created, add it and return it.
 	If that didn't work, use the convention of trying to instantiate
-	a presenter that matches aSymbol route in the templates/views directory
-	(and store it as child of this receiver).
-	If still none found, return nil."
+	a presenter that matches aSymbol route from what's found in
+	the templates/views directory and store it as child of this receiver.
+	If nothing of that worked, return nil."
 
 	^ (subpresenters includesKey: aSymbol)
 		  ifTrue: [ subpresenters at: aSymbol ]
