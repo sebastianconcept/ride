@@ -144,7 +144,14 @@ RideViewPresenterLocator >> templates [
 { #category : #accessing }
 RideViewPresenterLocator >> templatesFor: aPresenter [
 
-	^ (self templates at: #views) at: aPresenter class basePath
+	| views modelName kebabized found |
+	views := self templates at: #views.
+	modelName := aPresenter class getModelName.
+	kebabized := '-' join: (modelName asSnakeCase substrings: '_').
+	found := views at: kebabized.
+	^ found
+		  ifNil: [ views at: modelName asSnakeCase ]
+		  ifNotNil: [ found ]
 ]
 
 { #category : #accessing }

@@ -121,17 +121,19 @@ RidePresenter >> childAt: aSymbol [
 	"Answers the current child presenter found at aSymbol.
 	If not found, try to find a factory block to create it.
 	If a new one was created, add it and return it.
-	If that didn't work, return nil."
+	If that didn't work, use the convention of trying to instantiate
+	a presenter that matches aSymbol route in the templates/views directory
+	(and store it as child of this receiver).
+	If still none found, return nil."
 
-	| newSubpresenter |
 	^ (subpresenters includesKey: aSymbol)
 		  ifTrue: [ subpresenters at: aSymbol ]
 		  ifFalse: [ 
-			  newSubpresenter := self factory
-				                     at: aSymbol
-				                     ifPresent: [ :aBlock | aBlock value ]
-				                     ifAbsent: [ ^ nil ].
-			  subpresenters at: aSymbol put: newSubpresenter ]
+			  self factory
+				  at: aSymbol
+				  ifPresent: [ :aBlock | 
+				  subpresenters at: aSymbol put: aBlock value ]
+				  ifAbsent: [ self restfulSubPresenterOrNilFor: aSymbol ] ]
 ]
 
 { #category : #accessing }
@@ -317,6 +319,12 @@ RidePresenter >> model: aModel [
 	self setObservers	
 ]
 
+{ #category : #converting }
+RidePresenter >> normalizedToSnakeCase: aSymbol [
+
+	^ '_' join: (aSymbol asLowercase substrings: '-_.')
+]
+
 { #category : #accessing }
 RidePresenter >> pagePartials [
 
@@ -371,6 +379,25 @@ RidePresenter >> resetDelegate [
 RidePresenter >> resetSession [
 
 	Ride service invalidateSession: self currentSession
+]
+
+{ #category : #actions }
+RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
+
+	"use the convention of trying to instantiate
+	a presenter that matches aSymbol route in the templates/views directory
+	(and store it as child of this receiver).
+	If still none found, return nil."
+
+	| presenterName presenterClass |
+	presenterName := self locate presenterNameFor:
+		                 (self normalizedToSnakeCase: aSymbol).
+	presenterClass := Smalltalk
+		                  at: presenterName asSymbol
+		                  ifAbsent: [ nil ].
+	^ presenterClass
+		  ifNotNil: [ subpresenters at: aSymbol put: presenterClass new ]
+		  ifNil: [ nil ]
 ]
 
 { #category : #accessing }
