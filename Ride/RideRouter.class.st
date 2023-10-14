@@ -196,6 +196,7 @@ RideRouter >> getBasicHandlerDo: aBlock [
 
 	^ [ :req | 
 	  | session |
+	  Ride log: req uri asString level: #DEBUG.
 	  session := self getSessionFrom: req.
 	  [ RideCurrentSession value: session during: aBlock ]
 		  on: RideMissingPresenterError
