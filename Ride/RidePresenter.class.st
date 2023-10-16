@@ -210,6 +210,15 @@ RidePresenter >> html [
 	^ delegate ifNotNil: [ delegate html ] ifNil: [ self basicHTML ]
 ]
 
+{ #category : #rendering }
+RidePresenter >> htmlFor: nameOfAPartial [
+
+	"Answers the HTML rendered using the receiver's 
+	templateModel on the partial named nameOfAPartial"
+
+	^ (views at: nameOfAPartial) value: self templateModel
+]
+
 { #category : #'rest-html' }
 RidePresenter >> htmlOnDELETE [
 
