@@ -216,7 +216,16 @@ RidePresenter >> htmlFor: nameOfAPartial [
 	"Answers the HTML rendered using the receiver's 
 	templateModel on the partial named nameOfAPartial"
 
-	^ (views at: nameOfAPartial) value: self templateModel
+	^ self htmlFor: nameOfAPartial on: self templateModel
+]
+
+{ #category : #rendering }
+RidePresenter >> htmlFor: nameOfAPartial on: aTemplateModel [
+
+	"Answers the HTML rendered using the given aTemplateModel 
+	on the partial named nameOfAPartial"
+
+	^ (views at: nameOfAPartial) value: aTemplateModel
 ]
 
 { #category : #'rest-html' }
