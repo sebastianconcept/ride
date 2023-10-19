@@ -45,8 +45,7 @@ RideViewPresenterLocator >> getTemplates [
 	"Returns a dictionary with keys being view names (views/ dsubirectory names) 
 	and as value, a dictionary with mustache templates for every file found."
 
-	| newTemplates newViewTemplates |
-
+	| newTemplates newViewTemplates newEmailTemplates |
 	newTemplates := JsonObject new.
 	newViewTemplates := JsonObject new.
 	RideDirectoryResolver viewTemplatesDirectory directories do: [ :path | 
@@ -55,24 +54,33 @@ RideViewPresenterLocator >> getTemplates [
 			put: (self getTemplatesFrom: path) ].
 	newTemplates
 		at:
-		RideDirectoryResolver viewTemplatesDirectory basenameWithoutExtension
+		RideDirectoryResolver viewTemplatesDirectory
+			basenameWithoutExtension
 		put: newViewTemplates.
 	RideDirectoryResolver layoutTemplatesDirectory files do: [ :file | 
 		(newTemplates
-			 at:
-			 RideDirectoryResolver layoutTemplatesDirectory
-				 basenameWithoutExtension
+			 at: RideDirectoryResolver layoutTemplatesDirectory
+					 basenameWithoutExtension
 			 ifAbsentPut: [ JsonObject new ])
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].
 	RideDirectoryResolver sharedTemplatesDirectory files do: [ :file | 
 		(newTemplates
-			 at:
-			 RideDirectoryResolver sharedTemplatesDirectory
-				 basenameWithoutExtension
+			 at: RideDirectoryResolver sharedTemplatesDirectory
+					 basenameWithoutExtension
 			 ifAbsentPut: [ JsonObject new ])
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].
+	newEmailTemplates := JsonObject new.
+	RideDirectoryResolver emailTemplatesDirectory directories do: [ :path | 
+		newEmailTemplates
+			at: path basenameWithoutExtension
+			put: (self getTemplatesFrom: path) ].
+	newTemplates
+		at:
+		RideDirectoryResolver emailTemplatesDirectory
+			basenameWithoutExtension
+		put: newEmailTemplates.
 	^ newTemplates
 ]
 

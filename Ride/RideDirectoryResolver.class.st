@@ -16,6 +16,12 @@ RideDirectoryResolver class >> baseDirectory [
 ]
 
 { #category : #accessing }
+RideDirectoryResolver class >> emailTemplatesDirectory [
+
+	^ self templatesDirectory / 'emails'
+]
+
+{ #category : #accessing }
 RideDirectoryResolver class >> getLayoutTemplatesDir [
 
 	^ self baseDirectory / 'templates' / 'layouts'
