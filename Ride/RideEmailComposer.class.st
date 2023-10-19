@@ -33,7 +33,7 @@ RideEmailComposer class >> textTemplates [
 	^ textTemplates ifNil: [ textTemplates := Dictionary new ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 RideEmailComposer >> htmlFor: aSymbol [
 
 	^ self class htmlTemplates
@@ -43,7 +43,7 @@ RideEmailComposer >> htmlFor: aSymbol [
 		  ifAbsentPut: [ self loadHtmlFor: aSymbol ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 RideEmailComposer >> load: type for: aSymbol [
 
 	| baseDir locale |
@@ -57,13 +57,13 @@ RideEmailComposer >> load: type for: aSymbol [
 		  readStream contents asMustacheTemplate
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 RideEmailComposer >> loadHtmlFor: aSymbol [
 
 	^ self load: 'html' for: aSymbol
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 RideEmailComposer >> loadSubjectFor: aSymbol [
 
 	| baseDir locale |
@@ -77,7 +77,7 @@ RideEmailComposer >> loadSubjectFor: aSymbol [
 		  readStream contents asMustacheTemplate
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 RideEmailComposer >> loadTextFor: aSymbol [
 
 	^ self load: 'text' for: aSymbol
@@ -95,7 +95,7 @@ RideEmailComposer >> provider: anObject [
 	provider := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 RideEmailComposer >> subjectFor: aSymbol [
 
 	^ self class textTemplates
@@ -105,7 +105,7 @@ RideEmailComposer >> subjectFor: aSymbol [
 		  ifAbsentPut: [ self loadSubjectFor: aSymbol ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 RideEmailComposer >> textFor: aSymbol [
 
 	^ self class textTemplates

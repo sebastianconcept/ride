@@ -5,7 +5,8 @@ Class {
 	#name : #RideMaitre,
 	#superclass : #Object,
 	#instVars : [
-		'userActions'
+		'userActions',
+		'emailComposer'
 	],
 	#category : #'Ride-Core'
 }
@@ -15,6 +16,18 @@ RideMaitre class >> workersPoolSize [
 
 	^ (OSEnvironment current at: 'WORKER_POOL_SIZE' ifAbsent: [ 2 ])
 		  asInteger
+]
+
+{ #category : #acccessing }
+RideMaitre >> emailComposer [
+
+	^ emailComposer ifNil: [ self initializeEmailComposer ]
+]
+
+{ #category : #initialization }
+RideMaitre >> initializeEmailComposer [
+
+	^ emailComposer := RideEmailComposer new
 ]
 
 { #category : #initialization }
