@@ -136,6 +136,15 @@ RideRouter >> baseUrl [
 	^ self class baseUrl
 ]
 
+{ #category : #accessing }
+RideRouter >> domain [
+
+	^ domain ifNil: [ 
+		  domain := OSEnvironment current
+			            at: 'DOMAIN'
+			            ifAbsent: [ 'localhost' ] ]
+]
+
 { #category : #actions }
 RideRouter >> fileServe: request [
 
@@ -201,15 +210,6 @@ RideRouter >> getBasicHandlerDo: aBlock [
 	  [ RideCurrentSession value: session during: aBlock ]
 		  on: RideMissingPresenterError
 		  do: [ :x | "404" self halt ] ]
-]
-
-{ #category : #accessing }
-RideRouter >> getDomain [
-
-	^ domain ifNil: [ 
-		  domain := OSEnvironment current
-			            at: 'DOMAIN'
-			            ifAbsent: [ 'localhost' ] ]
 ]
 
 { #category : #accessing }
@@ -356,11 +356,11 @@ RideRouter >> newResetSessionCookie [
 	cookieString := 'id={1}; expires={2}; path=/; domain={3}' format: { 
 			                String new.
 			                expires.
-			                self getDomain }.
+			                self domain }.
 
 	^ ZnCookie
 		  fromString: cookieString
-		  for: ('http://' , self getDomain) asZnUrl
+		  for: ('http://' , self domain) asZnUrl
 ]
 
 { #category : #actions }
@@ -368,7 +368,7 @@ RideRouter >> newSessionCookieFor: sessionId [
 
 	^ ZnCookie
 		  fromString: (self sessionCookiePathFor: sessionId)
-		  for: ('http://' , self getDomain) asZnUrl
+		  for: ('http://' , self domain) asZnUrl
 ]
 
 { #category : #accessing }
@@ -391,7 +391,7 @@ RideRouter >> sessionCookiePathFor: anId [
 	^ 'id={1}; expires={2}; path=/; domain={3}' format: { 
 			  anId.
 			  expires.
-			  self getDomain }
+			  self domain }
 ]
 
 { #category : #accessing }
