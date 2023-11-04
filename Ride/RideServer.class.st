@@ -149,18 +149,6 @@ RideServer >> languageCodeFrom: request [
 	^ code
 ]
 
-{ #category : #accessing }
-RideServer >> maitre [
-
-	^ maitre
-]
-
-{ #category : #accessing }
-RideServer >> maitre: aMaitre [
-
-	maitre := aMaitre
-]
-
 { #category : #actions }
 RideServer >> newHttpServer [
 
