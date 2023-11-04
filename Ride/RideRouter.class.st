@@ -177,9 +177,10 @@ RideRouter >> fileServeOrRenderPresenterFor: request [
 		^ (self handleHTMLOnGETFor: route) value: request ].
 
 	"2. Try to serve it as a presenter's main view (directory)"
-	(route = request uri segments first and: [ 
-		 self hasPresenterForRoute: route ]) ifTrue: [ 
-		^ (self handleHTMLOnGETFor: route) value: request ].	
+	((request uri segments last includes: $.) not and: [ 
+		 route = request uri segments first and: [ 
+			 self hasPresenterForRoute: route ] ]) ifTrue: [ 
+		^ (self handleHTMLOnGETFor: route) value: request ].
 
 	"3. Try to serve it as a resource local to the view directory"
 	targetedPath := self baseFilePath / 'views'.
