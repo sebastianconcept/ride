@@ -1,6 +1,6 @@
 Extension { #name : #String }
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 String >> asSnakeCase [
 
 	"Convert to snake_case, i.e, remove spaces, and convert starting 

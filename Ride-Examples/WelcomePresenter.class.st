@@ -5,7 +5,7 @@ I'm the default Home presenter for the default new Ride web application.
 Class {
 	#name : #WelcomePresenter,
 	#superclass : #RidePresenter,
-	#category : #'RideExamples-Presenters'
+	#category : #'Ride-Examples-Presenters'
 }
 
 { #category : #private }

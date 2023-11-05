@@ -1,6 +1,6 @@
 Extension { #name : #Error }
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 Error >> describeOn: aJsonObjectToRespond [
 
 	RideServer debugMode ifTrue: [ 
@@ -18,7 +18,7 @@ Error >> describeOn: aJsonObjectToRespond [
 		  yourself
 ]
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 Error >> htmlDescribeOn: aJsonObjectToRespond [
 
 	RideServer debugMode ifTrue: [ 
@@ -36,7 +36,7 @@ Error >> htmlDescribeOn: aJsonObjectToRespond [
 		  yourself
 ]
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
 	"Answers the rendered template using the given aJsonObject as model and
 	loading it with the properties of the walkback and error message."

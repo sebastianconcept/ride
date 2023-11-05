@@ -4,7 +4,7 @@ I'm the main presenter of the Counter example
 Class {
 	#name : #CounterPresenter,
 	#superclass : #RidePresenter,
-	#category : #'RideExamples-Presenters'
+	#category : #'Ride-Examples-Presenters'
 }
 
 { #category : #private }

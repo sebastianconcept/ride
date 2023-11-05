@@ -1,6 +1,6 @@
 Extension { #name : #Dictionary }
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 Dictionary >> asJsonObject [
 
 	^ JsonObject fromAssociations: self associations

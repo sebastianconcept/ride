@@ -5,7 +5,7 @@ I customize routes and filters for this app.
 Class {
 	#name : #RideWelcomeAppServer,
 	#superclass : #RideServer,
-	#category : #'RideExamples-Core'
+	#category : #'Ride-Examples-Core'
 }
 
 { #category : #initialization }

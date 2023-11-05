@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'userFirstName'
 	],
-	#category : #'RideExamples-Models'
+	#category : #'Ride-Examples-Models'
 }
 
 { #category : #accessing }

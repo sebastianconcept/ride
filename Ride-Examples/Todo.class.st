@@ -8,7 +8,7 @@ Class {
 		'items',
 		'userFirstName'
 	],
-	#category : #'RideExamples-Models'
+	#category : #'Ride-Examples-Models'
 }
 
 { #category : #actions }

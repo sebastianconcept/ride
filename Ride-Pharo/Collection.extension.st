@@ -1,6 +1,6 @@
 Extension { #name : #Collection }
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 Collection >> asJsonObject [
 
 	^ self as: JsonObject

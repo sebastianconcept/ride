@@ -4,7 +4,7 @@ I'm the presenter of the chat demo application
 Class {
 	#name : #ChatPresenter,
 	#superclass : #RidePresenter,
-	#category : #'RideExamples-Presenters'
+	#category : #'Ride-Examples-Presenters'
 }
 
 { #category : #private }

@@ -8,7 +8,7 @@ Class {
 		'count',
 		'userFirstName'
 	],
-	#category : #'RideExamples-Models'
+	#category : #'Ride-Examples-Models'
 }
 
 { #category : #accessing }

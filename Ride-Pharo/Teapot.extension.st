@@ -1,6 +1,6 @@
 Extension { #name : #Teapot }
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 Teapot >> staticRouter [
 
 	^ staticRouter

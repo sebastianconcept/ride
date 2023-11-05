@@ -1,12 +1,12 @@
 Extension { #name : #TeaStaticRouter }
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 TeaStaticRouter >> delegate [
 
 	^ delegate
 ]
 
-{ #category : #'*RidePharo' }
+{ #category : #'*Ride-Pharo' }
 TeaStaticRouter >> delegate: anObject [
 
 	^ delegate := anObject

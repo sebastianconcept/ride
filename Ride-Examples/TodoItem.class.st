@@ -9,7 +9,7 @@ Class {
 		'done',
 		'description'
 	],
-	#category : #'RideExamples-Models'
+	#category : #'Ride-Examples-Models'
 }
 
 { #category : #converting }
