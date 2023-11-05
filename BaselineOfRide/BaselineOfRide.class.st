@@ -17,6 +17,7 @@ BaselineOfRide >> baseline: spec [
 		spec
 			group: 'Core' with: #( 'Ride' );
 			group: 'Tests' with: #( 'Ride-Tests' );
+			group: 'Examples' with: #( 'RideExamples' );
 			group: 'Tools' with: #( 'Ride-Tools' );
 			group: 'default' with: #( 'Core' ) ]
 ]
@@ -61,8 +62,8 @@ BaselineOfRide >> setUpPackages: spec [
 			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'RidePharo' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
-
-	spec package: 'Ride-Tools' with: [ spec requires: #( 'Ride-Tests' ) ]
+	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
+	spec package: 'Ride-Tools' with: [ spec requires: #( 'Ride' ) ]
 ]
 
 { #category : #dependencies }
