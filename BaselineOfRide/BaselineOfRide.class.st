@@ -17,7 +17,7 @@ BaselineOfRide >> baseline: spec [
 		spec
 			group: 'Core' with: #( 'Ride' );
 			group: 'Tests' with: #( 'Ride-Tests' );
-			group: 'Examples' with: #( 'RideExamples' );
+			group: 'Examples' with: #( 'Ride-Examples' );
 			group: 'Tools' with: #( 'Ride-Tools' );
 			group: 'default' with: #( 'Core' ) ]
 ]
@@ -48,9 +48,9 @@ BaselineOfRide >> setUpDependencies: spec [
 	self mustache: spec.
 	self teapot: spec.
 	
-	"In RidePharo we install some general extensions 
-	needed and the ones in Zinc and Teapot."
-	spec package: 'RidePharo'.
+	"In Ride-Pharo we install some general extensions 
+	needed for Pharo, plus extensions for Zinc and Teapot."
+	spec package: 'Ride-Pharo'.
 	spec postLoadDoIt: #loadTaskIt.
 ]
 
@@ -59,7 +59,7 @@ BaselineOfRide >> setUpPackages: spec [
 
 	spec package: 'Ride' with: [ 
 		spec requires:
-			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'RidePharo' ) ].
+			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'Ride-Pharo' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
