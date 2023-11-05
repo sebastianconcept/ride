@@ -4,7 +4,7 @@ I am the welcoming web app of the Rider framework
 Class {
 	#name : #RideWelcomeApp,
 	#superclass : #RideService,
-	#category : #'RideExamples-WelcomeApp-Core'
+	#category : #'RideExamples-Core'
 }
 
 { #category : #'instance creation' }

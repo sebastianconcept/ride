@@ -8,7 +8,7 @@ Class {
 		'chatMessages',
 		'userFirstName'
 	],
-	#category : #'RideExamples-WelcomeApp-Models'
+	#category : #'RideExamples-Models'
 }
 
 { #category : #accessing }

@@ -9,7 +9,7 @@ Class {
 		'done',
 		'description'
 	],
-	#category : #'RideExamples-WelcomeApp-Models'
+	#category : #'RideExamples-Models'
 }
 
 { #category : #converting }

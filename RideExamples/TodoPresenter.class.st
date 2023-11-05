@@ -4,7 +4,7 @@ I'm the presenter of the To-Do example
 Class {
 	#name : #TodoPresenter,
 	#superclass : #RidePresenter,
-	#category : #'RideExamples-WelcomeApp-Controllers'
+	#category : #'RideExamples-Presenters'
 }
 
 { #category : #private }
