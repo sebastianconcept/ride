@@ -43,6 +43,12 @@ RidePresenter class >> defaultModel [
 ]
 
 { #category : #accessing }
+RidePresenter class >> getKebabizedModelName [
+
+	^ '-' join: (self getModelName asSnakeCase substrings: '_')
+]
+
+{ #category : #accessing }
 RidePresenter class >> getModelClass [
 
 	"Answers the model class for this presenter."
@@ -59,6 +65,12 @@ RidePresenter class >> getModelName [
 	"Answers the conventional model name for this presenter."
 
 	^ self name copyFrom: 1 to: self name size - 'Presener' size - 1
+]
+
+{ #category : #accessing }
+RidePresenter class >> getNormalizedModelName [
+
+	^ self getKebabizedModelName
 ]
 
 { #category : #'instance creation' }
@@ -464,4 +476,8 @@ RidePresenter >> templateModel [
 	will render only the HTML of this component (not the full page)."
 
 	^ model asTemplateModel
+		  at: #indexJs put: ('./assets/js/{1}' format:
+					   { ((self locate assetsMap js at:
+							     self class getNormalizedModelName) at: #index) });
+		  yourself
 ]

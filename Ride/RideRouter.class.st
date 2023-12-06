@@ -125,6 +125,12 @@ RideRouter class >> views [
 ]
 
 { #category : #accessing }
+RideRouter >> assetsFilePath [
+
+	^ Ride service locate assetsFilePath
+]
+
+{ #category : #accessing }
 RideRouter >> baseFilePath [
 
 	^ self class baseFilePath
@@ -166,6 +172,21 @@ RideRouter >> fileServe: request [
 ]
 
 { #category : #actions }
+RideRouter >> fileServeAssetFor: request [
+
+	| targetedPath |
+	targetedPath := self assetsFilePath.
+	request uri segments allButFirst do: [ :segment | 
+		targetedPath := targetedPath / segment ].
+
+	^ targetedPath asFileReference exists
+		  ifTrue: [ targetedPath asFileReference contents ]
+		  ifFalse: [ 
+			  RideNotFoundError signal:
+				  ('{1} not found' format: { request uri asString }) ]
+]
+
+{ #category : #actions }
 RideRouter >> fileServeOrRenderPresenterFor: request [
 
 	| route targetedPath |
@@ -186,6 +207,7 @@ RideRouter >> fileServeOrRenderPresenterFor: request [
 	targetedPath := self baseFilePath / 'views'.
 	request uri segments do: [ :path | 
 		targetedPath := targetedPath / path.
+
 		(targetedPath asFileReference exists and: [ 
 			 targetedPath asFileReference isFile ]) ifTrue: [ 
 			^ targetedPath asFileReference contents ] ].
@@ -454,11 +476,18 @@ RideRouter >> setRoute: routeName on: aRideServer [
 	| routePath |
 	routePath := self baseUrl , '/' , routeName , '/*'.
 
+	aRideServer teapot
+		GET:
+			self baseUrl , '/assets/*'
+			-> [ :req | self fileServeAssetFor: req ];
+		output: #html.
+
 	routeName ~= '/' ifTrue: [ 
 		aRideServer teapot
 			GET: self baseUrl , '/<routeName>/*'
 				-> [ :req | self fileServeOrRenderPresenterFor: req ];
 			output: #html ].
+
 	aRideServer teapot
 		GET: routePath -> (self handleHTMLOnGETFor: routeName);
 		output: #html.
