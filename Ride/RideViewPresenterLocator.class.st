@@ -36,7 +36,13 @@ RideViewPresenterLocator >> assetsMap [
 { #category : #accessing }
 RideViewPresenterLocator >> assetsMapFile [
 
-	^ self appPath / 'maps' / 'assets.json'
+	^ self assetsMapPath / 'assets.json'
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> assetsMapPath [
+
+	^ (self appPath / 'maps') asFileReference ensureCreateDirectory
 ]
 
 { #category : #accessing }

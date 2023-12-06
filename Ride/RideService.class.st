@@ -84,7 +84,7 @@ RideService class >> setUp [
 { #category : #actions }
 RideService >> assetsSetUp [
 
-	| map |
+	| map jsPath |
 	map := self locate readAssetsMap.
 	map ifEmpty: [ 
 		Ride
@@ -92,12 +92,13 @@ RideService >> assetsSetUp [
 			level: #WARNING.
 		^ self rebuildJavaScriptAssets ].
 
-	(self locate assetsFilePath / 'js') asFileReference entries isEmpty 
-		ifTrue: [ 
-			Ride
-				log: 'No JavaScript assets found, creating them from sources.'
-				level: #WARNING.
-			self buildJavaScriptAssets ].
+	jsPath := (self locate assetsFilePath / 'js') asFileReference
+		          ensureCreateDirectory.
+	jsPath entries isEmpty ifTrue: [ 
+		Ride
+			log: 'No JavaScript assets found, creating them from sources.'
+			level: #WARNING.
+		self buildJavaScriptAssets ].
 
 	Ride log: 'JavaScript assets map found.'
 ]
