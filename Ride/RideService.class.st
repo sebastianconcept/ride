@@ -87,27 +87,23 @@ RideService >> assetsSetUp [
 	| map jsPath |
 	map := self locate readAssetsMap.
 	map ifEmpty: [ 
-		Ride
-			log: 'Assets map not found, rebuilding JavaScript assets...'
-			level: #WARNING.
+		Ride log: 'Assets map not found.' level: #WARNING.
 		^ self rebuildJavaScriptAssets ].
+
+	Ride log: 'JavaScript assets map found.'.
 
 	jsPath := (self locate assetsFilePath / 'js') asFileReference
 		          ensureCreateDirectory.
 	jsPath entries isEmpty ifTrue: [ 
-		Ride
-			log: 'No JavaScript assets found, creating them from sources.'
-			level: #WARNING.
-		self buildJavaScriptAssetsFor: map ].
-
-	Ride log: 'JavaScript assets map found.'
+		Ride log: 'No JavaScript assets found.' level: #WARNING.
+		self buildJavaScriptAssetsFor: map ]
 ]
 
 { #category : #actions }
 RideService >> buildJavaScriptAssets [
 
 	| destinationHash destinationFile |
-	Ride log: 'Building JavaScript assets from scratch...' level: #INFO.
+	Ride log: 'Building JavaScript assets and new map...' level: #INFO.
 	self locate javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
@@ -132,7 +128,7 @@ RideService >> buildJavaScriptAssets [
 RideService >> buildJavaScriptAssetsFor: assetsMap [
 
 	| destinationHash destinationFile mappedJsFilename |
-	Ride log: 'Building JavaScript assets from assets map...' level: #INFO.
+	Ride log: 'Building JavaScript assets as mapped...' level: #INFO.
 	self locate javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
@@ -151,7 +147,7 @@ RideService >> buildJavaScriptAssetsFor: assetsMap [
 RideService >> deleteJavaScriptAssets [
 
 	(self locator assetsFilePath / 'js') asFileReference
-		deleteAllChildren.
+		ensureDeleteAllChildren.
 	Ride log: 'JavaScript assets deleted.' level: #INFO
 ]
 
@@ -240,6 +236,7 @@ RideService >> makeJavaScriptAsset: jsSourceFile to: destinationFile [
 
 	"We can improve this by minifying it in the destination."
 
+	destinationFile parent ensureCreateDirectory.
 	jsSourceFile copyTo: destinationFile
 ]
 
