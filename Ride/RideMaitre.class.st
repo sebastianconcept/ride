@@ -11,7 +11,16 @@ Class {
 	#category : #'Ride-Core'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
+RideMaitre class >> assetsDirectory [
+
+	^ (OSEnvironment current
+		   at: 'ASSETS_PATH'
+		   ifAbsent: [ Smalltalk imageDirectory / 'app' / 'assets' ])
+		  asFileReference
+]
+
+{ #category : #accessing }
 RideMaitre class >> workersPoolSize [
 
 	^ (OSEnvironment current at: 'WORKER_POOL_SIZE' ifAbsent: [ 2 ])

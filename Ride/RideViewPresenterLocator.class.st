@@ -6,10 +6,61 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'templates',
-		'presenters'
+		'presenters',
+		'javaScriptAssets',
+		'assetsMap'
 	],
 	#category : #'Ride-Core'
 }
+
+{ #category : #accessing }
+RideViewPresenterLocator >> appPath [
+
+	^ Smalltalk imageDirectory / 'app'
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> assetsFilePath [
+
+	^ Path from: (OSEnvironment current
+			   at: #RIDE_ASSETS_FILE_PATH
+			   ifAbsent: [ self defaultAssetsFilePathString ])
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> assetsMap [
+
+	^ assetsMap ifNil: [ self initializeAssetsMap ]
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> assetsMapFile [
+
+	^ self appPath / 'maps' / 'assets.json'
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> defaultAssetsFilePathString [
+
+	^ (self appPath / 'assets') pathString
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> getJavaScriptAssets [
+
+	"Returns a dictionary with keys being view names (views/ dsubirectory names) 
+	and as value, a dictionary with the .js file names as keys and their content as value"
+
+	| assets jsFiles presenterJavaScript |
+	assets := Dictionary new.
+	RideDirectoryResolver viewTemplatesDirectory directories do: [ :path | 
+		jsFiles := path files select: [ :e | e extension = 'js' ].
+		presenterJavaScript := Dictionary new.
+		jsFiles do: [ :jsFile | 
+			presenterJavaScript at: jsFile basenameWithoutExtension put: jsFile ].
+		assets at: path basename put: presenterJavaScript ].
+	^ assets
+]
 
 { #category : #accessing }
 RideViewPresenterLocator >> getMustacheTemplagesIn: aPath [
@@ -101,6 +152,18 @@ RideViewPresenterLocator >> getTemplatesFrom: aPath [
 ]
 
 { #category : #initialization }
+RideViewPresenterLocator >> initializeAssetsMap [
+
+	^ assetsMap := self readAssetsMap
+]
+
+{ #category : #initialization }
+RideViewPresenterLocator >> initializeJavaScriptAssets [
+
+	^ javaScriptAssets := self getJavaScriptAssets
+]
+
+{ #category : #initialization }
 RideViewPresenterLocator >> initializePresenters [
 
 	^ presenters := self getPresenters
@@ -110,6 +173,12 @@ RideViewPresenterLocator >> initializePresenters [
 RideViewPresenterLocator >> initializeTemplates [
 
 	^ templates := self getTemplates
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> javaScriptAssets [
+
+	^ javaScriptAssets ifNil: [ self initializeJavaScriptAssets ]
 ]
 
 { #category : #accessing }
@@ -134,6 +203,18 @@ RideViewPresenterLocator >> presenters [
 	^ presenters ifNil: [ self initializePresenters ]
 ]
 
+{ #category : #actions }
+RideViewPresenterLocator >> readAssetsMap [
+
+	"Answers the assets cache as read from cache/assets.json"
+
+	| file |
+	file := self assetsMapFile.
+	^ file exists
+		  ifTrue: [ file readStreamDo: [ :stream | Json readFrom: stream ] ]
+		  ifFalse: [ Dictionary new ]
+]
+
 { #category : #accessing }
 RideViewPresenterLocator >> sharedTemplates [
 
@@ -152,6 +233,10 @@ RideViewPresenterLocator >> templates [
 { #category : #accessing }
 RideViewPresenterLocator >> templatesFor: aPresenter [
 
+	"Answers the mustache templates that correspond to aPresenter.
+	The convention that is followed is to find the presenter's 
+	model name in snake_case or kebab-case on disk."
+
 	| views modelName kebabized found |
 	views := self templates at: #views.
 	modelName := aPresenter class getModelName.
@@ -168,4 +253,19 @@ RideViewPresenterLocator >> viewTemplates [
 	^ self templates
 		  at: #views
 		  ifAbsent: [ RideMissingTemplateError signal: 'No templates for the views?' ]
+]
+
+{ #category : #actions }
+RideViewPresenterLocator >> writeAssetsMap [
+
+	"Writes the assets map in maps/assets.json"
+
+	| file |
+	file := self assetsMapFile.
+
+	file exists ifTrue: [ 
+		file writeStreamDo: [ :stream | stream truncate ] ].
+
+	file writeStreamDo: [ :stream | 
+		stream nextPutAll: self assetsMap asJsonString ]
 ]

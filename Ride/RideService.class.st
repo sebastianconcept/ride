@@ -74,11 +74,65 @@ RideService class >> sessionIdFromCookieOrNewFrom: aRequest [
 RideService class >> setUp [
 
 	"Customizations before starting the service."
-
+		
 	self log: 'Router setup...'.
 	Ride service router
 		sessionGetter: self getSessionGetter;
 		yourself
+]
+
+{ #category : #actions }
+RideService >> assetsSetUp [
+
+	| map |
+	map := self locate readAssetsMap.
+	map ifEmpty: [ 
+		Ride
+			log: 'Assets map not found, rebuilding JavaScript assets...'
+			level: #WARNING.
+		^ self rebuildJavaScriptAssets ].
+
+	(self locate assetsFilePath / 'js') asFileReference entries isEmpty 
+		ifTrue: [ 
+			Ride
+				log: 'No JavaScript assets found, creating them from sources.'
+				level: #WARNING.
+			self buildJavaScriptAssets ].
+
+	Ride log: 'JavaScript assets map found.'
+]
+
+{ #category : #actions }
+RideService >> buildJavaScriptAssets [
+
+	| destinationHash destinationFile |
+	Ride log: 'Building JavaScript assets...' level: #INFO.
+	self locate javaScriptAssets keysAndValuesDo: [ 
+		:presenterSelector 
+		:assets | 
+		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
+			destinationHash := UUID new asString36.
+			destinationFile := (self locator assetsFilePath / 'js'
+			                    / (destinationHash , '.js')) asFileReference.
+			self makeJavaScriptAsset: jsFile to: destinationFile.
+			((self locator assetsMap at: 'js' ifAbsentPut: [ Dictionary new ])
+				 at: presenterSelector
+				 ifAbsentPut: [ Dictionary new ])
+				at: jsSelector
+				put: destinationFile basename ] ].
+
+	Ride log: 'JavaScript assets ready.' level: #INFO.
+
+	self locator writeAssetsMap.
+	Ride log: 'JavaScript assets map updated.' level: #INFO
+]
+
+{ #category : #actions }
+RideService >> deleteJavaScriptAssets [
+
+	(self locator assetsFilePath / 'js') asFileReference
+		deleteAllChildren.
+	Ride log: 'JavaScript assets deleted.' level: #INFO
 ]
 
 { #category : #initialization }
@@ -161,10 +215,28 @@ RideService >> maitre: anObject [
 	maitre := anObject
 ]
 
+{ #category : #actions }
+RideService >> makeJavaScriptAsset: jsSourceFile to: destinationFile [
+
+	"We can improve this by minifying it in the destination."
+
+	jsSourceFile copyTo: destinationFile
+]
+
 { #category : #accessing }
 RideService >> newSessionId [
 
 	^ self class newSessionId
+]
+
+{ #category : #actions }
+RideService >> rebuildJavaScriptAssets [
+
+	Ride log: 'Rebuilding JavaScript assets...' level: #WARNING.
+
+	self
+		deleteJavaScriptAssets;
+		buildJavaScriptAssets
 ]
 
 { #category : #accessing }
@@ -240,7 +312,10 @@ RideService >> sessions: anObject [
 RideService >> setUp [
 
 	Ride log: ('{1} setup...' format: { self class name }).
-	self class setUp
+	self class setUp.
+	
+	Ride log: 'Assets setup...'.
+	self assetsSetUp.
 ]
 
 { #category : #actions }
