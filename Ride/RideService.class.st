@@ -98,7 +98,7 @@ RideService >> assetsSetUp [
 		Ride
 			log: 'No JavaScript assets found, creating them from sources.'
 			level: #WARNING.
-		self buildJavaScriptAssets ].
+		self buildJavaScriptAssetsFor: map ].
 
 	Ride log: 'JavaScript assets map found.'
 ]
@@ -107,7 +107,7 @@ RideService >> assetsSetUp [
 RideService >> buildJavaScriptAssets [
 
 	| destinationHash destinationFile |
-	Ride log: 'Building JavaScript assets...' level: #INFO.
+	Ride log: 'Building JavaScript assets from scratch...' level: #INFO.
 	self locate javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
@@ -126,6 +126,25 @@ RideService >> buildJavaScriptAssets [
 
 	self locator writeAssetsMap.
 	Ride log: 'JavaScript assets map updated.' level: #INFO
+]
+
+{ #category : #actions }
+RideService >> buildJavaScriptAssetsFor: assetsMap [
+
+	| destinationHash destinationFile mappedJsFilename |
+	Ride log: 'Building JavaScript assets from assets map...' level: #INFO.
+	self locate javaScriptAssets keysAndValuesDo: [ 
+		:presenterSelector 
+		:assets | 
+		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
+			mappedJsFilename := (assetsMap js at: presenterSelector) at:
+				                    jsSelector.
+			destinationHash := (mappedJsFilename substrings: '.') first.
+			destinationFile := (self locator assetsFilePath / 'js'
+			                    / (destinationHash , '.js')) asFileReference.
+			self makeJavaScriptAsset: jsFile to: destinationFile ] ].
+
+	Ride log: 'JavaScript assets ready.' level: #INFO
 ]
 
 { #category : #actions }
