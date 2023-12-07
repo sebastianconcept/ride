@@ -475,9 +475,16 @@ RidePresenter >> templateModel [
 	"Answers the model used for the template that 
 	will render only the HTML of this component (not the full page)."
 
-	^ model asTemplateModel
-		  at: #indexJs put: ('./assets/js/{1}' format:
-					   { ((self locate assetsMap js at:
-							     self class getNormalizedModelName) at: #index) });
-		  yourself
+	| template presenterJsAssets indexJs |
+	template := model asTemplateModel.
+	presenterJsAssets := self locate assetsMap js at:
+		                     self class getNormalizedModelName.
+	^ (presenterJsAssets notNil and: [ 
+		   indexJs := presenterJsAssets at: #index.
+		   indexJs notNil ])
+		  ifFalse: [ template ]
+		  ifTrue: [ 
+			  template
+				  at: #indexJs put: ('./assets/js/{1}' format: { indexJs });
+				  yourself ]
 ]
