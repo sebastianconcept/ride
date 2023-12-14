@@ -485,6 +485,6 @@ RidePresenter >> templateModel [
 		  ifFalse: [ template ]
 		  ifTrue: [ 
 			  template
-				  at: #indexJs put: ('./assets/js/{1}' format: { indexJs });
+				  at: #indexJs put: ('/assets/js/{1}' format: { indexJs });
 				  yourself ]
 ]
