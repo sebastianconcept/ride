@@ -50,6 +50,12 @@ Ride class >> isDebugMode [
 ]
 
 { #category : #testing }
+Ride class >> isDevelopment [
+
+	^ self mode asLowercase = 'development'
+]
+
+{ #category : #testing }
 Ride class >> isProduction [
 
 	^ self mode asLowercase = 'production'
@@ -98,7 +104,9 @@ Ride class >> logLevelSymbols: anObject [
 { #category : #accessing }
 Ride class >> mode [
 
-	^ OSEnvironment current at: 'RIDE_MODE'
+	^ OSEnvironment current at: #MODE ifAbsent: [ 
+		  RideError signal:
+			  'The environment needs to have defined the MODE env var as production, development or debug' ]
 ]
 
 { #category : #actions }
