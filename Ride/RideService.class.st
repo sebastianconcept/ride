@@ -337,11 +337,14 @@ RideService >> setUp [
 
 { #category : #actions }
 RideService >> start [
+
 	self setUp.
 	Ride log: ('{1} starting...' format: { self class name }).
 	self maitre start.
 	self server start.
-	Ride log: ('{1} started' format: { self class name }).
+	Ride log: ('{1} {2} started' format: { 
+				 self class name.
+				 self version })
 ]
 
 { #category : #actions }
@@ -352,4 +355,10 @@ RideService >> stop [
 	self server stop.
 	Ride log: ('{1} stopped' format: { self class name }).
 	self reset
+]
+
+{ #category : #accessing }
+RideService >> version [
+
+	^ OSEnvironment current at: 'VERSION' ifAbsent: [ 'v?.?.?' ]
 ]
