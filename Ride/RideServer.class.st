@@ -7,6 +7,9 @@ Applications might be interested in subclassing me and implement their own custo
 - setFilters
 - setRoutes
 
+In relation to the filter for maintainance mode, it counts with the right HTTP server configuration in order to work well. See nginxExample class method for the boilerplate.
+
+
 "
 Class {
 	#name : #RideServer,
@@ -88,6 +91,87 @@ RideServer class >> httpPort [
 ]
 
 { #category : #accessing }
+RideServer class >> nginxConfExample [
+
+	^ '# Access to the Pharo http service with the app
+upstream yourapp_backend {
+    server 127.0.0.1:3004;
+}
+
+# Access to REPLEndpoint for maintainance
+upstream repl {
+    server 127.0.0.1:4045;
+}
+
+# Basic http configuration rewriting all requests to https
+server {
+    listen 80;
+    server_name yourapp.local.com;
+    rewrite ^(.*) https://yourapp.local.com$1 permanent;
+}
+
+# Settings for the service using https
+server {
+    listen               443 ssl;
+
+    # Setup your trusted certificates
+    # Ref: https://www.freecodecamp.org/news/how-to-get-https-working-on-your-local-development-environment-in-5-minutes-7af615770eec
+    ssl_certificate       /path/to/your/project/ssl/yourapp.local.com.crt;
+    ssl_certificate_key  /path/to/your/project/ssl/yourapp.local.com.key;
+
+    resolver 8.8.8.8 8.8.4.4 valid=300s;
+    resolver_timeout 5s;
+
+    server_name          yourapp.local.com;
+
+    # Default public dir to search for content
+    root /path/to/your/project/yourapp/public;
+
+    # Proxy to your REPL endpoint
+    location /repl {
+        proxy_pass http://repl;
+    }
+
+    # Serving your app assets dir
+    location /assets/ {
+        alias /path/to/your/project/yourapp/app/assets;
+    }
+
+    # Setup main route to serve from the root or 
+    # Default public dir to search for content or @yourapp when is not found
+    location / {
+        try_files $uri @yourapp;
+    }
+
+    # Setup how to proxy to your app accessible at yourapp_backend
+    location @yourapp {
+        add_header Strict-Transport-Security "max-age=63072000; includeSubdomains" always;
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header Cross-Origin-Opener-Policy same-origin-allow-popups always;
+
+        # Preflighted requests
+        if ($request_method = OPTIONS ) {
+            add_header "Access-Control-Allow-Origin" "*";
+            add_header "Access-Control-Allow-Methods" "GET, PUT, PATCH, POST, OPTIONS, HEAD, DELETE";
+            add_header "Access-Control-Allow-Headers" "Authorization, Origin, X-Requested-With, Content-Type, Accept, Range";
+            return 200;
+        }
+     
+        # All supported requests
+        if ($request_method ~* "(GET|POST|PUT|PATCH|DELETE)") {
+            add_header "Access-Control-Allow-Headers" "Authorization, Origin, X-Requested-With, Content-Type, Accept, Range";
+        }
+
+        # set client body size to 10 MB #
+        client_max_body_size 10M;
+
+        proxy_pass  http://yourapp_backend;
+    }
+}'
+]
+
+{ #category : #accessing }
 RideServer class >> version [
 
 	^ '1.0.1'
@@ -105,6 +189,24 @@ RideServer class >> webSockerPort [
 RideServer >> debugMode [
 
 	^ self class debugMode
+]
+
+{ #category : #actions }
+RideServer >> htmlMaintenancePage [
+
+	| templateModel maintenanceTemplate |
+	templateModel := {  } asDictionary.
+	maintenanceTemplate := Ride service locate sharedTemplates at:
+		                       #maintenance.
+	(Smalltalk os environment at: #MW_TITLE ifAbsent: [ nil ]) ifNotNil: [ 
+		:string | templateModel at: #title put: string ].
+	(Smalltalk os environment at: #MW_DETAILS ifAbsent: [ nil ]) 
+		ifNotNil: [ :string | templateModel at: #details put: string ].
+	(Smalltalk os environment at: #MW_NOTES ifAbsent: [ nil ]) ifNotNil: [ 
+		:string | templateModel at: #notes put: string ].
+	^ maintenanceTemplate
+		  value: templateModel
+		  partials: Ride service locate sharedTemplates
 ]
 
 { #category : #initialization }
@@ -206,18 +308,6 @@ RideServer >> onWebSocketMessage: message for: aRideSession [
 ]
 
 { #category : #actions }
-RideServer >> renderHtml404On: aRideNotFoundError [
-
-	self halt
-]
-
-{ #category : #actions }
-RideServer >> renderHtml500On: anError [
-
-	^ anError descriptionModel
-]
-
-{ #category : #actions }
 RideServer >> reset [
 
 	webSocket ifNotNil: [ 
@@ -285,6 +375,18 @@ RideServer >> setExceptionHandlers [
 			yourself.
 		abort response teaTransform: [ :same | same ] request: req ].
 
+	self teapot
+		exception: RideMaintenanceException -> [ :ex :req | 
+				response := TeaResponse ok.
+				origin := req headers at: 'origin' ifAbsent: [ '*' ].
+				response body: self htmlMaintenancePage.
+				response headers
+					at: 'Access-Control-Allow-Credentials' put: 'true';
+					at: 'Access-Control-Allow-Origin' put: origin;
+					yourself.
+				response ];
+		output: #html.
+
 	self teapot exception: RideValidationError -> [ :ex :req | 
 		response := TeaResponse badRequest.
 		origin := req headers at: 'origin' ifAbsent: [ '*' ].
@@ -337,7 +439,8 @@ RideServer >> setExceptionHandlers [
 { #category : #actions }
 RideServer >> setFilters [
 
-	"Nothing to add"
+	self teapot before: '*' -> [ :request | 
+		Ride isUnderMaintenance ifTrue: [ RideMaintenanceException signal ] ]
 ]
 
 { #category : #actions }
@@ -349,8 +452,8 @@ RideServer >> setRoutes [
 { #category : #actions }
 RideServer >> start [
 
-	self setRoutes.
 	self setFilters.
+	self setRoutes.
 	self setExceptionHandlers.
 	self class hasWebSocket ifTrue: [ 
 		self webSocket start.

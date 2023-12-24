@@ -69,6 +69,12 @@ Ride class >> isProduction [
 	^ self mode asLowercase = 'production'
 ]
 
+{ #category : #testing }
+Ride class >> isUnderMaintenance [
+
+	^ (Smalltalk os environment at: #MW ifAbsent: [ 0 ]) asInteger = 1
+]
+
 { #category : #actions }
 Ride class >> log: aString [
 
