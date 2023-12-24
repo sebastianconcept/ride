@@ -25,14 +25,6 @@ Ride class >> defaultLogLevel [
 	^ #INFO
 ]
 
-{ #category : #accessing }
-Ride class >> do [
-
-	"Answers a Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, model scaffolder, presenter scaffolder, crud scaffolder, database, etc"
-
-	^ RideDoer
-]
-
 { #category : #actions }
 Ride class >> ensure [
 
@@ -113,6 +105,14 @@ Ride class >> logLevelSymbols [
 Ride class >> logLevelSymbols: anObject [
 
 	logLevelSymbols := anObject
+]
+
+{ #category : #accessing }
+Ride class >> make [
+
+	"Answers a Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, model scaffolder, presenter scaffolder, crud scaffolder, database, etc"
+
+	^ RideDoer
 ]
 
 { #category : #accessing }

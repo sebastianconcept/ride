@@ -1,5 +1,5 @@
 "
-I'm a Ride helper dedicated to scaffold a presenter
+I'm a Ride helper dedicated to boilerplate a presenter
 "
 Class {
 	#name : #RidePresenterHelper,

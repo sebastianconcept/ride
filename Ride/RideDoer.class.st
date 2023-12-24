@@ -8,7 +8,19 @@ Class {
 }
 
 { #category : #accessing }
+RideDoer class >> crud [
+
+	^ RideCRUDHelper
+]
+
+{ #category : #accessing }
 RideDoer class >> db [
 
 	^ RideDatabaseHelper
+]
+
+{ #category : #accessing }
+RideDoer class >> presenter [
+
+	^ RidePresenter
 ]
