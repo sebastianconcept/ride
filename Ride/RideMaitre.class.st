@@ -5,8 +5,9 @@ Class {
 	#name : #RideMaitre,
 	#superclass : #Object,
 	#instVars : [
-		'userActions',
-		'emailComposer'
+		'emailComposer',
+		'actionsQueue',
+		'actionsPool'
 	],
 	#category : #'Ride-Core'
 }
@@ -28,9 +29,43 @@ RideMaitre class >> workersPoolSize [
 ]
 
 { #category : #acccessing }
+RideMaitre >> actionsPool [
+
+	"Answer the pool of workers that will execute the scheduled actions.
+	Useful when you do not need sequential order preserved
+	and you can schedule actions to eventually get done."
+
+	^ actionsPool ifNil: [ self initializeActionsPool ]
+]
+
+{ #category : #acccessing }
+RideMaitre >> actionsQueue [
+
+	"Answer the worker that has a queue of actions.
+	For example when you need sequential order preserved
+	you schedule actions to this worker."
+
+	^ actionsQueue ifNil: [ self initializeActionsQueue ]
+]
+
+{ #category : #acccessing }
 RideMaitre >> emailComposer [
 
 	^ emailComposer ifNil: [ self initializeEmailComposer ]
+]
+
+{ #category : #initialization }
+RideMaitre >> initializeActionsPool [
+
+	^ actionsPool := TKTWorkerPool new
+		                 poolMaxSize: self class workersPoolSize;
+		                 yourself
+]
+
+{ #category : #initialization }
+RideMaitre >> initializeActionsQueue [
+
+	^ actionsQueue := TKTWorker new
 ]
 
 { #category : #initialization }
@@ -39,34 +74,29 @@ RideMaitre >> initializeEmailComposer [
 	^ emailComposer := RideEmailComposer new
 ]
 
-{ #category : #initialization }
-RideMaitre >> initializeUserActions [
-
-	^ userActions := TKTWorkerPool new
-		                 poolMaxSize: self class workersPoolSize;
-		                 yourself
-]
-
 { #category : #actions }
 RideMaitre >> reset [
 
-	userActions ifNotNil: [ 
-		userActions stop.
-		userActions := nil ]
-]
+	actionsQueue ifNotNil: [ 
+		actionsQueue stop.
+		actionsQueue := nil ].
 
-{ #category : #actions }
-RideMaitre >> scheduleAction: aBlock [
-
-	self userActions schedule: aBlock
+	actionsPool ifNotNil: [ 
+		actionsPool stop.
+		actionsPool := nil ]
 ]
 
 { #category : #actions }
 RideMaitre >> start [
 
-	self userActions start.
+	self actionsQueue start.
 	Ride
-		log: ('{1} prepared {2} workers...' format: { 
+		log:
+		('{1} started the actions queue...' format: { self class name })
+		level: #INFO.
+	self actionsPool start.
+	Ride
+		log: ('{1} prepared {2} workers for its action pool...' format: { 
 					 self class name.
 					 self class workersPoolSize asString })
 		level: #INFO
@@ -76,10 +106,4 @@ RideMaitre >> start [
 RideMaitre >> stop [
 
 	self reset
-]
-
-{ #category : #acccessing }
-RideMaitre >> userActions [
-
-	^ userActions ifNil: [ self initializeUserActions ]
 ]
