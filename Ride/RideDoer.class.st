@@ -4,7 +4,10 @@ I'm a Ride helper dedicated to keep types of actions being done by the specialis
 Class {
 	#name : #RideDoer,
 	#superclass : #Object,
-	#category : #'Ride-Scaffolding'
+	#classInstVars : [
+		'packageName'
+	],
+	#category : #'Ride-Boilerplate'
 }
 
 { #category : #accessing }
@@ -20,7 +23,33 @@ RideDoer class >> db [
 ]
 
 { #category : #accessing }
+RideDoer class >> model [
+
+	^ RideModelHelper
+]
+
+{ #category : #accessing }
+RideDoer class >> packageName [
+
+	^ packageName ifNil: [ 
+		  self error:
+			  'The packageName for the Ride boilerplate is not defined' ]
+]
+
+{ #category : #accessing }
+RideDoer class >> packageName: anObject [
+
+	packageName := anObject
+]
+
+{ #category : #accessing }
 RideDoer class >> presenter [
 
-	^ RidePresenter
+	^ RidePresenterHelper
+]
+
+{ #category : #accessing }
+RideDoer class >> view [
+
+	^ RideViewHelper
 ]

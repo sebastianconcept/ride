@@ -3,6 +3,6 @@ I'm a Ride helper dedicated to do the boilerplate for a model. This means, the m
 "
 Class {
 	#name : #RideCRUDHelper,
-	#superclass : #Object,
-	#category : #'Ride-Scaffolding'
+	#superclass : #RideBoilerplateHelper,
+	#category : #'Ride-Boilerplate'
 }
