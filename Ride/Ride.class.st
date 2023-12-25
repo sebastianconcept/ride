@@ -25,7 +25,7 @@ Ride class >> defaultLogLevel [
 	^ #INFO
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 Ride class >> draft [
 
 	"Answers a new Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"

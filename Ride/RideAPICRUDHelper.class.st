@@ -6,3 +6,11 @@ Class {
 	#superclass : #RideCRUDHelper,
 	#category : #'Ride-Boilerplate'
 }
+
+{ #category : #'instance creation' }
+RideAPICRUDHelper >> for: aSymbol [
+
+	super for: aSymbol.
+	doer controller for: aSymbol.	
+	self addCRUDMethodsTo: (self controllerForModel: aSymbol) for: aSymbol
+]

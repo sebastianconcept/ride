@@ -11,5 +11,7 @@ Class {
 RideMVCCRUDHelper >> for: aSymbol [
 
 	super for: aSymbol.
-	self addCRUDMethodsTo: (self controllerForModel: aSymbol)
+	self
+		addCRUDMethodsTo: (self controllerForModel: aSymbol)
+		for: aSymbol
 ]

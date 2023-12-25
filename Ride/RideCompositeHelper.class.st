@@ -11,6 +11,13 @@ Class {
 	#category : #'Ride-Boilerplate'
 }
 
+{ #category : #'as yet unclassified' }
+RideCompositeHelper class >> getPluralOf: aSymbol [
+
+	self flag: #todo.
+	^ aSymbol asSnakeCase
+]
+
 { #category : #accessing }
 RideCompositeHelper >> controllerForModel: aSymbol [
 

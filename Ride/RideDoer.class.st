@@ -36,6 +36,12 @@ RideDoer >> api [
 ]
 
 { #category : #accessing }
+RideDoer >> controller [
+
+	^ RideControllerHelper new
+]
+
+{ #category : #accessing }
 RideDoer >> db [
 
 	^ RideDatabaseHelper new
