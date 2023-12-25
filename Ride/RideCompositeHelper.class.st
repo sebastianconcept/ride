@@ -50,6 +50,15 @@ RideCompositeHelper >> initialize [
 	js := false
 ]
 
+{ #category : #actions }
+RideCompositeHelper >> mustacheTemplateFor: aSymbol [
+
+	| view |
+	view := doer view mustache.
+	view js: js.
+	view for: aSymbol
+]
+
 { #category : #accessing }
 RideCompositeHelper >> presenterForModel: aSymbol [
 

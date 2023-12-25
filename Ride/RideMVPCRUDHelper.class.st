@@ -11,5 +11,7 @@ Class {
 RideMVPCRUDHelper >> for: aSymbol [
 
 	super for: aSymbol.
-	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol
+	doer presenter for: aSymbol.
+	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
+	self mustacheTemplateFor: aSymbol
 ]
