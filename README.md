@@ -34,7 +34,7 @@ Ride restart.
 ```
 
 ### Enhancing developer productivity
-Ride offers you a convenient way to draft the basic elements needed for implementing feature you need to implement next. For example, given that in an hypothetical CoffeeSystem web application you need to implement a `CoffeeInvoice`, here is what Ride has at your disposal:
+Ride offers you a convenient way to quickly draft the basic elements needed for implementing a feature based in a new model. For example, given a CoffeeSystem web application a new `CoffeeInvoice` model, you could:
 
 ```smalltalk
 "Set the default package that will be the destination of the generated code"
@@ -52,7 +52,7 @@ Ride draft view mustache for: #CoffeeInvoice.
 
 ## MVP
 
-Using the basic generators, Ride also can create the basic Model-View-Presenter code for a given model:
+Using these basic code generators, Ride also can create the elemental Model-View-Presenter code for a given model:
 
 ```smalltalk
 "Create the model and presenter classes and mustache template file for CoffeeInvoice"
@@ -67,7 +67,7 @@ Ride draft mvp crud for: #CoffeeInvoice.
 
 ## MVC
 
-If you prefer the completely stateless approach instead, Ride has it with its Model-View-Controller approach:
+If you prefer the completely stateless approach instead, Ride has that with its Model-View-Controller approach:
 
 ```smalltalk
 "Create the model and controller classes and mustache template file for CoffeeInvoice"
@@ -81,7 +81,7 @@ Ride draft mvc crud for: #CoffeeInvoice.
 ```
 
 ## API
-If you like MVC but you only need an API, this is how you can generate its boilerplate code:
+If you need an API and you like to keep concerns organized with MVC, this is how you can generate its boilerplate code:
 ```smalltalk
 Ride draft api crud for: #CoffeeInvoice.
 ```
