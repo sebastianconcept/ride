@@ -1,20 +1,20 @@
 "
-I help with the creating the boilerplate of a Model its View and its Presenter for a given model root name
+I help with the creating the boilerplate of a Model its View and its Controller for a given model root name
 "
 Class {
-	#name : #RideMVPHelper,
+	#name : #RideMVCHelper,
 	#superclass : #RideCompositeHelper,
 	#category : #'Ride-Boilerplate'
 }
 
 { #category : #accessing }
-RideMVPHelper >> crud [
+RideMVCHelper >> crud [
 
 	^ RideMVPCRUDHelper new
 ]
 
 { #category : #actions }
-RideMVPHelper >> for: aSymbol [
+RideMVCHelper >> for: aSymbol [
 
 	| v |
 	doer model for: aSymbol.

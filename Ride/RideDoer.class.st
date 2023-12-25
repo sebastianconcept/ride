@@ -28,12 +28,6 @@ RideDoer class >> defaultPackageName: anObject [
 ]
 
 { #category : #accessing }
-RideDoer >> crud [
-
-	^ RideCRUDHelper new
-]
-
-{ #category : #accessing }
 RideDoer >> db [
 
 	^ RideDatabaseHelper new
@@ -59,8 +53,10 @@ RideDoer >> model [
 
 { #category : #accessing }
 RideDoer >> mvc [
-	"It can create the boilerplate for implmenting MVC on a given model"
-	self notYetImplemented
+
+	^ RideMVCHelper new
+		  doer: self;
+		  yourself
 ]
 
 { #category : #accessing }
