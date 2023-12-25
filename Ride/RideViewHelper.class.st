@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #accessing }
-RideViewHelper class >> mustache [
+RideViewHelper >> mustache [
 
-	^ RideMustacheHelper
+	^ RideMustacheHelper new
 ]

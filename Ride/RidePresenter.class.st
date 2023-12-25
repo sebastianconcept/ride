@@ -351,12 +351,6 @@ RidePresenter >> model: aModel [
 	self setObservers	
 ]
 
-{ #category : #converting }
-RidePresenter >> normalizedToSnakeCase: aSymbol [
-
-	^ '_' join: (aSymbol asLowercase substrings: '-_.')
-]
-
 { #category : #accessing }
 RidePresenter >> pagePartials [
 
@@ -429,8 +423,8 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 	If still none found, return nil."
 
 	| presenterName presenterClass |
-	presenterName := self locate presenterNameFor:
-		                 (self normalizedToSnakeCase: aSymbol).
+	presenterName := RideNameNormalizer presenterNameFromURISegment:
+		                 aSymbol.
 	presenterClass := Smalltalk
 		                  at: presenterName asSymbol
 		                  ifAbsent: [ nil ].

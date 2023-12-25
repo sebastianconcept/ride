@@ -3,12 +3,24 @@ I'm a Ride helper dedicated to boilerplate a model
 "
 Class {
 	#name : #RideModelHelper,
-	#superclass : #RideBoilerplateHelper,
+	#superclass : #RideOneClassCreationHelper,
 	#category : #'Ride-Boilerplate'
 }
 
-{ #category : #accessing }
-RideModelHelper class >> newClassNamed: className [
+{ #category : #private }
+RideModelHelper >> classNameFor: aSymbol [
 
-	^ self newClassNamed: className withSuperclass: RideModel
+	^ aSymbol
+]
+
+{ #category : #actions }
+RideModelHelper >> defaultCommentsFor: aSymbol [
+
+	^ 'I am {1} model' format: { aSymbol asString }
+]
+
+{ #category : #private }
+RideModelHelper >> targetedSuperclass [
+
+	^ RideModel
 ]

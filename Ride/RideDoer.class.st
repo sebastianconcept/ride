@@ -1,55 +1,96 @@
 "
-I'm a Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, model scaffolder, presenter scaffolder, crud scaffolder, database, etc
+I'm a Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, model, presenter, crud, database, etc
 "
 Class {
 	#name : #RideDoer,
 	#superclass : #Object,
-	#classInstVars : [
+	#instVars : [
 		'packageName'
+	],
+	#classInstVars : [
+		'defaultPackageName'
 	],
 	#category : #'Ride-Boilerplate'
 }
 
 { #category : #accessing }
-RideDoer class >> crud [
+RideDoer class >> defaultPackageName [
 
-	^ RideCRUDHelper
-]
-
-{ #category : #accessing }
-RideDoer class >> db [
-
-	^ RideDatabaseHelper
-]
-
-{ #category : #accessing }
-RideDoer class >> model [
-
-	^ RideModelHelper
-]
-
-{ #category : #accessing }
-RideDoer class >> packageName [
-
-	^ packageName ifNil: [ 
+	^ defaultPackageName ifNil: [ 
 		  self error:
 			  'The packageName for the Ride boilerplate is not defined' ]
 ]
 
 { #category : #accessing }
-RideDoer class >> packageName: anObject [
+RideDoer class >> defaultPackageName: anObject [
+
+	defaultPackageName := anObject
+]
+
+{ #category : #accessing }
+RideDoer >> crud [
+
+	^ RideCRUDHelper new
+]
+
+{ #category : #accessing }
+RideDoer >> db [
+
+	^ RideDatabaseHelper new
+]
+
+{ #category : #accessing }
+RideDoer >> defaultPackageName: aString [
+
+	self class defaultPackageName: aString
+]
+
+{ #category : #initialization }
+RideDoer >> initializePackageName [
+
+	^ packageName := self class defaultPackageName
+]
+
+{ #category : #accessing }
+RideDoer >> model [
+
+	^ RideModelHelper new
+]
+
+{ #category : #accessing }
+RideDoer >> mvc [
+	"It can create the boilerplate for implmenting MVC on a given model"
+	self notYetImplemented
+]
+
+{ #category : #accessing }
+RideDoer >> mvp [
+
+	^ RideMVPHelper new
+		  doer: self;
+		  yourself
+]
+
+{ #category : #accessing }
+RideDoer >> packageName [
+
+	^ packageName ifNil: [ self initializePackageName ]
+]
+
+{ #category : #accessing }
+RideDoer >> packageName: anObject [
 
 	packageName := anObject
 ]
 
 { #category : #accessing }
-RideDoer class >> presenter [
+RideDoer >> presenter [
 
-	^ RidePresenterHelper
+	^ RidePresenterHelper new
 ]
 
 { #category : #accessing }
-RideDoer class >> view [
+RideDoer >> view [
 
-	^ RideViewHelper
+	^ RideViewHelper new
 ]

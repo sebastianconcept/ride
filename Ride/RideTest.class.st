@@ -16,15 +16,32 @@ RideTest >> testCamelCaseToSnakeCase [
 RideTest >> testSnakeCaseRouteToCamelCaseControllerName [
 
 	self
-		assert: (RideViewPresenterLocator new presenterNameFor: 'some')
+		assert: (RideNameNormalizer controllerNameFromURISegment: 'some')
 		equals: 'SomeController'.
 	self
 		assert:
-		(RideViewPresenterLocator new presenterNameFor: 'some_thing')
+		(RideNameNormalizer controllerNameFromURISegment: 'some_thing')
 		equals: 'SomeThingController'.
 	self
 		assert:
-		(RideViewPresenterLocator new presenterNameFor:
+		(RideNameNormalizer controllerNameFromURISegment:
 			 'some_thing_modeled')
 		equals: 'SomeThingModeledController'
+]
+
+{ #category : #tests }
+RideTest >> testSnakeCaseRouteToCamelCasePresenterName [
+
+	self
+		assert: (RideNameNormalizer presenterNameFromURISegment: 'some')
+		equals: 'SomePresenter'.
+	self
+		assert:
+		(RideNameNormalizer presenterNameFromURISegment: 'some_thing')
+		equals: 'SomeThingPresenter'.
+	self
+		assert:
+		(RideNameNormalizer presenterNameFromURISegment:
+			 'some_thing_modeled')
+		equals: 'SomeThingModeledPresenter'
 ]

@@ -3,14 +3,24 @@ I'm a Ride helper dedicated to boilerplate a presenter
 "
 Class {
 	#name : #RidePresenterHelper,
-	#superclass : #RideBoilerplateHelper,
+	#superclass : #RideOneClassCreationHelper,
 	#category : #'Ride-Boilerplate'
 }
 
 { #category : #accessing }
-RidePresenterHelper class >> newClassNamed: className [
+RidePresenterHelper >> classNameFor: aSymbol [
 
-	^ self
-		  newClassNamed: ('{1}Presenter' format: { className })
-		  withSuperclass: RidePresenter
+	^ '{1}Presenter' format: { aSymbol }
+]
+
+{ #category : #actions }
+RidePresenterHelper >> defaultCommentsFor: aSymbol [
+
+	^ 'I am the presenter for {1} models' format: { aSymbol asString }
+]
+
+{ #category : #private }
+RidePresenterHelper >> targetedSuperclass [
+
+	^ RidePresenter
 ]

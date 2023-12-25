@@ -3,6 +3,12 @@ I'm a Ride helper dedicated to do the boilerplate for a model. This means, the m
 "
 Class {
 	#name : #RideCRUDHelper,
-	#superclass : #RideBoilerplateHelper,
+	#superclass : #RideCompositeHelper,
 	#category : #'Ride-Boilerplate'
 }
+
+{ #category : #actions }
+RideCRUDHelper >> for: aSymbol [
+
+	self notYetImplemented
+]

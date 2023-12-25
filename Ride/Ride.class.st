@@ -20,17 +20,17 @@ Ride class >> allowsLoglevel: aSymbol [
 ]
 
 { #category : #accessing }
-Ride class >> boilerplate [
-
-	"Answers a Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"
-
-	^ RideDoer
-]
-
-{ #category : #accessing }
 Ride class >> defaultLogLevel [
 
 	^ #INFO
+]
+
+{ #category : #accessing }
+Ride class >> draft [
+
+	"Answers a new Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"
+
+	^ RideDoer new
 ]
 
 { #category : #actions }

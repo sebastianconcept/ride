@@ -8,14 +8,14 @@ Class {
 }
 
 { #category : #actions }
-RideDatabaseHelper class >> truncate: aMaplessClass [
+RideDatabaseHelper >> truncate: aMaplessClass [
 
 	aMaplessClass getRepository withClientDo: [ :client | 
 		client truncateMapless: aMaplessClass ]
 ]
 
 { #category : #actions }
-RideDatabaseHelper class >> truncateAll [
+RideDatabaseHelper >> truncateAll [
 
 	Ride service repository withClientDo: [ :client | 
 		client truncateAll ]
