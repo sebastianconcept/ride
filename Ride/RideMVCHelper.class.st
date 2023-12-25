@@ -10,16 +10,13 @@ Class {
 { #category : #accessing }
 RideMVCHelper >> crud [
 
-	^ RideMVPCRUDHelper new
+	^ RideMVCCRUDHelper new
+		  doer: doer;
+		  yourself
 ]
 
 { #category : #actions }
 RideMVCHelper >> for: aSymbol [
 
-	| v |
-	doer model for: aSymbol.
-	doer presenter for: aSymbol.
-	v := doer view mustache.
-	v js: js.
-	v for: aSymbol
+	self notYetImplemented
 ]

@@ -3,6 +3,13 @@ I help to draft the model, views and controllers needed for a basic CRUD around 
 "
 Class {
 	#name : #RideMVCCRUDHelper,
-	#superclass : #RideCompositeHelper,
+	#superclass : #RideCRUDHelper,
 	#category : #'Ride-Boilerplate'
 }
+
+{ #category : #actions }
+RideMVCCRUDHelper >> for: aSymbol [
+
+	super for: aSymbol.
+	self addCRUDMethodsTo: (self controllerForModel: aSymbol)
+]

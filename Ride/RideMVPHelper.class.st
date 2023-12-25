@@ -11,15 +11,17 @@ Class {
 RideMVPHelper >> crud [
 
 	^ RideMVPCRUDHelper new
+		  doer: doer;
+		  yourself
 ]
 
 { #category : #actions }
 RideMVPHelper >> for: aSymbol [
 
-	| v |
+	| view |
 	doer model for: aSymbol.
 	doer presenter for: aSymbol.
-	v := doer view mustache.
-	v js: js.
-	v for: aSymbol
+	view := doer view mustache.
+	view js: js.
+	view for: aSymbol
 ]

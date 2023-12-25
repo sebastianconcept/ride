@@ -3,6 +3,13 @@ I help to draft the model, views and presenters needed for a basic CRUD around t
 "
 Class {
 	#name : #RideMVPCRUDHelper,
-	#superclass : #RideCompositeHelper,
+	#superclass : #RideCRUDHelper,
 	#category : #'Ride-Boilerplate'
 }
+
+{ #category : #actions }
+RideMVPCRUDHelper >> for: aSymbol [
+
+	super for: aSymbol.
+	self addCRUDMethodsTo: (self presenterForModel: aSymbol)
+]

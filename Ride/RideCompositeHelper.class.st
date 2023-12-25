@@ -12,6 +12,12 @@ Class {
 }
 
 { #category : #accessing }
+RideCompositeHelper >> controllerForModel: aSymbol [
+
+	^ Smalltalk at: (doer controller classNameFor: aSymbol) asSymbol
+]
+
+{ #category : #accessing }
 RideCompositeHelper >> doer [
 
 	^ doer
@@ -23,12 +29,24 @@ RideCompositeHelper >> doer: anObject [
 	doer := anObject
 ]
 
+{ #category : #actions }
+RideCompositeHelper >> for: aSymbol [
+
+	self subclassResponsibility
+]
+
 { #category : #initialization }
 RideCompositeHelper >> initialize [
 
 	super initialize.
 
 	js := false
+]
+
+{ #category : #accessing }
+RideCompositeHelper >> presenterForModel: aSymbol [
+
+	^ Smalltalk at: (doer presenter classNameFor: aSymbol) asSymbol
 ]
 
 { #category : #actions }

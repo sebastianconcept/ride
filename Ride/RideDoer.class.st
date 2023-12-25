@@ -28,6 +28,14 @@ RideDoer class >> defaultPackageName: anObject [
 ]
 
 { #category : #accessing }
+RideDoer >> api [
+
+	^ RideAPIHelper new
+		  doer: self;
+		  yourself
+]
+
+{ #category : #accessing }
 RideDoer >> db [
 
 	^ RideDatabaseHelper new
