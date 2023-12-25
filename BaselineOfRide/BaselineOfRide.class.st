@@ -42,6 +42,16 @@ BaselineOfRide >> loadTaskIt [
 ]
 
 { #category : #dependencies }
+BaselineOfRide >> mapless: spec [
+
+	spec baseline: 'Mapless' with: [ 
+		spec
+			repository:
+				'github://sebastianconcept/Mapless:93-Support-for-SQLite/src';
+			loads: #( 'Core' 'Memory' 'SQLite' ) ]
+]
+
+{ #category : #dependencies }
 BaselineOfRide >> mustache: spec [
 
 	spec baseline: 'Mustache' with: [ 
@@ -54,6 +64,7 @@ BaselineOfRide >> mustache: spec [
 BaselineOfRide >> setUpDependencies: spec [
 
 	self json: spec.
+	self mapless: spec.	
 	self zinc: spec.
 	self mustache: spec.
 	self teapot: spec.
@@ -69,7 +80,8 @@ BaselineOfRide >> setUpPackages: spec [
 
 	spec package: 'Ride' with: [ 
 		spec requires:
-			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'JSON' 'Ride-Pharo' ) ].
+			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'JSON' 'Ride-Pharo'
+			   'Mapless' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].

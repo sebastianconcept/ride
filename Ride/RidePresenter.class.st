@@ -4,15 +4,18 @@ I provide the commonalities of all types of presenters.
 See my child classes for concrete examples.
 
 ## Responsabilities:
-1. Handle HTTP verbs.
-2. Define action methods that the frontend can provoke.
-3. Define pagePartials and pageTemplateModel to have the receiver rendereable as a web page.
-4. Set observations on the models and their respective reaction methods.
-5. Define any other method that will return HTML upon the frontend action messages.
-6. These additional HTML methods will get the HTML rendered by relying on their own dedicated partials and template models.
-7. I have a factory that allows me to create subpresenters lazily i.e.: when I try a `presenterForRoute:`.
-8. I can change my `focusedView` and with that render the model in different aspects.
-9. I might use a child as my delegate and it will respond in my place.
+1. Be stateful, maintaining state related to presentation and GUI.
+2. Have a model, which I use to perform actions and use as my source of application domain state.
+3. Handle HTTP verbs.
+4. Define action methods that the frontend can provoke.
+5. Define which paramenters are acceptable in a received request.
+6. Define pagePartials and pageTemplateModel to have the receiver rendereable as a web page.
+7. Set observations on the models and their respective reaction methods.
+8. Define any other method that will return a rendered ouput to use in responses (HTML, JSON, XML, RSS, etc).
+9. I have a factory that allows me to create subpresenters lazily i.e.: when I try a `presenterForRoute:`.
+10. I can change my `focusedView` and with that render the model in different aspects.
+11. I might use a child as my delegate and it will respond in my place.
+
 "
 Class {
 	#name : #RidePresenter,
@@ -351,12 +354,6 @@ RidePresenter >> model: aModel [
 	self setObservers	
 ]
 
-{ #category : #converting }
-RidePresenter >> normalizedToSnakeCase: aSymbol [
-
-	^ '_' join: (aSymbol asLowercase substrings: '-_.')
-]
-
 { #category : #accessing }
 RidePresenter >> pagePartials [
 
@@ -429,8 +426,8 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 	If still none found, return nil."
 
 	| presenterName presenterClass |
-	presenterName := self locate presenterNameFor:
-		                 (self normalizedToSnakeCase: aSymbol).
+	presenterName := RideNameNormalizer presenterNameFromURISegment:
+		                 aSymbol.
 	presenterClass := Smalltalk
 		                  at: presenterName asSymbol
 		                  ifAbsent: [ nil ].

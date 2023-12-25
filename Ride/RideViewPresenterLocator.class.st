@@ -16,13 +16,13 @@ Class {
 { #category : #accessing }
 RideViewPresenterLocator >> appPath [
 
-	^ Smalltalk imageDirectory / 'app'
+	^ self projectRootPath / 'app'
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> assetsFilePath [
 
-	^ Path from: (OSEnvironment current
+	^ Path from: (Smalltalk os environment
 			   at: #RIDE_ASSETS_FILE_PATH
 			   ifAbsent: [ self defaultAssetsFilePathString ])
 ]
@@ -88,11 +88,12 @@ RideViewPresenterLocator >> getPresenters [
 	newPresenters := Dictionary new.
 	self viewTemplates keys do: [ :routeName | 
 		newPresenters at: routeName put: (Smalltalk
-				 at: (self presenterNameFor: routeName) asSymbol
+				 at:
+				 (RideNameNormalizer presenterNameFromURISegment: routeName)
+					 asSymbol
 				 ifAbsent: [ 
-					 RideMissingPresenterError signal:
-						 ('{1} not found' format:
-							  { (self presenterNameFor: routeName) }) ]) ].
+					 RideMissingPresenterError signal: ('{1} not found' format:
+							  { (RideNameNormalizer presenterNameFromURISegment: routeName) }) ]) ].
 	^ newPresenters
 ]
 
@@ -209,6 +210,14 @@ RideViewPresenterLocator >> presenters [
 	^ presenters ifNil: [ self initializePresenters ]
 ]
 
+{ #category : #accessing }
+RideViewPresenterLocator >> projectRootPath [
+
+	^ Path from: (Smalltalk os environment
+			   at: #PROJECT_ROOT_PATH
+			   ifAbsent: [ Smalltalk imageDirectory pathString ])
+]
+
 { #category : #actions }
 RideViewPresenterLocator >> readAssetsMap [
 
@@ -254,11 +263,23 @@ RideViewPresenterLocator >> templatesFor: aPresenter [
 ]
 
 { #category : #accessing }
+RideViewPresenterLocator >> templatesPath [
+
+	^ self appPath / 'templates'
+]
+
+{ #category : #accessing }
 RideViewPresenterLocator >> viewTemplates [
 
 	^ self templates
 		  at: #views
 		  ifAbsent: [ RideMissingTemplateError signal: 'No templates for the views?' ]
+]
+
+{ #category : #accessing }
+RideViewPresenterLocator >> viewsPath [
+
+	^ self templatesPath / 'views'
 ]
 
 { #category : #actions }

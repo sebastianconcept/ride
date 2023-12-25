@@ -33,3 +33,55 @@ Ride start.
 Ride restart.
 ```
 
+### Enhancing developer productivity
+Ride offers you a convenient way to draft the basic elements needed for implementing feature you need to implement next. For example, given that in an hypothetical CoffeeSystem web application you need to implement a `CoffeeInvoice`, here is what Ride has at your disposal:
+
+```smalltalk
+"Set the default package that will be the destination of the generated code"
+Ride draft defaultPackageName: 'CoffeeSystem'.
+
+"Create a RideModel subclass CoffeeInvoice used as app domain state"
+Ride draft model for: #CoffeeInvoice.
+
+"Create a RidePresenter subclass CoffeeInvoicePresenter"
+Ride draft presenter for: #CoffeeInvoice.
+
+"Create the template templates/views/coffee_invoices/index.mustache"
+Ride draft view mustache for: #CoffeeInvoice.
+```
+
+## MVP
+
+Using the basic generators, Ride also can create the basic Model-View-Presenter code for a given model:
+
+```smalltalk
+"Create the model and presenter classes and mustache template file for CoffeeInvoice"
+Ride draft mvp for: #CoffeeInvoice.
+
+"Same as before but CoffeeInvoicePresenter loads custom JavaScript"
+Ride draft mvp withJs for: #CoffeeInvoice.
+
+"Have an unstyled but functioning CRUD for the CoffeeInvoice models based on MVP"
+Ride draft mvp crud for: #CoffeeInvoice.
+```
+
+## MVC
+
+If you prefer the completely stateless approach instead, Ride has it with its Model-View-Controller approach:
+
+```smalltalk
+"Create the model and controller classes and mustache template file for CoffeeInvoice"
+Ride draft mvc for: #CoffeeInvoice.
+
+"Same as before but in addition to that it has custom JavaScript"
+Ride draft mvc withJs for: #CoffeeInvoice.
+
+"Have an unstyled but functioning CRUD for the CoffeeInvoice models based on MVC"
+Ride draft mvc crud for: #CoffeeInvoice.
+```
+
+## API
+If you like MVC but you only need an API, this is how you can generate its boilerplate code:
+```smalltalk
+Ride draft api crud for: #CoffeeInvoice.
+```

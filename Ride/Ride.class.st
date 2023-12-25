@@ -26,6 +26,14 @@ Ride class >> defaultLogLevel [
 ]
 
 { #category : #actions }
+Ride class >> draft [
+
+	"Answers a new Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"
+
+	^ RideDoer new
+]
+
+{ #category : #actions }
 Ride class >> ensure [
 
 	"Goes to the file system and checks the src/config/ directory for settings that are needed to keep this image properly set for the app."
@@ -59,6 +67,12 @@ Ride class >> isDevelopment [
 Ride class >> isProduction [
 
 	^ self mode asLowercase = 'production'
+]
+
+{ #category : #testing }
+Ride class >> isUnderMaintenance [
+
+	^ (Smalltalk os environment at: #MW ifAbsent: [ 0 ]) asInteger = 1
 ]
 
 { #category : #actions }
