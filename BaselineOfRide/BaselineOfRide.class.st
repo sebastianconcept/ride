@@ -68,6 +68,7 @@ BaselineOfRide >> setUpDependencies: spec [
 	self zinc: spec.
 	self mustache: spec.
 	self teapot: spec.
+	self singularizePluralize: spec.
 	
 	"In Ride-Pharo we install some general extensions 
 	needed for Pharo, plus extensions for Zinc and Teapot."
@@ -81,11 +82,20 @@ BaselineOfRide >> setUpPackages: spec [
 	spec package: 'Ride' with: [ 
 		spec requires:
 			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'JSON' 'Ride-Pharo'
-			   'Mapless' ) ].
+			   'Mapless' 'SingularizePluralize' ) ].
 
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Tools' with: [ spec requires: #( 'Ride' ) ]
+]
+
+{ #category : #dependencies }
+BaselineOfRide >> singularizePluralize: spec [
+
+	spec baseline: 'SingularizePluralize' with: [ 
+		spec
+			loads: #( 'SingularizePluralize' );
+			repository: 'github://pharo-contributions/SingularizePluralize:v1.1/src' ]
 ]
 
 { #category : #dependencies }

@@ -35,7 +35,7 @@ RideMustacheHelper class >> defaultViewTemplateWithJs [
 { #category : #accessing }
 RideMustacheHelper class >> getPathFor: aSymbol [
 
-	^ Ride service locator viewsPath / aSymbol asSnakeCase
+	^ Ride service locator viewsPath / aSymbol asPlural asSnakeCase
 ]
 
 { #category : #actions }
