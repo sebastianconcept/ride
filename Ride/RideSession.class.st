@@ -8,7 +8,8 @@ Class {
 	#instVars : [
 		'id',
 		'presenters',
-		'webSocket'
+		'webSocket',
+		'auth'
 	],
 	#category : #'Ride-Core'
 }
@@ -35,6 +36,12 @@ RideSession class >> newWith: anId on: aController [
 RideSession >> add: routeKey presenter: aRidePresenter [
 
 	^ self presenters at: routeKey put: aRidePresenter
+]
+
+{ #category : #testing }
+RideSession >> hasAuth [
+
+	^ auth notNil
 ]
 
 { #category : #testing }

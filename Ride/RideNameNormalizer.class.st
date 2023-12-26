@@ -40,7 +40,7 @@ RideNameNormalizer class >> nameFromURISegment: aString suffixedWith: anotherStr
 		            (((self normalizedToSnakeCase: aString) substrings: '_') 
 			             collect: [ :e | e capitalized ]).
 	^ '{1}{2}' format: { 
-			  rootName asPlural.
+			  rootName.
 			  anotherString capitalized }
 ]
 
@@ -53,6 +53,20 @@ RideNameNormalizer class >> normalizedToSnakeCase: aString [
 ]
 
 { #category : #accessing }
+RideNameNormalizer class >> pluralNameFromURISegment: aString suffixedWith: anotherString [
+
+	"Camel cases and adds anotherString capitalized as suffix"
+
+	| rootName |
+	rootName := '' join:
+		            (((self normalizedToSnakeCase: aString) substrings: '_') 
+			             collect: [ :e | e capitalized ]).
+	^ '{1}{2}' format: { 
+			  rootName asPlural.
+			  anotherString capitalized }
+]
+
+{ #category : #accessing }
 RideNameNormalizer class >> presenterNameFromModelName: aString [
 
 	^ self presenterNameFromURISegment: aString
@@ -62,4 +76,10 @@ RideNameNormalizer class >> presenterNameFromModelName: aString [
 RideNameNormalizer class >> presenterNameFromURISegment: aString [
 
 	^ self nameFromURISegment: aString suffixedWith: 'Presenter'
+]
+
+{ #category : #accessing }
+RideNameNormalizer class >> presenterPluralNameFromURISegment: aString [
+
+	^ self pluralNameFromURISegment: aString suffixedWith: 'Presenter'
 ]

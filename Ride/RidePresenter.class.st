@@ -423,15 +423,20 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 	"use the convention of trying to instantiate
 	a presenter that matches aSymbol route in the templates/views directory
 	(and store it as child of this receiver).
+	It tries first in its singular version, then in its plural version.
 	If still none found, return nil."
 
-	| presenterName presenterClass |
-
-	presenterName := RideNameNormalizer presenterNameFromURISegment:
-		                 aSymbol.
+	| presenterClass presenterSingularName presenterPluralName |
+	presenterSingularName := RideNameNormalizer 
+		                         presenterNameFromURISegment: aSymbol.
+	presenterPluralName := RideNameNormalizer 
+		                       presenterPluralNameFromURISegment: aSymbol.
 	presenterClass := Smalltalk
-		                  at: presenterName asSymbol
-		                  ifAbsent: [ nil ].
+		                  at: presenterSingularName asSymbol
+		                  ifAbsent: [ 
+		                  Smalltalk
+			                  at: presenterPluralName asSymbol
+			                  ifAbsent: [ nil ] ].
 	^ presenterClass
 		  ifNotNil: [ subpresenters at: aSymbol put: presenterClass new ]
 		  ifNil: [ nil ]
