@@ -21,7 +21,7 @@ RideCRUDHelper class >> createMethodFor: aSymbol [
 	self redirectTo: #{2}_url notice: ''{1} was successfully created.''.
 ' format: { 
 			  aSymbol.
-			  (self getPluralOf: aSymbol) }
+			  aSymbol asLowercase asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -42,7 +42,7 @@ RideCRUDHelper class >> destroyMethodFor: aSymbol [
 				notice: ''{1} was successfully destroyed.'' ] ]	
 ' format: { 
 			  aSymbol.
-			  (self getPluralOf: aSymbol) }
+			  aSymbol asLowercase asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -56,7 +56,7 @@ RideCRUDHelper class >> editMethodFor: aSymbol [
 		model := {1} findId: (self currentRequest uri segments reversed second) ]
 ' format: { 
 			  aSymbol.
-			  (self getPluralOf: aSymbol) }
+			  aSymbol asLowercase asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -69,7 +69,7 @@ RideCRUDHelper class >> indexMethodFor: aSymbol [
 	model := {1} findAll
 ' format: { 
 			  aSymbol.
-			  (self getPluralOf: aSymbol) }
+			  aSymbol asLowercase asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -82,7 +82,7 @@ RideCRUDHelper class >> newModelMethodFor: aSymbol [
 	model := {1} new
 ' format: { 
 			  aSymbol.
-			  (self getPluralOf: aSymbol) }
+			  aSymbol asLowercase asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -96,7 +96,7 @@ RideCRUDHelper class >> showMethodFor: aSymbol [
 		model := {1} findId: (self currentRequest uri segments last) ]
 ' format: { 
 			  aSymbol.
-			  (self getPluralOf: aSymbol) }
+			  aSymbol asLowercase asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -113,7 +113,7 @@ RideCRUDHelper class >> updateMethodFor: aSymbol [
 	self redirectTo: #{2}_url notice: ''{1} was successfully updated.''
 ' format: { 
 			  aSymbol.
-			  (self getPluralOf: aSymbol) }
+			  aSymbol asLowercase asPlural asSnakeCase }
 ]
 
 { #category : #actions }

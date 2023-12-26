@@ -15,5 +15,14 @@ RideMVCCRUDHelper >> for: aSymbol [
 	self
 		addCRUDMethodsTo: (self controllerForModel: aSymbol)
 		for: aSymbol.
-	self mustacheTemplateFor: aSymbol
+
+	doer view mustache
+		js: js;
+		crudIndexFor: aSymbol;
+		crudModelFor: aSymbol;
+		crudShowFor: aSymbol;
+		crudNewModelFor: aSymbol;
+		crudEditFor: aSymbol;
+		crudFormFor: aSymbol;
+		yourself
 ]

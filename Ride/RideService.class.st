@@ -144,6 +144,13 @@ RideService >> buildJavaScriptAssetsFor: assetsMap [
 ]
 
 { #category : #actions }
+RideService >> databaseStart [
+
+	Ride log: 'Database starting...'.
+	self repository databaseStartOn: self
+]
+
+{ #category : #actions }
 RideService >> deleteJavaScriptAssets [
 
 	(self locator assetsFilePath / 'js') asFileReference
@@ -333,12 +340,25 @@ RideService >> setUp [
 	
 	Ride log: 'Assets setup...'.
 	self assetsSetUp.
+	
+]
+
+{ #category : #actions }
+RideService >> sqlLiteDatabaseStart [
+
+	self class databaseDirectory ensureCreateDirectory.
+	(RideModel allSubclasses reject: #isAbstract) do: [ :each | 
+		(self repository hasTableFor: each) ifFalse: [ 
+			self repository ensureTableFor: each ] ]
 ]
 
 { #category : #actions }
 RideService >> start [
 
 	self setUp.
+
+	Ride log: 'Database start...'.
+	self databaseStart.	
 	Ride log: ('{1} starting...' format: { self class name }).
 	self maitre start.
 	self server start.
