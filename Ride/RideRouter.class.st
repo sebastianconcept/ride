@@ -237,7 +237,7 @@ RideRouter >> getBasicHandlerDo: aBlock [
 	  session := self getSessionFrom: req.
 	  [ RideCurrentSession value: session during: aBlock ]
 		  on: RideMissingPresenterError
-		  do: [ :x | "404" self halt ] ]
+		  do: [ :x | "404" RideNotFoundError signal: 'Missing presenter' ] ]
 ]
 
 { #category : #accessing }

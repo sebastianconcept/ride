@@ -426,6 +426,7 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 	If still none found, return nil."
 
 	| presenterName presenterClass |
+
 	presenterName := RideNameNormalizer presenterNameFromURISegment:
 		                 aSymbol.
 	presenterClass := Smalltalk

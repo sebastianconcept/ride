@@ -93,7 +93,7 @@ RideMustacheHelper class >> indexMustacheTemplateContent: aSymbol [
 
 <a href="/{4}">New {3}</a>
 ' format: { 
-			  aSymbol.
+			  aSymbol asPlural.
 			  aSymbol asPlural uncapitalized.
 			  aSymbol uncapitalized.
 			  aSymbol asPlural asSnakeCase }

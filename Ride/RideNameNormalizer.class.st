@@ -40,7 +40,7 @@ RideNameNormalizer class >> nameFromURISegment: aString suffixedWith: anotherStr
 		            (((self normalizedToSnakeCase: aString) substrings: '_') 
 			             collect: [ :e | e capitalized ]).
 	^ '{1}{2}' format: { 
-			  rootName.
+			  rootName asPlural.
 			  anotherString capitalized }
 ]
 

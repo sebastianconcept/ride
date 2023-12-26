@@ -89,7 +89,8 @@ RideSession >> presenterForRoute: routeName [
 		  | presenter |
 		  presenter := routeName = '/'
 			               ifTrue: [ self rootPresenter ]
-			               ifFalse: [ self rootPresenter childAt: routeName ].
+			               ifFalse: [ 
+			               self rootPresenter childAt: routeName asSingular ].
 
 		  presenter ifNil: [ 
 			  RideMissingPresenterError signal:

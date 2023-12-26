@@ -400,15 +400,21 @@ RideServer >> setExceptionHandlers [
 
 	self teapot
 		exception: RideNotFoundError -> [ :ex :req | 
+				| templateModel |
 				response := TeaResponse notFound.
 				Ride log: ex printString level: #ERROR.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
+				templateModel := Ride service locate sharedTemplates copy
+					                 at: #status put: response code asString;
+					                 yourself.
+				Ride isDevelopment ifTrue: [ 
+					templateModel
+						at: #error
+						put: { (#messageText -> ex messageText) } asDictionary ].
 				response body: (ex
-							 renderHtmlWith:
-								 { (#status -> response code) } asDictionary asJsonObject
-							 on:
-								 (Ride service locate sharedTemplates at:
-										  response code asString)).
+						 renderHtmlWith: templateModel
+						 on:
+						 (Ride service locate sharedTemplates at: response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;
