@@ -8,12 +8,6 @@ Class {
 }
 
 { #category : #querying }
-RideModel class >> findId: anId [
-
-	^ self getRepository find: self atId: anId
-]
-
-{ #category : #querying }
 RideModel class >> getRepository [
 
 	^ Ride service repository
