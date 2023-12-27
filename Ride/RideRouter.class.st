@@ -259,7 +259,7 @@ RideRouter >> handleHTMLHomePagePOST [
 
 	"Answers the html produced with the controller that is set as root."
 
-	| response session request sessionCookie |
+	| response session request sessionCookie presenter content |
 	^ self getBasicHandlerDo: [ 
 		  request := RideCurrentRequest value.
 		  session := RideCurrentSession value.
@@ -268,7 +268,12 @@ RideRouter >> handleHTMLHomePagePOST [
 		  response headers at: 'Set-Cookie' put: sessionCookie fullString.
 		  RideCurrentResponse
 			  value: response
-			  during: [ response body: session rootPresenter htmlOnPOST ].
+			  during: [ "response body: session rootPresenter htmlOnPOST"
+				  presenter := session presenterForRoute: request uri.
+				  content := (request headers includesKey: 'X-Ride-AJAX')
+					             ifTrue: [ presenter htmlOnGET ]
+					             ifFalse: [ presenter htmlPageOnGET ].
+				  response body: content ].
 		  response ]
 ]
 

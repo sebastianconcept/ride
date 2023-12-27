@@ -38,6 +38,18 @@ RideSession >> add: routeKey presenter: aRidePresenter [
 	^ self presenters at: routeKey put: aRidePresenter
 ]
 
+{ #category : #accessing }
+RideSession >> auth [
+
+	^ auth
+]
+
+{ #category : #accessing }
+RideSession >> auth: anObject [
+
+	auth := anObject
+]
+
 { #category : #testing }
 RideSession >> hasAuth [
 
@@ -90,7 +102,10 @@ RideSession >> onWebSocketMessage: aJsonObject [
 ]
 
 { #category : #accessing }
-RideSession >> presenterForRoute: routeName [
+RideSession >> presenterForRoute: uri [
+
+	| routeName |
+	routeName := uri asString.
 
 	^ self presenters at: routeName ifAbsentPut: [ 
 		  | presenter |
