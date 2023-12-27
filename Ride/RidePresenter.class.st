@@ -168,6 +168,17 @@ RidePresenter >> createViews [
 ]
 
 { #category : #accessing }
+RidePresenter >> currentAction [
+
+	"Returns the selector corresponding to the action interpreted by the receiver. 
+	In Ride, this behavior can be overridden, but by default, URIs are interpreted 
+	such that their first segment determines the targeted presenter, 
+	and the second segment determines the corresponding selector to execute."
+
+	^ self currentRequest uri segments second asSymbol
+]
+
+{ #category : #accessing }
 RidePresenter >> currentRequest [
 
 	^ RideCurrentRequest value

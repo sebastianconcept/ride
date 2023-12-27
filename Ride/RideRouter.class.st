@@ -17,7 +17,8 @@ Class {
 	#instVars : [
 		'sessionGetter',
 		'domain',
-		'rootPresenterGetter'
+		'rootPresenterGetter',
+		'strategy'
 	],
 	#category : #'Ride-Core'
 }
@@ -145,10 +146,7 @@ RideRouter >> baseUrl [
 { #category : #accessing }
 RideRouter >> domain [
 
-	^ domain ifNil: [ 
-		  domain := OSEnvironment current
-			            at: 'DOMAIN'
-			            ifAbsent: [ 'localhost' ] ]
+	^ domain ifNil: [ self initializeDomain ]
 ]
 
 { #category : #actions }
@@ -346,6 +344,14 @@ RideRouter >> hasSessionCookie: request [
 	^ (request cookies
 		   detect: [ :each | each name = 'id' ]
 		   ifNone: [ nil ]) notNil
+]
+
+{ #category : #initialization }
+RideRouter >> initializeDomain [
+
+	^ domain := Smalltalk os environment
+		            at: 'DOMAIN'
+		            ifAbsent: [ 'localhost' ]
 ]
 
 { #category : #initialization }

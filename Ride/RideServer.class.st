@@ -15,6 +15,7 @@ Class {
 	#name : #RideServer,
 	#superclass : #Object,
 	#instVars : [
+		'settings',
 		'teapot',
 		'validator',
 		'maitre',
@@ -60,6 +61,18 @@ RideServer class >> defaultHttpBind [
 { #category : #accessing }
 RideServer class >> defaultHttpPort [
 	^ 3004
+]
+
+{ #category : #accessing }
+RideServer class >> defaultMAXAGE [
+
+	^ Smalltalk os environment at: 'MAXAGE' ifAbsent: [ 60 * 60 ]
+]
+
+{ #category : #accessing }
+RideServer class >> defaultSMAXAGE [
+
+	^ Smalltalk os environment at: 'SMAXAGE' ifAbsent: [ 120 * 60 ] "for the CDN"
 ]
 
 { #category : #accessing }
@@ -220,6 +233,12 @@ RideServer >> initialize [
 ]
 
 { #category : #initialization }
+RideServer >> initializeSettings [
+
+	^ settings := Dictionary new
+]
+
+{ #category : #initialization }
 RideServer >> initializeTeapot [
 
 	^ teapot := self newHttpServer
@@ -350,8 +369,12 @@ RideServer >> setAccessControlAllowOriginFilter [
 RideServer >> setCacheControlFilter [
 
 	| maxage smaxage |
-	maxage := OSEnvironment current at: 'MAXAGE' ifAbsent: [ 60 * 60 ]. "for the browser"
-	smaxage := OSEnvironment current at: 'SMAXAGE' ifAbsent: [ 120 * 60 ]. "for the CDN"
+	maxage := self settings
+		          at: 'MAXAGE'
+		          ifAbsentPut: [ self class defaultMAXAGE ]. "for the browser"
+	smaxage := self settings
+		           at: 'SMAXAGE'
+		           ifAbsentPut: [ self class defaultSMAXAGE ]. "for the CDN"
 	self teapot
 		after: '/*' -> [ :req :resp | 
 				resp headers
@@ -446,13 +469,25 @@ RideServer >> setExceptionHandlers [
 RideServer >> setFilters [
 
 	self teapot before: '*' -> [ :request | 
-		Ride isUnderMaintenance ifTrue: [ RideMaintenanceException signal ] ]
+		Ride isMaintenance ifTrue: [ RideMaintenanceException signal ] ]
 ]
 
 { #category : #actions }
 RideServer >> setRoutes [
 
 	Ride service router setRoutesOn: self
+]
+
+{ #category : #accessing }
+RideServer >> settings [
+
+	^ settings ifNil: [ self initializeSettings ]
+]
+
+{ #category : #accessing }
+RideServer >> settings: anObject [
+
+	settings := anObject
 ]
 
 { #category : #actions }

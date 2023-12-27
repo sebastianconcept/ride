@@ -138,6 +138,19 @@ RideSession >> rootPresenter [
 	^ self presenters at: #/ ifAbsent: [ nil ]
 ]
 
+{ #category : #actions }
+RideSession >> signOut [
+
+	auth := nil
+]
+
+{ #category : #actions }
+RideSession >> signOutAndRedirectTo: url [
+
+	auth := nil.
+	(TeaAbort response: (TeaResponse redirect location: url)) signal
+]
+
 { #category : #accessing }
 RideSession >> webSocket [
 

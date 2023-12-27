@@ -6,7 +6,8 @@ Class {
 	#superclass : #Object,
 	#classInstVars : [
 		'logLevelSymbols',
-		'service'
+		'service',
+		'isMaintenance'
 	],
 	#category : #'Ride-Core'
 }
@@ -42,6 +43,13 @@ Ride class >> ensure [
 ]
 
 { #category : #initialization }
+Ride class >> initializeIsMaintenance [
+
+	^ isMaintenance := (Smalltalk os environment at: #MW ifAbsent: [ 0 ])
+		                   asInteger = 1
+]
+
+{ #category : #initialization }
 Ride class >> initializeLogLevelSymbols [
 
 	^ logLevelSymbols := { 
@@ -64,15 +72,15 @@ Ride class >> isDevelopment [
 ]
 
 { #category : #testing }
-Ride class >> isProduction [
+Ride class >> isMaintenance [
 
-	^ self mode asLowercase = 'production'
+	^ isMaintenance ifNil: [ self initializeIsMaintenance ]
 ]
 
 { #category : #testing }
-Ride class >> isUnderMaintenance [
+Ride class >> isProduction [
 
-	^ (Smalltalk os environment at: #MW ifAbsent: [ 0 ]) asInteger = 1
+	^ self mode asLowercase = 'production'
 ]
 
 { #category : #actions }
@@ -145,7 +153,8 @@ Ride class >> reset [
 	service ifNotNil: [ 
 		released := service.
 		service := nil ].
-	logLevelSymbols := nil
+	logLevelSymbols := nil.
+	isMaintenance := nil
 ]
 
 { #category : #actions }
