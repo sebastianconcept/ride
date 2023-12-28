@@ -28,7 +28,7 @@ Class {
 { #category : #accessing }
 RideServer class >> databaseName [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #DB_NAME
 		  ifAbsent: [ self defaultDatabaseName ]
 ]
@@ -36,9 +36,9 @@ RideServer class >> databaseName [
 { #category : #accessing }
 RideServer class >> debugMode [
 
-	^ (OSEnvironment current
-		  at: #HTTP_DEBUG
-		  ifAbsent: [ self defaultDebugMode ]) asInteger > 0
+	^ (Smalltalk os environment
+		   at: #HTTP_DEBUG
+		   ifAbsent: [ self defaultDebugMode ]) asInteger > 0
 ]
 
 { #category : #accessing }
@@ -83,14 +83,14 @@ RideServer class >> defaultWebSocketPort [
 { #category : #testing }
 RideServer class >> hasWebSocket [
 
-	^ (OSEnvironment current at: #WEB_SOCKET_PORT ifAbsent: [ 0 ])
+	^ (Smalltalk os environment at: #WEB_SOCKET_PORT ifAbsent: [ 0 ])
 		  asInteger > 0
 ]
 
 { #category : #accessing }
 RideServer class >> httpBind [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #HTTP_BIND
 		  ifAbsent: [ self defaultHttpBind ]
 ]
@@ -98,9 +98,9 @@ RideServer class >> httpBind [
 { #category : #accessing }
 RideServer class >> httpPort [
 
-	^ (OSEnvironment current
-		  at: #HTTP_PORT
-		  ifAbsent: [ self defaultHttpPort ]) asInteger
+	^ (Smalltalk os environment
+		   at: #HTTP_PORT
+		   ifAbsent: [ self defaultHttpPort ]) asInteger
 ]
 
 { #category : #accessing }
@@ -193,9 +193,9 @@ RideServer class >> version [
 { #category : #accessing }
 RideServer class >> webSockerPort [
 
-	^ (OSEnvironment current
-		  at: #WEB_SOCKET_PORT
-		  ifAbsent: [ self defaultWebSocketPort ]) asInteger
+	^ (Smalltalk os environment
+		   at: #WEB_SOCKET_PORT
+		   ifAbsent: [ self defaultWebSocketPort ]) asInteger
 ]
 
 { #category : #accessing }

@@ -9,7 +9,8 @@ Class {
 		'id',
 		'presenters',
 		'webSocket',
-		'auth'
+		'auth',
+		'cache'
 	],
 	#category : #'Ride-Core'
 }
@@ -50,6 +51,18 @@ RideSession >> auth: anObject [
 	auth := anObject
 ]
 
+{ #category : #accessing }
+RideSession >> cache [
+
+	^ cache ifNil: [ self initializeCache ]
+]
+
+{ #category : #accessing }
+RideSession >> cache: anObject [
+
+	cache := anObject
+]
+
 { #category : #testing }
 RideSession >> hasAuth [
 
@@ -72,6 +85,12 @@ RideSession >> id [
 RideSession >> id: anObject [
 
 	id := anObject
+]
+
+{ #category : #initialization }
+RideSession >> initializeCache [
+
+	^ cache := TTLCache new
 ]
 
 { #category : #initialization }

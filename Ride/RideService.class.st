@@ -13,7 +13,8 @@ Class {
 		'sessions',
 		'maitre',
 		'repository',
-		'locator'
+		'locator',
+		'cache'
 	],
 	#category : #'Ride-Core'
 }
@@ -143,6 +144,18 @@ RideService >> buildJavaScriptAssetsFor: assetsMap [
 	Ride log: 'JavaScript assets ready.' level: #INFO
 ]
 
+{ #category : #accessing }
+RideService >> cache [
+
+	^ cache ifNil: [ self initializeCache ]
+]
+
+{ #category : #accessing }
+RideService >> cache: aCache [
+
+	cache := aCache
+]
+
 { #category : #actions }
 RideService >> databaseStart [
 
@@ -156,6 +169,12 @@ RideService >> deleteJavaScriptAssets [
 	(self locator assetsFilePath / 'js') asFileReference
 		ensureDeleteAllChildren.
 	Ride log: 'JavaScript assets deleted.' level: #INFO
+]
+
+{ #category : #initialization }
+RideService >> initializeCache [
+
+	^ cache := TTLCache new
 ]
 
 { #category : #initialization }
@@ -380,5 +399,5 @@ RideService >> stop [
 { #category : #accessing }
 RideService >> version [
 
-	^ OSEnvironment current at: 'VERSION' ifAbsent: [ 'v?.?.?' ]
+	^ Smalltalk os environment at: 'VERSION' ifAbsent: [ 'v?.?.?' ]
 ]

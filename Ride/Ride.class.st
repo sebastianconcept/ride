@@ -106,7 +106,7 @@ Ride class >> log: aString level: aSymbol [
 { #category : #accessing }
 Ride class >> logLevel [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: 'LOGLEVEL'
 		  ifAbsent: [ self defaultLogLevel ]
 ]
@@ -126,7 +126,7 @@ Ride class >> logLevelSymbols: anObject [
 { #category : #accessing }
 Ride class >> mode [
 
-	^ OSEnvironment current at: #MODE ifAbsent: [ 
+	^ Smalltalk os environment at: #MODE ifAbsent: [ 
 		  RideError signal:
 			  'The environment needs to have defined the MODE env var as production, development or debug' ]
 ]

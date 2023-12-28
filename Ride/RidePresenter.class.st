@@ -459,6 +459,18 @@ RidePresenter >> router [
 	^ Ride service router
 ]
 
+{ #category : #accessing }
+RidePresenter >> serviceCache [
+
+	^ Ride service cache
+]
+
+{ #category : #accessing }
+RidePresenter >> sessionCache [
+
+	^ self currentSession cache
+]
+
 { #category : #initialization }
 RidePresenter >> setObservers [
 ]

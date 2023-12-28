@@ -26,7 +26,7 @@ Class {
 { #category : #accessing }
 RideRouter class >> baseFilePath [
 
-	^ Path from: (OSEnvironment current
+	^ Path from: (Smalltalk os environment
 			   at: #RIDE_BASE_FILE_PATH
 			   ifAbsent: [ self defaultBaseFilePathString ])
 ]
@@ -34,7 +34,7 @@ RideRouter class >> baseFilePath [
 { #category : #accessing }
 RideRouter class >> baseUrl [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #RIDE_BASE_URL
 		  ifAbsent: [ self defaultBaseUrl ]
 ]
@@ -84,7 +84,7 @@ RideRouter class >> publicDirectory [
 { #category : #accessing }
 RideRouter class >> publicDirectoryString [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #RIDE_PUBLIC_BASE_PATH
 		  ifAbsent: [ self defaultPublicBasePath ]
 ]
@@ -92,7 +92,7 @@ RideRouter class >> publicDirectoryString [
 { #category : #accessing }
 RideRouter class >> publicPathString [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #RIDE_PUBLIC_BASE_URL
 		  ifAbsent: [ self defaultPublicBaseUrl ]
 ]
