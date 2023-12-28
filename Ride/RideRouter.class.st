@@ -112,7 +112,7 @@ RideRouter class >> uploadsBaseDirectory [
 { #category : #accessing }
 RideRouter class >> uploadsBaseDirectoryString [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #RIDE_UPLOAD_BASE_PATH
 		  ifAbsent: [ self defaultUploadsBasePath ]
 ]

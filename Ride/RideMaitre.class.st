@@ -15,7 +15,7 @@ Class {
 { #category : #accessing }
 RideMaitre class >> assetsDirectory [
 
-	^ (OSEnvironment current
+	^ (Smalltalk os environment
 		   at: 'ASSETS_PATH'
 		   ifAbsent: [ Smalltalk imageDirectory / 'app' / 'assets' ])
 		  asFileReference
