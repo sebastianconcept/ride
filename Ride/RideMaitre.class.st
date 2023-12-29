@@ -15,6 +15,8 @@ Class {
 { #category : #accessing }
 RideMaitre class >> assetsDirectory [
 
+	self deprecated: 'use locator'.
+	self halt.
 	^ (Smalltalk os environment
 		   at: 'ASSETS_PATH'
 		   ifAbsent: [ Smalltalk imageDirectory / 'app' / 'assets' ])

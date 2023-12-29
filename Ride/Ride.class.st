@@ -83,6 +83,12 @@ Ride class >> isProduction [
 	^ self mode asLowercase = 'production'
 ]
 
+{ #category : #accessing }
+Ride class >> locator [
+
+	^ RideResourceLocator
+]
+
 { #category : #actions }
 Ride class >> log: aString [
 
@@ -154,7 +160,8 @@ Ride class >> reset [
 		released := service.
 		service := nil ].
 	logLevelSymbols := nil.
-	isMaintenance := nil
+	isMaintenance := nil.
+	RideDeclarativeRouting reset.
 ]
 
 { #category : #actions }
@@ -163,12 +170,6 @@ Ride class >> restart [
 	self
 		stop;
 		start
-]
-
-{ #category : #actions }
-Ride class >> scaffold [
-
-	^ RideScaffold 
 ]
 
 { #category : #accessing }

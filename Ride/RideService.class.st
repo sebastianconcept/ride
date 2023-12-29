@@ -9,12 +9,12 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'server',
-		'router',
 		'sessions',
 		'maitre',
 		'repository',
 		'locator',
-		'cache'
+		'cache',
+		'sessionGetter'
 	],
 	#category : #'Ride-Core'
 }
@@ -27,7 +27,7 @@ RideService class >> getSessionGetter [
 	  sessionId := self sessionIdFromCookieOrNewFrom: request.
 	  Ride service sessions
 		  at: sessionId
-		  ifAbsentPut: [ self newSessionWith: sessionId ] ]
+		  ifAbsentPut: [ self newSessionWith: sessionId url: request url ] ]
 ]
 
 { #category : #accessing }
@@ -49,9 +49,28 @@ RideService class >> log: aString level: aSymbol [
 ]
 
 { #category : #actions }
+RideService class >> newResetSessionCookie [
+
+	| expires cookieString domain |
+	domain := Ride service server router domain.
+	expires := ZnUtils httpDate: DateAndTime now - 10 years.
+	cookieString := 'id={1}; expires={2}; path=/; domain={3}' format: { 
+			                String new.
+			                expires.
+			                domain }.
+	^ ZnCookie fromString: cookieString for: ('http://' , domain) asZnUrl
+]
+
+{ #category : #actions }
 RideService class >> newSessionId [
 
 	^ UUID new asString36
+]
+
+{ #category : #accessing }
+RideService class >> newSessionWith: sessionId url: anUrl [
+
+	self subclassResponsibility
 ]
 
 { #category : #accessing }
@@ -75,11 +94,12 @@ RideService class >> sessionIdFromCookieOrNewFrom: aRequest [
 RideService class >> setUp [
 
 	"Customizations before starting the service."
-		
-	self log: 'Router setup...'.
-	Ride service router
+
+	Ride service
 		sessionGetter: self getSessionGetter;
-		yourself
+		yourself.
+
+	self log: 'Router setup...'
 ]
 
 { #category : #actions }
@@ -171,6 +191,12 @@ RideService >> deleteJavaScriptAssets [
 	Ride log: 'JavaScript assets deleted.' level: #INFO
 ]
 
+{ #category : #accessing }
+RideService >> getSessionFrom: request [
+
+	^ self sessionGetter value: request
+]
+
 { #category : #initialization }
 RideService >> initializeCache [
 
@@ -196,12 +222,6 @@ RideService >> initializeRepository [
 ]
 
 { #category : #initialization }
-RideService >> initializeRouter [
-
-	^ router := RideRouter new
-]
-
-{ #category : #initialization }
 RideService >> initializeServer [
 
 	^ server := RideServer new
@@ -222,7 +242,7 @@ RideService >> invalidateSession: aRideSession [
 	"Reset the session cookie"
 	RideCurrentResponse value headers
 		at: 'Set-Cookie'
-		put: Ride service router newResetSessionCookie fullString
+		put: Ride service class newResetSessionCookie fullString
 ]
 
 { #category : #accessing }
@@ -301,10 +321,6 @@ RideService >> reset [
 		| released |
 		released := server.
 		server := nil ].
-	router ifNotNil: [ 
-		| released |
-		released := router.
-		router := nil ].
 	locator ifNotNil: [ 
 		| released |
 		released := locator.
@@ -313,18 +329,6 @@ RideService >> reset [
 		| released |
 		released := sessions.
 		sessions := nil ]
-]
-
-{ #category : #accessing }
-RideService >> router [
-
-	^ router ifNil: [ self initializeRouter ]
-]
-
-{ #category : #accessing }
-RideService >> router: anObject [
-
-	router := anObject
 ]
 
 { #category : #accessing }
@@ -337,6 +341,20 @@ RideService >> server [
 RideService >> server: anObject [
 
 	server := anObject
+]
+
+{ #category : #accessing }
+RideService >> sessionGetter [
+
+	^ sessionGetter ifNil: [ 
+		  RideError signal:
+			  'This service has not definedd its required session getter' ]
+]
+
+{ #category : #accessing }
+RideService >> sessionGetter: anObject [
+
+	sessionGetter := anObject
 ]
 
 { #category : #accessing }

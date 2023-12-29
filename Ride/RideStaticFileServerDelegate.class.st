@@ -1,7 +1,10 @@
+"
+probably deprecated
+"
 Class {
 	#name : #RideStaticFileServerDelegate,
 	#superclass : #ZnStaticFileServerDelegate,
-	#category : #'Ride-Core'
+	#category : #'Ride-HTTP'
 }
 
 { #category : #public }

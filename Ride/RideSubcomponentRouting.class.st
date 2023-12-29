@@ -15,7 +15,7 @@ To be processed as reaching the root controller and asking for its child 'jobs' 
 
 "
 Class {
-	#name : #RideRouterURISegmentsAsSubComponent,
+	#name : #RideSubcomponentRouting,
 	#superclass : #RideRouterStrategy,
-	#category : #'Ride-Core'
+	#category : #'Ride-HTTP'
 }

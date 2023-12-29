@@ -323,6 +323,14 @@ RidePresenter >> htmlPageOnGET [
 	^ self htmlPage 
 ]
 
+{ #category : #actions }
+RidePresenter >> index [
+
+	"Returns the HTML of the receiver rendered as a full web page."
+
+	^ self htmlPage
+]
+
 { #category : #initialization }
 RidePresenter >> initialize [
 
@@ -363,6 +371,26 @@ RidePresenter >> model: aModel [
 
 	model := aModel.
 	self setObservers	
+]
+
+{ #category : #actions }
+RidePresenter >> onAboutToRespond [
+
+	"no-op is the default"
+]
+
+{ #category : #actions }
+RidePresenter >> onAfterAction [
+
+	"no-op is the default"
+
+	
+]
+
+{ #category : #actions }
+RidePresenter >> onBeforeAction [
+
+	"no-op is the default"
 ]
 
 { #category : #accessing }
@@ -443,10 +471,10 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 	presenterPluralName := RideNameNormalizer 
 		                       presenterPluralNameFromURISegment: aSymbol.
 	presenterClass := Smalltalk
-		                  at: presenterSingularName asSymbol
+		                  at: presenterPluralName asSymbol
 		                  ifAbsent: [ 
 		                  Smalltalk
-			                  at: presenterPluralName asSymbol
+			                  at: presenterSingularName asSymbol
 			                  ifAbsent: [ nil ] ].
 	^ presenterClass
 		  ifNotNil: [ subpresenters at: aSymbol put: presenterClass new ]
@@ -501,16 +529,16 @@ RidePresenter >> templateModel [
 	"Answers the model used for the template that 
 	will render only the HTML of this component (not the full page)."
 
-	| template presenterJsAssets indexJs |
+	| template presenterJsAssets |
 	template := model asTemplateModel.
 	presenterJsAssets := self locate assetsMap js at:
 		                     self class getNormalizedModelName.
-	^ (presenterJsAssets notNil and: [ 
-		   indexJs := presenterJsAssets at: #index.
-		   indexJs notNil ])
+	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
 		  ifFalse: [ template ]
 		  ifTrue: [ 
-			  template
-				  at: #indexJs put: ('/assets/js/{1}' format: { indexJs });
-				  yourself ]
+			  presenterJsAssets keysAndValuesDo: [ :key :value | 
+				  template
+					  at: ('{1}Js' format: { key })
+					  put: ('/assets/js/{1}' format: { value }) ].
+			  template ]
 ]

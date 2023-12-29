@@ -7,7 +7,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'presenters',
+		'initialUrl',
 		'webSocket',
 		'auth',
 		'cache'
@@ -15,22 +15,10 @@ Class {
 	#category : #'Ride-Core'
 }
 
-{ #category : #accessing }
-RideSession class >> defaultController [
-
-	^ nil
-]
-
 { #category : #'instance creation' }
-RideSession class >> newWith: anId [
+RideSession class >> newWith: anId url: anUrl [
 
-	^ self newWith: anId on: self defaultController
-]
-
-{ #category : #'instance creation' }
-RideSession class >> newWith: anId on: aController [
-
-	^ self new initializeWith: anId on: aController
+	^ self new initializeWith: anId url: anUrl
 ]
 
 { #category : #actions }
@@ -87,6 +75,26 @@ RideSession >> id: anObject [
 	id := anObject
 ]
 
+{ #category : #accessing }
+RideSession >> initialUrl [
+
+	^ initialUrl
+]
+
+{ #category : #accessing }
+RideSession >> initialUrl: anUrl [
+
+	| excluded |
+	excluded := #( 'sign-in' 'sign-out' ).
+
+	(anUrl segments size > 0 and: [ 
+		 Ride log: 'initial URL ' , anUrl asString.
+		 (excluded includes: anUrl segments first) not ]) ifTrue: [ 
+		Ride log:
+			'Setting initial URL: ' , anUrl asString , ' in ' , self id.
+		initialUrl := anUrl ]
+]
+
 { #category : #initialization }
 RideSession >> initializeCache [
 
@@ -94,18 +102,12 @@ RideSession >> initializeCache [
 ]
 
 { #category : #initialization }
-RideSession >> initializePresenters [
-
-	^ presenters := Dictionary new
-]
-
-{ #category : #initialization }
-RideSession >> initializeWith: anId on: aPresenter [
+RideSession >> initializeWith: anId url: anUrl [
 
 	super initialize.
 
 	id := anId.
-	self add: #/ presenter: aPresenter
+	self initialUrl: anUrl
 ]
 
 { #category : #accessing }
@@ -118,31 +120,6 @@ RideSession >> locate [
 RideSession >> onWebSocketMessage: aJsonObject [
 
 	
-]
-
-{ #category : #accessing }
-RideSession >> presenterForRoute: uri [
-
-	| routeName |
-	routeName := uri asString.
-
-	^ self presenters at: routeName ifAbsentPut: [ 
-		  | presenter |
-		  presenter := routeName = '/'
-			               ifTrue: [ self rootPresenter ]
-			               ifFalse: [ 
-			               self rootPresenter childAt: routeName asSingular ].
-
-		  presenter ifNil: [ 
-			  RideMissingPresenterError signal:
-				  ('{1} not found' format: { routeName }) ].
-		  presenter ]
-]
-
-{ #category : #accessing }
-RideSession >> presenters [
-
-	^ presenters ifNil: [ self initializePresenters ]
 ]
 
 { #category : #actions }
@@ -167,6 +144,7 @@ RideSession >> signOut [
 RideSession >> signOutAndRedirectTo: url [
 
 	auth := nil.
+	Ride service invalidateSession: self.
 	(TeaAbort response: (TeaResponse redirect location: url)) signal
 ]
 

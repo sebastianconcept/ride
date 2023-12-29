@@ -16,6 +16,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'settings',
+		'router',
 		'teapot',
 		'validator',
 		'maitre',
@@ -233,6 +234,12 @@ RideServer >> initialize [
 ]
 
 { #category : #initialization }
+RideServer >> initializeRouter [
+
+	^ router := RideRouter new
+]
+
+{ #category : #initialization }
 RideServer >> initializeSettings [
 
 	^ settings := Dictionary new
@@ -279,7 +286,9 @@ RideServer >> newHttpServer [
 			             (#port -> self class httpPort).
 			             (#debugMode -> self class debugMode).
 			             (#bindAddress
-			              -> (NetNameResolver addressForName: self class httpBind)) }.
+			              ->
+			              (NetNameResolver addressForName: self class httpBind)).
+			             (#notFoundHandlerClass -> RideNotFoundTeaHandler) }.
 	((newServer instVarNamed: 'compositeRouter') instVarNamed:
 		 'errorhandlers') removeLast.
 	^ newServer
@@ -340,6 +349,12 @@ RideServer >> reset [
 		released := teapot.
 		teapot := nil.
 		released stop ]
+]
+
+{ #category : #accessing }
+RideServer >> router [
+
+	^ router ifNil: [ self initializeRouter ]
 ]
 
 { #category : #actions }
@@ -475,7 +490,10 @@ RideServer >> setFilters [
 { #category : #actions }
 RideServer >> setRoutes [
 
-	Ride service router setRoutesOn: self
+	self setFilters.
+	self router setRoutesOn: self.
+	self setExceptionHandlers.
+	self setCacheControlFilter
 ]
 
 { #category : #accessing }
@@ -493,9 +511,7 @@ RideServer >> settings: anObject [
 { #category : #actions }
 RideServer >> start [
 
-	self setFilters.
 	self setRoutes.
-	self setExceptionHandlers.
 	self class hasWebSocket ifTrue: [ 
 		self webSocket start.
 		Ride log: ('WebSocket started at {1}:{2}' format: { 
