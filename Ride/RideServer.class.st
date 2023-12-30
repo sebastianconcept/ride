@@ -242,7 +242,7 @@ RideServer >> initializeRouter [
 { #category : #initialization }
 RideServer >> initializeSettings [
 
-	^ settings := Dictionary new
+	^ settings := SmallDictionary new
 ]
 
 { #category : #initialization }
@@ -470,7 +470,7 @@ RideServer >> setExceptionHandlers [
 							 renderHtmlWith:
 								 { (#status -> response code) } asDictionary asJsonObject
 							 on:
-								 (Ride service locate sharedTemplates at:
+								 (Ride resource sharedTemplates at:
 										  response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';

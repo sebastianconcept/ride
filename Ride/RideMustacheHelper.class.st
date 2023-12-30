@@ -70,7 +70,7 @@ RideMustacheHelper class >> formMustacheTemplateContent: aSymbol [
 { #category : #accessing }
 RideMustacheHelper class >> getPathFor: aSymbol [
 
-	^ Ride service locator viewsPath / aSymbol asPlural asSnakeCase
+	^ Ride resource viewsDirectory / aSymbol asPlural asSnakeCase
 ]
 
 { #category : #accessing }

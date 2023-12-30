@@ -51,7 +51,7 @@ RidePolyglot class >> dictionaries [
 { #category : #initialization }
 RidePolyglot class >> initializeDictionaries [
 
-	^ dictionaries := Dictionary new
+	^ dictionaries := SmallDictionary new
 ]
 
 { #category : #actions }

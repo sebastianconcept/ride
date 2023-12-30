@@ -118,7 +118,7 @@ RidePresenter >> ajaxReactionAndRender [
 { #category : #accessing }
 RidePresenter >> applicationTemplate [
 
-	^ Ride service locate templates layouts application
+	^ Ride resource templates layouts application
 ]
 
 { #category : #rendering }
@@ -160,7 +160,7 @@ RidePresenter >> children [
 { #category : #initialization }
 RidePresenter >> createViews [
 
-	views := Ride service locate templatesFor: self.
+	views := Ride resource templatesFor: self.
 	views ifNil: [ 
 		RideMissingTemplateError signal:
 			('{1} template not found' format: { self class name }) ].
@@ -343,7 +343,7 @@ RidePresenter >> initialize [
 { #category : #initialization }
 RidePresenter >> initializeFactory [
 
-	^ factory := Dictionary new
+	^ factory := SmallDictionary new
 ]
 
 { #category : #accessing }
@@ -440,7 +440,7 @@ RidePresenter >> partials [
 
 	"In addition to that, all shared partials are made available to the presenter"
 	^ partials
-		  addAll: self locate sharedTemplates;
+		  addAll: Ride resource sharedTemplates;
 		  yourself
 ]
 
@@ -531,8 +531,9 @@ RidePresenter >> templateModel [
 
 	| template presenterJsAssets |
 	template := model asTemplateModel.
-	presenterJsAssets := self locate assetsMap js at:
-		                     self class getNormalizedModelName.
+	presenterJsAssets := Ride resource assetsMap js
+		                     at: self class getNormalizedModelName
+		                     ifAbsent: [ nil ].
 	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
 		  ifFalse: [ template ]
 		  ifTrue: [ 

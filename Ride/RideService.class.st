@@ -106,14 +106,14 @@ RideService class >> setUp [
 RideService >> assetsSetUp [
 
 	| map jsPath |
-	map := self locate readAssetsMap.
+	map := Ride resource assetsMap.
 	map ifEmpty: [ 
 		Ride log: 'Assets map not found.' level: #WARNING.
 		^ self rebuildJavaScriptAssets ].
 
 	Ride log: 'JavaScript assets map found.'.
 
-	jsPath := (self locate assetsFilePath / 'js') asFileReference
+	jsPath := (Ride resource assetsFileDirectory / 'js') asFileReference
 		          ensureCreateDirectory.
 	jsPath entries isEmpty ifTrue: [ 
 		Ride log: 'No JavaScript assets found.' level: #WARNING.
@@ -125,23 +125,23 @@ RideService >> buildJavaScriptAssets [
 
 	| destinationHash destinationFile |
 	Ride log: 'Building JavaScript assets and new map...' level: #INFO.
-	self locate javaScriptAssets keysAndValuesDo: [ 
+	Ride resource javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
 		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
 			destinationHash := UUID new asString36.
-			destinationFile := (self locator assetsFilePath / 'js'
+			destinationFile := (Ride resource assetsDirectory / 'js'
 			                    / (destinationHash , '.js')) asFileReference.
 			self makeJavaScriptAsset: jsFile to: destinationFile.
-			((self locator assetsMap at: 'js' ifAbsentPut: [ Dictionary new ])
+			((Ride resource assetsMap at: 'js' ifAbsentPut: [ SmallDictionary new ])
 				 at: presenterSelector
-				 ifAbsentPut: [ Dictionary new ])
+				 ifAbsentPut: [ SmallDictionary new ])
 				at: jsSelector
 				put: destinationFile basename ] ].
 
 	Ride log: 'JavaScript assets ready.' level: #INFO.
 
-	self locator writeAssetsMap.
+	Ride resource writeAssetsMap.
 	Ride log: 'JavaScript assets map updated.' level: #INFO
 ]
 
@@ -150,14 +150,14 @@ RideService >> buildJavaScriptAssetsFor: assetsMap [
 
 	| destinationHash destinationFile mappedJsFilename |
 	Ride log: 'Building JavaScript assets as mapped...' level: #INFO.
-	self locate javaScriptAssets keysAndValuesDo: [ 
+	Ride resource javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
 		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
 			mappedJsFilename := (assetsMap js at: presenterSelector) at:
 				                    jsSelector.
 			destinationHash := (mappedJsFilename substrings: '.') first.
-			destinationFile := (self locator assetsFilePath / 'js'
+			destinationFile := (self locator assetsFileDirectory / 'js'
 			                    / (destinationHash , '.js')) asFileReference.
 			self makeJavaScriptAsset: jsFile to: destinationFile ] ].
 
@@ -186,7 +186,7 @@ RideService >> databaseStart [
 { #category : #actions }
 RideService >> deleteJavaScriptAssets [
 
-	(self locator assetsFilePath / 'js') asFileReference
+	(Ride resource assetsDirectory / 'js') asFileReference
 		ensureDeleteAllChildren.
 	Ride log: 'JavaScript assets deleted.' level: #INFO
 ]

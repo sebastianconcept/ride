@@ -87,9 +87,10 @@ RideSession >> initialUrl: anUrl [
 	| excluded |
 	excluded := #( 'sign-in' 'sign-out' ).
 
-	(anUrl segments size > 0 and: [ 
-		 Ride log: 'initial URL ' , anUrl asString.
-		 (excluded includes: anUrl segments first) not ]) ifTrue: [ 
+	(anUrl segments notNil and: [ 
+		 anUrl segments size > 0 and: [ 
+			 Ride log: 'initial URL ' , anUrl asString.
+			 (excluded includes: anUrl segments first) not ] ]) ifTrue: [ 
 		Ride log:
 			'Setting initial URL: ' , anUrl asString , ' in ' , self id.
 		initialUrl := anUrl ]

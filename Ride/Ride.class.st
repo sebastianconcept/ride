@@ -85,8 +85,9 @@ Ride class >> isProduction [
 
 { #category : #accessing }
 Ride class >> locator [
-
-	^ RideResourceLocator
+	self deprecated: 'use resource'.
+	self halt.
+	^ RideResource
 ]
 
 { #category : #actions }
@@ -162,6 +163,14 @@ Ride class >> reset [
 	logLevelSymbols := nil.
 	isMaintenance := nil.
 	RideDeclarativeRouting reset.
+	Ride resource reset.
+	Ride isDevelopment ifTrue: [ Ride resource resetAssetsMapFile ]
+]
+
+{ #category : #accessing }
+Ride class >> resource [
+
+	^ RideResource
 ]
 
 { #category : #actions }

@@ -51,7 +51,7 @@ RideMultilingual class >> dictionaries [
 { #category : #initialization }
 RideMultilingual class >> initializeDictionaries [
 
-	^ dictionaries := Dictionary new
+	^ dictionaries := SmallDictionary new
 ]
 
 { #category : #initialization }
