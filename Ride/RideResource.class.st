@@ -19,20 +19,21 @@ RideResource class >> appDirectory [
 { #category : #accessing }
 RideResource class >> assetsDirectory [
 
-	^ (self values at: #assetsDirectory ifAbsentPut: [ 
-		   Smalltalk os environment
-			   at: 'ASSETS_PATH'
-			   ifAbsent: [ Smalltalk imageDirectory / 'app' / 'assets' ] ])
-		  asFileReference
+	^ ([ 
+	   Smalltalk os environment
+		   at: 'ASSETS_PATH'
+		   ifAbsent: [ Smalltalk imageDirectory / 'app' / 'assets' ] ] 
+		   systemValueAt: #assetsDirectory) asFileReference
 ]
 
 { #category : #accessing }
 RideResource class >> assetsDirectoryString [
 
-	^ self values at: #assetsDirectoryString ifAbsentPut: [ 
-		  Smalltalk os environment
-			  at: #RIDE_ASSETS_PATH
-			  ifAbsent: [ self defaultAssetsDirectoryString ] ]
+	^ [ 
+	  Smalltalk os environment
+		  at: #RIDE_ASSETS_PATH
+		  ifAbsent: [ self defaultAssetsDirectoryString ] ] systemValueAt:
+		  #assetsDirectoryString
 ]
 
 { #category : #accessing }
@@ -44,7 +45,7 @@ RideResource class >> assetsFileDirectory [
 { #category : #accessing }
 RideResource class >> assetsMap [
 
-	^ self values at: #assetsMap ifAbsentPut: [ self readAssetsMap ]
+	^ [ self readAssetsMap ] systemValueAt: #assetsMap
 ]
 
 { #category : #accessing }
@@ -62,25 +63,25 @@ RideResource class >> assetsMapFile [
 { #category : #accessing }
 RideResource class >> baseUrl [
 
-	^ self values at: #baseUrl ifAbsentPut: [ 
-		  Smalltalk os environment
-			  at: #RIDE_BASE_URL
-			  ifAbsent: [ self defaultBaseUrl ] ]
+	^ [ 
+	  Smalltalk os environment
+		  at: #RIDE_BASE_URL
+		  ifAbsent: [ self defaultBaseUrl ] ] systemValueAt: #baseUrl
 ]
 
-{ #category : #accessing }
+{ #category : #defaults }
 RideResource class >> defaultAssetsDirectoryString [
 
 	^ (self appDirectory / 'assets') pathString
 ]
 
-{ #category : #accessing }
+{ #category : #defaults }
 RideResource class >> defaultBaseUrl [
 
 	^ ''
 ]
 
-{ #category : #accessing }
+{ #category : #defaults }
 RideResource class >> defaultUploadsBaseDirectoryString [
 
 	^ (Smalltalk imageDirectory / 'uploads') pathString
@@ -188,9 +189,7 @@ RideResource class >> initializeValues [
 { #category : #accessing }
 RideResource class >> javaScriptAssets [
 
-	^ self values
-		  at: #javaScriptAssets
-		  ifAbsentPut: [ self getJavaScriptAssets ]
+	^ [ self getJavaScriptAssets ] systemValueAt: #javaScriptAssets
 ]
 
 { #category : #accessing }
@@ -202,11 +201,11 @@ RideResource class >> layoutTemplatesDirectory [
 { #category : #accessing }
 RideResource class >> outboxDirectory [
 
-	^ (self values at: #outboxDirectory ifAbsentPut: [ 
-		   Smalltalk os environment
-			   at: 'OUTBOX_PATH'
-			   ifAbsent: [ Smalltalk imageDirectory / 'outbox' ] ])
-		  asFileReference
+	^ ([ 
+	   Smalltalk os environment
+		   at: 'OUTBOX_PATH'
+		   ifAbsent: [ Smalltalk imageDirectory / 'outbox' ] ] 
+		   systemValueAt: #outboxDirectory) asFileReference
 ]
 
 { #category : #accessing }
@@ -218,10 +217,11 @@ RideResource class >> projectRootDirectory [
 { #category : #accessing }
 RideResource class >> projectRootDirectoryString [
 
-	^ self values at: #projectRootDirectoryString ifAbsentPut: [ 
-		  Smalltalk os environment
-			  at: #PROJECT_ROOT_PATH
-			  ifAbsent: [ Smalltalk imageDirectory pathString ] ]
+	^ [ 
+	  Smalltalk os environment
+		  at: #PROJECT_ROOT_PATH
+		  ifAbsent: [ Smalltalk imageDirectory pathString ] ] 
+		  systemValueAt: #projectRootDirectoryString
 ]
 
 { #category : #actions }
@@ -267,9 +267,15 @@ RideResource class >> sharedTemplatesDirectory [
 ]
 
 { #category : #accessing }
+RideResource class >> tempDirectory [
+
+	^ FileLocator temp resolve
+]
+
+{ #category : #accessing }
 RideResource class >> templates [
 
-	^ self values at: #templates ifAbsentPut: [ self getTemplates ]
+	^ [ self getTemplates ] systemValueAt: #templates
 ]
 
 { #category : #accessing }
@@ -304,10 +310,17 @@ RideResource class >> uploadsBaseDirectory [
 { #category : #accessing }
 RideResource class >> uploadsBaseDirectoryString [
 
-	^ self values at: #uploadsBaseDirectoryString ifAbsentPut: [ 
-		  Smalltalk os environment
-			  at: #RIDE_UPLOAD_BASE_PATH
-			  ifAbsent: [ self defaultUploadsBaseDirectoryString ] ]
+	^ [ 
+	  Smalltalk os environment
+		  at: #RIDE_UPLOAD_BASE_PATH
+		  ifAbsent: [ self defaultUploadsBaseDirectoryString ] ] 
+		  systemValueAt: #uploadsBaseDirectoryString
+]
+
+{ #category : #accessing }
+RideResource class >> uploadsDirectory [
+
+	^ self projectRootDirectory / 'uploads'
 ]
 
 { #category : #accessing }
