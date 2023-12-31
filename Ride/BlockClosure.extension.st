@@ -50,3 +50,9 @@ BlockClosure >> systemValueAt: aKey [
 
 	^ Ride resource values at: aKey ifAbsentPut: self
 ]
+
+{ #category : #'*Ride' }
+BlockClosure >> toActionsQueue [
+
+	^ Ride service maitre actionsQueue schedule: self
+]
