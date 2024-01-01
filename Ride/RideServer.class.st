@@ -442,7 +442,7 @@ RideServer >> setExceptionHandlers [
 				response := TeaResponse notFound.
 				Ride log: ex printString level: #ERROR.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
-				templateModel := Ride service locate sharedTemplates copy
+				templateModel := Ride resource sharedTemplates copy
 					                 at: #status put: response code asString;
 					                 yourself.
 				Ride isDevelopment ifTrue: [ 
@@ -452,7 +452,7 @@ RideServer >> setExceptionHandlers [
 				response body: (ex
 						 renderHtmlWith: templateModel
 						 on:
-						 (Ride service locate sharedTemplates at: response code asString)).
+						 (Ride resource sharedTemplates at: response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;

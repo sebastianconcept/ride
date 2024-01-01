@@ -7,7 +7,6 @@ Class {
 	#name : #RideRouter,
 	#superclass : #Object,
 	#instVars : [
-		'domain',
 		'rootComponentGetter',
 		'strategy'
 	],
@@ -29,15 +28,8 @@ RideRouter >> beSubcomponent [
 { #category : #accessing }
 RideRouter >> domain [
 
-	^ domain ifNil: [ self initializeDomain ]
-]
-
-{ #category : #initialization }
-RideRouter >> initializeDomain [
-
-	^ domain := Smalltalk os environment
-		            at: #DOMAIN
-		            ifAbsent: [ 'localhost' ]
+	^ [ Smalltalk os environment at: #DOMAIN ifAbsent: [ 'localhost' ] ] 
+		  systemValueAt: #domain
 ]
 
 { #category : #initialization }

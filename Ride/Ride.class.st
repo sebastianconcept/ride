@@ -27,11 +27,17 @@ Ride class >> defaultLogLevel [
 ]
 
 { #category : #actions }
-Ride class >> draft [
+Ride class >> do [
 
 	"Answers a new Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"
 
 	^ RideDoer new
+]
+
+{ #category : #actions }
+Ride class >> draft [
+
+	^ self do
 ]
 
 { #category : #actions }

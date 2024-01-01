@@ -7,10 +7,9 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'initialUrl',
 		'webSocket',
-		'auth',
-		'cache'
+		'cache',
+		'values'
 	],
 	#category : #'Ride-Core'
 }
@@ -28,18 +27,6 @@ RideSession >> add: routeKey presenter: aRidePresenter [
 ]
 
 { #category : #accessing }
-RideSession >> auth [
-
-	^ auth
-]
-
-{ #category : #accessing }
-RideSession >> auth: anObject [
-
-	auth := anObject
-]
-
-{ #category : #accessing }
 RideSession >> cache [
 
 	^ cache ifNil: [ self initializeCache ]
@@ -54,7 +41,7 @@ RideSession >> cache: anObject [
 { #category : #testing }
 RideSession >> hasAuth [
 
-	^ auth notNil
+	^ self values includesKey: #auth
 ]
 
 { #category : #testing }
@@ -78,7 +65,7 @@ RideSession >> id: anObject [
 { #category : #accessing }
 RideSession >> initialUrl [
 
-	^ initialUrl
+	^ self values at: #initialUrl ifAbsent: [ nil ]
 ]
 
 { #category : #accessing }
@@ -89,11 +76,11 @@ RideSession >> initialUrl: anUrl [
 
 	(anUrl segments notNil and: [ 
 		 anUrl segments size > 0 and: [ 
-			 Ride log: 'initial URL ' , anUrl asString.
+			 [ 'initial URL ' , anUrl asString ] logDebug.
 			 (excluded includes: anUrl segments first) not ] ]) ifTrue: [ 
-		Ride log:
-			'Setting initial URL: ' , anUrl asString , ' in ' , self id.
-		initialUrl := anUrl ]
+		[ 'Setting initial URL: ' , anUrl asString , ' in ' , self id ]
+			logDebug.
+		self values at: #initialUrl put: anUrl ]
 ]
 
 { #category : #initialization }
@@ -103,12 +90,32 @@ RideSession >> initializeCache [
 ]
 
 { #category : #initialization }
+RideSession >> initializeValues [
+
+	^ values := SmallDictionary new
+]
+
+{ #category : #initialization }
 RideSession >> initializeWith: anId url: anUrl [
 
 	super initialize.
 
 	id := anId.
 	self initialUrl: anUrl
+]
+
+{ #category : #actions }
+RideSession >> invalidateAndRedirectTo: url [
+
+	| response |
+	Ride service invalidateSession: self.
+	response := RideCurrentResponse value.
+
+	"Redirect"
+	response
+		code: 302;
+		location: url.
+	(TeaAbort response: response) signal
 ]
 
 { #category : #accessing }
@@ -131,22 +138,15 @@ RideSession >> remove: routeKey [
 
 { #category : #accessing }
 RideSession >> rootPresenter [
-
+self deprecated: '?'
+self halt.
 	^ self presenters at: #/ ifAbsent: [ nil ]
 ]
 
-{ #category : #actions }
-RideSession >> signOut [
+{ #category : #accessing }
+RideSession >> values [
 
-	auth := nil
-]
-
-{ #category : #actions }
-RideSession >> signOutAndRedirectTo: url [
-
-	auth := nil.
-	Ride service invalidateSession: self.
-	(TeaAbort response: (TeaResponse redirect location: url)) signal
+	^ values ifNil: [ self initializeValues ]
 ]
 
 { #category : #accessing }
