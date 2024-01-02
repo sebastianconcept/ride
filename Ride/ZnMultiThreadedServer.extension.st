@@ -12,15 +12,17 @@ ZnMultiThreadedServer >> executeOneRequestResponseOn: stream [
 	^ (request := self readRequestSafely: stream timing: timing)
 		  ifNil: [ true ]
 		  ifNotNil: [ 
-			  RideCurrentRequest value: request during: [ 
-				  response := self handleRequest: request timing: timing.
-				  self augmentResponse: response forRequest: request.
-				  self writeResponseSafely: response on: stream timing: timing.
-				  self
-					  logServerTransactionRequest: request
-					  response: response
-					  timing: timing.
-				  response useConnection: stream.
-				  request wantsConnectionClose or: [ 
-					  response wantsConnectionClose ] ] ]
+			  RideCurrentRequest
+				  value: (TeaRequest fromZnRequest: request)
+				  during: [ 
+					  response := self handleRequest: request timing: timing.
+					  self augmentResponse: response forRequest: request.
+					  self writeResponseSafely: response on: stream timing: timing.
+					  self
+						  logServerTransactionRequest: request
+						  response: response
+						  timing: timing.
+					  response useConnection: stream.
+					  request wantsConnectionClose or: [ 
+						  response wantsConnectionClose ] ] ]
 ]

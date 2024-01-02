@@ -36,6 +36,14 @@ RideDoer >> api [
 ]
 
 { #category : #accessing }
+RideDoer >> app [
+
+	^ RideAppHelper new
+		  doer: self;
+		  yourself
+]
+
+{ #category : #accessing }
 RideDoer >> controller [
 
 	^ RideControllerHelper new
@@ -79,6 +87,13 @@ RideDoer >> mvp [
 	^ RideMVPHelper new
 		  doer: self;
 		  yourself
+]
+
+{ #category : #actions }
+RideDoer >> newApp: aSymbol [
+
+	self defaultPackageName: aSymbol.
+	self app for: aSymbol
 ]
 
 { #category : #accessing }

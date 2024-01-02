@@ -57,9 +57,11 @@ Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
 				put: (lines collect: [ :line | { (#step -> line) } asDictionary ]) ].
 		^ aMustacheTemplate
 			  value: aJsonObject
-			  partials: Ride service locate sharedTemplates ].
+			  partials: Ride resource sharedTemplates ].
 
-	^ aMustacheTemplate value: (aJsonObject
-			   at: #message put: self messageText;
-			   yourself)
+	^ aMustacheTemplate
+		  value: (aJsonObject
+				   at: #message put: self messageText;
+				   yourself)
+		  partials: Ride service locate sharedTemplates
 ]

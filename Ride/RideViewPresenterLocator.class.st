@@ -15,13 +15,15 @@ Class {
 
 { #category : #accessing }
 RideViewPresenterLocator >> appPath [
-
-	^ self projectRootPath / 'app'
+	self deprecated: 'using resources'.
+	self halt.
+	^ self projectRootDirectory / 'app'
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> assetsFilePath [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ Path from: (Smalltalk os environment
 			   at: #RIDE_ASSETS_FILE_PATH
 			   ifAbsent: [ self defaultAssetsFilePathString ])
@@ -29,25 +31,29 @@ RideViewPresenterLocator >> assetsFilePath [
 
 { #category : #accessing }
 RideViewPresenterLocator >> assetsMap [
-
+self flag: #deprecated.
+self halt.
 	^ assetsMap ifNil: [ self initializeAssetsMap ]
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> assetsMapFile [
-
+self deprecated: 'use locator'.
+self halt.
 	^ self assetsMapPath / 'assets.json'
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> assetsMapPath [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ (self appPath / 'maps') asFileReference ensureCreateDirectory
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> defaultAssetsFilePathString [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ (self appPath / 'assets') pathString
 ]
 
@@ -58,6 +64,8 @@ RideViewPresenterLocator >> getJavaScriptAssets [
 	and as value, a dictionary with the .js file names as keys and their content as value"
 
 	| assets jsFiles presenterJavaScript |
+	self deprecated: 'using resources'.
+	self halt.
 	assets := Dictionary new.
 	RideDirectoryResolver viewTemplatesDirectory directories do: [ :path | 
 		jsFiles := path files select: [ :e | e extension = 'js' ].
@@ -74,6 +82,8 @@ RideViewPresenterLocator >> getMustacheTemplagesIn: aPath [
 	"Returns only the .mustache template files in aPath"
 
 	| accepted |
+		self deprecated: 'use resources'.
+self halt.
 	accepted := #( mustache mst ms tmpl ).
 	^ aPath files select: [ :file | accepted includes: file extension ]
 ]
@@ -85,6 +95,8 @@ RideViewPresenterLocator >> getPresenters [
 	and as value, the corresponding presenter classes expected to be found in the image."
 
 	| newPresenters |
+		self deprecated: 'using resources'.
+	self halt.
 	newPresenters := Dictionary new.
 	self viewTemplates keys do: [ :routeName | 
 		newPresenters at: routeName put: (Smalltalk
@@ -104,6 +116,8 @@ RideViewPresenterLocator >> getTemplates [
 	and as value, a dictionary with mustache templates for every file found."
 
 	| newTemplates newViewTemplates newEmailTemplates |
+	self deprecated: 'use resources'.
+self halt.
 	newTemplates := JsonObject new.
 	newViewTemplates := JsonObject new.
 	RideDirectoryResolver viewTemplatesDirectory directories do: [ :path | 
@@ -149,6 +163,8 @@ RideViewPresenterLocator >> getTemplatesFrom: aPath [
 	and as value, the mustache template based on its content."
 
 	| newTemplates |
+		self deprecated: 'using resources'.
+	self halt.
 	newTemplates := JsonObject new.
 	(self getMustacheTemplagesIn: aPath) do: [ :file | 
 		newTemplates
@@ -160,36 +176,43 @@ RideViewPresenterLocator >> getTemplatesFrom: aPath [
 
 { #category : #initialization }
 RideViewPresenterLocator >> initializeAssetsMap [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ assetsMap := self readAssetsMap
 ]
 
 { #category : #initialization }
 RideViewPresenterLocator >> initializeJavaScriptAssets [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ javaScriptAssets := self getJavaScriptAssets
 ]
 
 { #category : #initialization }
 RideViewPresenterLocator >> initializePresenters [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ presenters := self getPresenters
 ]
 
 { #category : #initialization }
 RideViewPresenterLocator >> initializeTemplates [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ templates := self getTemplates
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> javaScriptAssets [
-
+self deprecated: 'use resources'.
+self halt.
 	^ javaScriptAssets ifNil: [ self initializeJavaScriptAssets ]
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> layoutTemplates [
+	self deprecated: 'using resources'.
+	self halt.
 
 	^ self templates
 		  at: #layouts
@@ -199,19 +222,23 @@ RideViewPresenterLocator >> layoutTemplates [
 
 { #category : #accessing }
 RideViewPresenterLocator >> presenterNameFor: routeName [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ '{1}Presenter' format: { ('' join:
 			   ((routeName substrings: '_') collect: [ :e | e capitalized ])) }
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> presenters [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ presenters ifNil: [ self initializePresenters ]
 ]
 
 { #category : #accessing }
-RideViewPresenterLocator >> projectRootPath [
+RideViewPresenterLocator >> projectRootDirectory [
+	self deprecated: 'using resources'.
+	self halt.
 
 	^ Path from: (Smalltalk os environment
 			   at: #PROJECT_ROOT_PATH
@@ -224,6 +251,8 @@ RideViewPresenterLocator >> readAssetsMap [
 	"Answers the assets cache as read from cache/assets.json"
 
 	| file |
+	self deprecated: 'use locator'.
+	self halt.
 	file := self assetsMapFile.
 	^ file exists
 		  ifTrue: [ file readStreamDo: [ :stream | Json readFrom: stream ] ]
@@ -232,7 +261,8 @@ RideViewPresenterLocator >> readAssetsMap [
 
 { #category : #accessing }
 RideViewPresenterLocator >> sharedTemplates [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ self templates
 		  at: #shared
 		  ifAbsent: [ 
@@ -241,7 +271,8 @@ RideViewPresenterLocator >> sharedTemplates [
 
 { #category : #accessing }
 RideViewPresenterLocator >> templates [
-
+	self deprecated: 'use Ride resource'.
+	self halt.
 	^ templates ifNil: [ self initializeTemplates ]
 ]
 
@@ -253,6 +284,8 @@ RideViewPresenterLocator >> templatesFor: aPresenter [
 	model name in snake_case or kebab-case on disk."
 
 	| views modelName kebabized found |
+		self deprecated: 'using resources'.
+	self halt.
 	views := self templates at: #views.
 	modelName := aPresenter class getModelName.
 	kebabized := '-' join: (modelName asSnakeCase substrings: '_').
@@ -264,12 +297,16 @@ RideViewPresenterLocator >> templatesFor: aPresenter [
 
 { #category : #accessing }
 RideViewPresenterLocator >> templatesPath [
-
+	self deprecated: 'using resources'.
+	self halt.
 	^ self appPath / 'templates'
 ]
 
 { #category : #accessing }
 RideViewPresenterLocator >> viewTemplates [
+	self deprecated: 'use Ride resource'.
+	self halt.
+
 
 	^ self templates
 		  at: #views
@@ -278,6 +315,8 @@ RideViewPresenterLocator >> viewTemplates [
 
 { #category : #accessing }
 RideViewPresenterLocator >> viewsPath [
+	self deprecated: 'use Ride resource'.
+	self halt.
 
 	^ self templatesPath / 'views'
 ]
@@ -288,6 +327,8 @@ RideViewPresenterLocator >> writeAssetsMap [
 	"Writes the assets map in maps/assets.json"
 
 	| file |
+	self deprecated: 'use Ride resource'.
+	self halt.
 	file := self assetsMapFile.
 
 	file exists ifTrue: [ 

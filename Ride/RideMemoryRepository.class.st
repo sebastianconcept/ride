@@ -14,20 +14,20 @@ Class {
 { #category : #accessing }
 RideMemoryRepository >> find: aRideModel atId: anId [
 
-	^ (storage at: aRideModel ifAbsentPut: [ Dictionary new ]) at: anId
+	^ (storage at: aRideModel ifAbsentPut: [ SmallDictionary new ]) at: anId
 ]
 
 { #category : #initialization }
 RideMemoryRepository >> initialize [
 
 	super initialize.
-	storage := Dictionary new
+	storage := SmallDictionary new
 ]
 
 { #category : #initialization }
 RideMemoryRepository >> reset [
 
-	storage := Dictionary new
+	storage := SmallDictionary new
 ]
 
 { #category : #accessing }

@@ -10,7 +10,7 @@ Class {
 { #category : #accessing }
 RidePresenterHelper >> classNameFor: aSymbol [
 
-	^ '{1}Presenter' format: { aSymbol }
+	^ '{1}Presenter' format: { aSymbol asPlural }
 ]
 
 { #category : #actions }

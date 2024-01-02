@@ -7,34 +7,41 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'presenters',
-		'webSocket'
+		'webSocket',
+		'cache',
+		'values'
 	],
 	#category : #'Ride-Core'
 }
 
-{ #category : #accessing }
-RideSession class >> defaultController [
-
-	^ nil
-]
-
 { #category : #'instance creation' }
-RideSession class >> newWith: anId [
+RideSession class >> newWith: anId url: anUrl [
 
-	^ self newWith: anId on: self defaultController
-]
-
-{ #category : #'instance creation' }
-RideSession class >> newWith: anId on: aController [
-
-	^ self new initializeWith: anId on: aController
+	^ self new initializeWith: anId url: anUrl
 ]
 
 { #category : #actions }
 RideSession >> add: routeKey presenter: aRidePresenter [
 
 	^ self presenters at: routeKey put: aRidePresenter
+]
+
+{ #category : #accessing }
+RideSession >> cache [
+
+	^ cache ifNil: [ self initializeCache ]
+]
+
+{ #category : #accessing }
+RideSession >> cache: anObject [
+
+	cache := anObject
+]
+
+{ #category : #testing }
+RideSession >> hasAuth [
+
+	^ self values includesKey: #auth
 ]
 
 { #category : #testing }
@@ -55,19 +62,60 @@ RideSession >> id: anObject [
 	id := anObject
 ]
 
-{ #category : #initialization }
-RideSession >> initializePresenters [
+{ #category : #accessing }
+RideSession >> initialUrl [
 
-	^ presenters := Dictionary new
+	^ self values at: #initialUrl ifAbsent: [ nil ]
+]
+
+{ #category : #accessing }
+RideSession >> initialUrl: anUrl [
+
+	| excluded |
+	excluded := #( 'sign-in' 'sign-out' ).
+
+	(anUrl segments notNil and: [ 
+		 anUrl segments size > 0 and: [ 
+			 [ 'initial URL ' , anUrl asString ] logDebug.
+			 (excluded includes: anUrl segments first) not ] ]) ifTrue: [ 
+		[ 'Setting initial URL: ' , anUrl asString , ' in ' , self id ]
+			logDebug.
+		self values at: #initialUrl put: anUrl ]
 ]
 
 { #category : #initialization }
-RideSession >> initializeWith: anId on: aPresenter [
+RideSession >> initializeCache [
+
+	^ cache := TTLCache new
+]
+
+{ #category : #initialization }
+RideSession >> initializeValues [
+
+	^ values := SmallDictionary new
+]
+
+{ #category : #initialization }
+RideSession >> initializeWith: anId url: anUrl [
 
 	super initialize.
 
 	id := anId.
-	self add: #/ presenter: aPresenter
+	self initialUrl: anUrl
+]
+
+{ #category : #actions }
+RideSession >> invalidateAndRedirectTo: url [
+
+	| response |
+	Ride service invalidateSession: self.
+	response := RideCurrentResponse value.
+
+	"Redirect"
+	response
+		code: 302;
+		location: url.
+	(TeaAbort response: response) signal
 ]
 
 { #category : #accessing }
@@ -82,27 +130,6 @@ RideSession >> onWebSocketMessage: aJsonObject [
 	
 ]
 
-{ #category : #accessing }
-RideSession >> presenterForRoute: routeName [
-
-	^ self presenters at: routeName ifAbsentPut: [ 
-		  | presenter |
-		  presenter := routeName = '/'
-			               ifTrue: [ self rootPresenter ]
-			               ifFalse: [ self rootPresenter childAt: routeName ].
-
-		  presenter ifNil: [ 
-			  RideMissingPresenterError signal:
-				  ('{1} not found' format: { routeName }) ].
-		  presenter ]
-]
-
-{ #category : #accessing }
-RideSession >> presenters [
-
-	^ presenters ifNil: [ self initializePresenters ]
-]
-
 { #category : #actions }
 RideSession >> remove: routeKey [
 
@@ -111,8 +138,15 @@ RideSession >> remove: routeKey [
 
 { #category : #accessing }
 RideSession >> rootPresenter [
-
+self deprecated: '?'
+self halt.
 	^ self presenters at: #/ ifAbsent: [ nil ]
+]
+
+{ #category : #accessing }
+RideSession >> values [
+
+	^ values ifNil: [ self initializeValues ]
 ]
 
 { #category : #accessing }

@@ -118,7 +118,7 @@ RidePresenter >> ajaxReactionAndRender [
 { #category : #accessing }
 RidePresenter >> applicationTemplate [
 
-	^ Ride service locate templates layouts application
+	^ Ride resource templates layouts application
 ]
 
 { #category : #rendering }
@@ -160,11 +160,22 @@ RidePresenter >> children [
 { #category : #initialization }
 RidePresenter >> createViews [
 
-	views := Ride service locate templatesFor: self.
+	views := Ride resource templatesFor: self.
 	views ifNil: [ 
 		RideMissingTemplateError signal:
 			('{1} template not found' format: { self class name }) ].
 	focusedView := views at: #index
+]
+
+{ #category : #accessing }
+RidePresenter >> currentAction [
+
+	"Returns the selector corresponding to the action interpreted by the receiver. 
+	In Ride, this behavior can be overridden, but by default, URIs are interpreted 
+	such that their first segment determines the targeted presenter, 
+	and the second segment determines the corresponding selector to execute."
+
+	^ self currentRequest uri segments second asSymbol
 ]
 
 { #category : #accessing }
@@ -312,6 +323,14 @@ RidePresenter >> htmlPageOnGET [
 	^ self htmlPage 
 ]
 
+{ #category : #actions }
+RidePresenter >> index [
+
+	"Returns the HTML of the receiver rendered as a full web page."
+
+	^ self htmlPage
+]
+
 { #category : #initialization }
 RidePresenter >> initialize [
 
@@ -324,7 +343,7 @@ RidePresenter >> initialize [
 { #category : #initialization }
 RidePresenter >> initializeFactory [
 
-	^ factory := Dictionary new
+	^ factory := SmallDictionary new
 ]
 
 { #category : #accessing }
@@ -352,6 +371,26 @@ RidePresenter >> model: aModel [
 
 	model := aModel.
 	self setObservers	
+]
+
+{ #category : #actions }
+RidePresenter >> onAboutToRespond [
+
+	"no-op is the default"
+]
+
+{ #category : #actions }
+RidePresenter >> onAfterAction [
+
+	"no-op is the default"
+
+	
+]
+
+{ #category : #actions }
+RidePresenter >> onBeforeAction [
+
+	"no-op is the default"
 ]
 
 { #category : #accessing }
@@ -401,7 +440,7 @@ RidePresenter >> partials [
 
 	"In addition to that, all shared partials are made available to the presenter"
 	^ partials
-		  addAll: self locate sharedTemplates;
+		  addAll: Ride resource sharedTemplates;
 		  yourself
 ]
 
@@ -423,14 +462,20 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 	"use the convention of trying to instantiate
 	a presenter that matches aSymbol route in the templates/views directory
 	(and store it as child of this receiver).
+	It tries first in its singular version, then in its plural version.
 	If still none found, return nil."
 
-	| presenterName presenterClass |
-	presenterName := RideNameNormalizer presenterNameFromURISegment:
-		                 aSymbol.
+	| presenterClass presenterSingularName presenterPluralName |
+	presenterSingularName := RideNameNormalizer 
+		                         presenterNameFromURISegment: aSymbol.
+	presenterPluralName := RideNameNormalizer 
+		                       presenterPluralNameFromURISegment: aSymbol.
 	presenterClass := Smalltalk
-		                  at: presenterName asSymbol
-		                  ifAbsent: [ nil ].
+		                  at: presenterPluralName asSymbol
+		                  ifAbsent: [ 
+		                  Smalltalk
+			                  at: presenterSingularName asSymbol
+			                  ifAbsent: [ nil ] ].
 	^ presenterClass
 		  ifNotNil: [ subpresenters at: aSymbol put: presenterClass new ]
 		  ifNil: [ nil ]
@@ -440,6 +485,18 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 RidePresenter >> router [
 
 	^ Ride service router
+]
+
+{ #category : #accessing }
+RidePresenter >> serviceCache [
+
+	^ Ride service cache
+]
+
+{ #category : #accessing }
+RidePresenter >> sessionCache [
+
+	^ self currentSession cache
 ]
 
 { #category : #initialization }
@@ -472,16 +529,17 @@ RidePresenter >> templateModel [
 	"Answers the model used for the template that 
 	will render only the HTML of this component (not the full page)."
 
-	| template presenterJsAssets indexJs |
+	| template presenterJsAssets |
 	template := model asTemplateModel.
-	presenterJsAssets := self locate assetsMap js at:
-		                     self class getNormalizedModelName.
-	^ (presenterJsAssets notNil and: [ 
-		   indexJs := presenterJsAssets at: #index.
-		   indexJs notNil ])
+	presenterJsAssets := Ride resource assetsMap js
+		                     at: self class getNormalizedModelName
+		                     ifAbsent: [ nil ].
+	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
 		  ifFalse: [ template ]
 		  ifTrue: [ 
-			  template
-				  at: #indexJs put: ('/assets/js/{1}' format: { indexJs });
-				  yourself ]
+			  presenterJsAssets keysAndValuesDo: [ :key :value | 
+				  template
+					  at: ('{1}Js' format: { key })
+					  put: ('/assets/js/{1}' format: { value }) ].
+			  template ]
 ]

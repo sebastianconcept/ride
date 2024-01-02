@@ -15,6 +15,8 @@ Class {
 	#name : #RideServer,
 	#superclass : #Object,
 	#instVars : [
+		'settings',
+		'router',
 		'teapot',
 		'validator',
 		'maitre',
@@ -27,7 +29,7 @@ Class {
 { #category : #accessing }
 RideServer class >> databaseName [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #DB_NAME
 		  ifAbsent: [ self defaultDatabaseName ]
 ]
@@ -35,9 +37,9 @@ RideServer class >> databaseName [
 { #category : #accessing }
 RideServer class >> debugMode [
 
-	^ (OSEnvironment current
-		  at: #HTTP_DEBUG
-		  ifAbsent: [ self defaultDebugMode ]) asInteger > 0
+	^ (Smalltalk os environment
+		   at: #HTTP_DEBUG
+		   ifAbsent: [ self defaultDebugMode ]) asInteger > 0
 ]
 
 { #category : #accessing }
@@ -63,6 +65,18 @@ RideServer class >> defaultHttpPort [
 ]
 
 { #category : #accessing }
+RideServer class >> defaultMAXAGE [
+
+	^ Smalltalk os environment at: 'MAXAGE' ifAbsent: [ 60 * 60 ]
+]
+
+{ #category : #accessing }
+RideServer class >> defaultSMAXAGE [
+
+	^ Smalltalk os environment at: 'SMAXAGE' ifAbsent: [ 120 * 60 ] "for the CDN"
+]
+
+{ #category : #accessing }
 RideServer class >> defaultWebSocketPort [
 	^ 3008
 ]
@@ -70,14 +84,14 @@ RideServer class >> defaultWebSocketPort [
 { #category : #testing }
 RideServer class >> hasWebSocket [
 
-	^ (OSEnvironment current at: #WEB_SOCKET_PORT ifAbsent: [ 0 ])
+	^ (Smalltalk os environment at: #WEB_SOCKET_PORT ifAbsent: [ 0 ])
 		  asInteger > 0
 ]
 
 { #category : #accessing }
 RideServer class >> httpBind [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: #HTTP_BIND
 		  ifAbsent: [ self defaultHttpBind ]
 ]
@@ -85,9 +99,9 @@ RideServer class >> httpBind [
 { #category : #accessing }
 RideServer class >> httpPort [
 
-	^ (OSEnvironment current
-		  at: #HTTP_PORT
-		  ifAbsent: [ self defaultHttpPort ]) asInteger
+	^ (Smalltalk os environment
+		   at: #HTTP_PORT
+		   ifAbsent: [ self defaultHttpPort ]) asInteger
 ]
 
 { #category : #accessing }
@@ -180,9 +194,9 @@ RideServer class >> version [
 { #category : #accessing }
 RideServer class >> webSockerPort [
 
-	^ (OSEnvironment current
-		  at: #WEB_SOCKET_PORT
-		  ifAbsent: [ self defaultWebSocketPort ]) asInteger
+	^ (Smalltalk os environment
+		   at: #WEB_SOCKET_PORT
+		   ifAbsent: [ self defaultWebSocketPort ]) asInteger
 ]
 
 { #category : #accessing }
@@ -217,6 +231,18 @@ RideServer >> initialize [
 		reset;
 		loadLanguages.
 	validator := RideValidator new
+]
+
+{ #category : #initialization }
+RideServer >> initializeRouter [
+
+	^ router := RideRouter new
+]
+
+{ #category : #initialization }
+RideServer >> initializeSettings [
+
+	^ settings := SmallDictionary new
 ]
 
 { #category : #initialization }
@@ -260,9 +286,17 @@ RideServer >> newHttpServer [
 			             (#port -> self class httpPort).
 			             (#debugMode -> self class debugMode).
 			             (#bindAddress
-			              -> (NetNameResolver addressForName: self class httpBind)) }.
+			              ->
+			              (NetNameResolver addressForName: self class httpBind)).
+			             (#notFoundHandlerClass -> RideNotFoundTeaHandler) }.
 	((newServer instVarNamed: 'compositeRouter') instVarNamed:
 		 'errorhandlers') removeLast.
+
+	"The application can serve controlled assets via Teapot's static delegate."
+	newServer staticRouter
+		urlPrefix: '/assets'
+		path: Ride resource assetsDirectoryString.
+		
 	^ newServer
 ]
 
@@ -323,6 +357,12 @@ RideServer >> reset [
 		released stop ]
 ]
 
+{ #category : #accessing }
+RideServer >> router [
+
+	^ router ifNil: [ self initializeRouter ]
+]
+
 { #category : #actions }
 RideServer >> run: aWebSocket with: aBlock [
 	^ [ [ | message |
@@ -350,8 +390,12 @@ RideServer >> setAccessControlAllowOriginFilter [
 RideServer >> setCacheControlFilter [
 
 	| maxage smaxage |
-	maxage := OSEnvironment current at: 'MAXAGE' ifAbsent: [ 60 * 60 ]. "for the browser"
-	smaxage := OSEnvironment current at: 'SMAXAGE' ifAbsent: [ 120 * 60 ]. "for the CDN"
+	maxage := self settings
+		          at: 'MAXAGE'
+		          ifAbsentPut: [ self class defaultMAXAGE ]. "for the browser"
+	smaxage := self settings
+		           at: 'SMAXAGE'
+		           ifAbsentPut: [ self class defaultSMAXAGE ]. "for the CDN"
 	self teapot
 		after: '/*' -> [ :req :resp | 
 				resp headers
@@ -400,15 +444,21 @@ RideServer >> setExceptionHandlers [
 
 	self teapot
 		exception: RideNotFoundError -> [ :ex :req | 
+				| templateModel |
 				response := TeaResponse notFound.
 				Ride log: ex printString level: #ERROR.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
+				templateModel := Ride resource sharedTemplates copy
+					                 at: #status put: response code asString;
+					                 yourself.
+				Ride isDevelopment ifTrue: [ 
+					templateModel
+						at: #error
+						put: { (#messageText -> ex messageText) } asDictionary ].
 				response body: (ex
-							 renderHtmlWith:
-								 { (#status -> response code) } asDictionary asJsonObject
-							 on:
-								 (Ride service locate sharedTemplates at:
-										  response code asString)).
+						 renderHtmlWith: templateModel
+						 on:
+						 (Ride resource sharedTemplates at: response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;
@@ -426,7 +476,7 @@ RideServer >> setExceptionHandlers [
 							 renderHtmlWith:
 								 { (#status -> response code) } asDictionary asJsonObject
 							 on:
-								 (Ride service locate sharedTemplates at:
+								 (Ride resource sharedTemplates at:
 										  response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
@@ -440,21 +490,34 @@ RideServer >> setExceptionHandlers [
 RideServer >> setFilters [
 
 	self teapot before: '*' -> [ :request | 
-		Ride isUnderMaintenance ifTrue: [ RideMaintenanceException signal ] ]
+		Ride isMaintenance ifTrue: [ RideMaintenanceException signal ] ]
 ]
 
 { #category : #actions }
 RideServer >> setRoutes [
 
-	Ride service router setRoutesOn: self
+	self setFilters.
+	self router setRoutesOn: self.
+	self setExceptionHandlers.
+	self setCacheControlFilter
+]
+
+{ #category : #accessing }
+RideServer >> settings [
+
+	^ settings ifNil: [ self initializeSettings ]
+]
+
+{ #category : #accessing }
+RideServer >> settings: anObject [
+
+	settings := anObject
 ]
 
 { #category : #actions }
 RideServer >> start [
 
-	self setFilters.
 	self setRoutes.
-	self setExceptionHandlers.
 	self class hasWebSocket ifTrue: [ 
 		self webSocket start.
 		Ride log: ('WebSocket started at {1}:{2}' format: { 

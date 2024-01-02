@@ -9,11 +9,12 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'server',
-		'router',
 		'sessions',
 		'maitre',
 		'repository',
-		'locator'
+		'locator',
+		'cache',
+		'sessionGetter'
 	],
 	#category : #'Ride-Core'
 }
@@ -26,7 +27,7 @@ RideService class >> getSessionGetter [
 	  sessionId := self sessionIdFromCookieOrNewFrom: request.
 	  Ride service sessions
 		  at: sessionId
-		  ifAbsentPut: [ self newSessionWith: sessionId ] ]
+		  ifAbsentPut: [ self newSessionWith: sessionId url: request url ] ]
 ]
 
 { #category : #accessing }
@@ -48,9 +49,28 @@ RideService class >> log: aString level: aSymbol [
 ]
 
 { #category : #actions }
+RideService class >> newResetSessionCookie [
+
+	| expires cookieString domain |
+	domain := Ride service server router domain.
+	expires := ZnUtils httpDate: DateAndTime now - 10 years.
+	cookieString := 'id={1}; expires={2}; path=/; domain={3}' format: { 
+			                String new.
+			                expires.
+			                domain }.
+	^ ZnCookie fromString: cookieString for: ('http://' , domain) asZnUrl
+]
+
+{ #category : #actions }
 RideService class >> newSessionId [
 
 	^ UUID new asString36
+]
+
+{ #category : #accessing }
+RideService class >> newSessionWith: sessionId url: anUrl [
+
+	self subclassResponsibility
 ]
 
 { #category : #accessing }
@@ -74,25 +94,26 @@ RideService class >> sessionIdFromCookieOrNewFrom: aRequest [
 RideService class >> setUp [
 
 	"Customizations before starting the service."
-		
-	self log: 'Router setup...'.
-	Ride service router
+
+	Ride service
 		sessionGetter: self getSessionGetter;
-		yourself
+		yourself.
+
+	self log: 'Router setup...'
 ]
 
 { #category : #actions }
 RideService >> assetsSetUp [
 
 	| map jsPath |
-	map := self locate readAssetsMap.
+	map := Ride resource assetsMap.
 	map ifEmpty: [ 
 		Ride log: 'Assets map not found.' level: #WARNING.
 		^ self rebuildJavaScriptAssets ].
 
 	Ride log: 'JavaScript assets map found.'.
 
-	jsPath := (self locate assetsFilePath / 'js') asFileReference
+	jsPath := (Ride resource assetsFileDirectory / 'js') asFileReference
 		          ensureCreateDirectory.
 	jsPath entries isEmpty ifTrue: [ 
 		Ride log: 'No JavaScript assets found.' level: #WARNING.
@@ -104,23 +125,23 @@ RideService >> buildJavaScriptAssets [
 
 	| destinationHash destinationFile |
 	Ride log: 'Building JavaScript assets and new map...' level: #INFO.
-	self locate javaScriptAssets keysAndValuesDo: [ 
+	Ride resource javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
 		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
 			destinationHash := UUID new asString36.
-			destinationFile := (self locator assetsFilePath / 'js'
+			destinationFile := (Ride resource assetsDirectory / 'js'
 			                    / (destinationHash , '.js')) asFileReference.
 			self makeJavaScriptAsset: jsFile to: destinationFile.
-			((self locator assetsMap at: 'js' ifAbsentPut: [ Dictionary new ])
+			((Ride resource assetsMap at: 'js' ifAbsentPut: [ SmallDictionary new ])
 				 at: presenterSelector
-				 ifAbsentPut: [ Dictionary new ])
+				 ifAbsentPut: [ SmallDictionary new ])
 				at: jsSelector
 				put: destinationFile basename ] ].
 
 	Ride log: 'JavaScript assets ready.' level: #INFO.
 
-	self locator writeAssetsMap.
+	Ride resource writeAssetsMap.
 	Ride log: 'JavaScript assets map updated.' level: #INFO
 ]
 
@@ -129,18 +150,30 @@ RideService >> buildJavaScriptAssetsFor: assetsMap [
 
 	| destinationHash destinationFile mappedJsFilename |
 	Ride log: 'Building JavaScript assets as mapped...' level: #INFO.
-	self locate javaScriptAssets keysAndValuesDo: [ 
+	Ride resource javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
 		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
 			mappedJsFilename := (assetsMap js at: presenterSelector) at:
 				                    jsSelector.
 			destinationHash := (mappedJsFilename substrings: '.') first.
-			destinationFile := (self locator assetsFilePath / 'js'
+			destinationFile := (self locator assetsFileDirectory / 'js'
 			                    / (destinationHash , '.js')) asFileReference.
 			self makeJavaScriptAsset: jsFile to: destinationFile ] ].
 
 	Ride log: 'JavaScript assets ready.' level: #INFO
+]
+
+{ #category : #accessing }
+RideService >> cache [
+
+	^ cache ifNil: [ self initializeCache ]
+]
+
+{ #category : #accessing }
+RideService >> cache: aCache [
+
+	cache := aCache
 ]
 
 { #category : #actions }
@@ -153,9 +186,21 @@ RideService >> databaseStart [
 { #category : #actions }
 RideService >> deleteJavaScriptAssets [
 
-	(self locator assetsFilePath / 'js') asFileReference
+	(Ride resource assetsDirectory / 'js') asFileReference
 		ensureDeleteAllChildren.
 	Ride log: 'JavaScript assets deleted.' level: #INFO
+]
+
+{ #category : #accessing }
+RideService >> getSessionFrom: request [
+
+	^ self sessionGetter value: request
+]
+
+{ #category : #initialization }
+RideService >> initializeCache [
+
+	^ cache := TTLCache new
 ]
 
 { #category : #initialization }
@@ -174,12 +219,6 @@ RideService >> initializeMaitre [
 RideService >> initializeRepository [
 
 	^ repository := RideMemoryRepository new
-]
-
-{ #category : #initialization }
-RideService >> initializeRouter [
-
-	^ router := RideRouter new
 ]
 
 { #category : #initialization }
@@ -203,7 +242,7 @@ RideService >> invalidateSession: aRideSession [
 	"Reset the session cookie"
 	RideCurrentResponse value headers
 		at: 'Set-Cookie'
-		put: Ride service router newResetSessionCookie fullString
+		put: Ride service class newResetSessionCookie fullString
 ]
 
 { #category : #accessing }
@@ -282,10 +321,6 @@ RideService >> reset [
 		| released |
 		released := server.
 		server := nil ].
-	router ifNotNil: [ 
-		| released |
-		released := router.
-		router := nil ].
 	locator ifNotNil: [ 
 		| released |
 		released := locator.
@@ -294,18 +329,6 @@ RideService >> reset [
 		| released |
 		released := sessions.
 		sessions := nil ]
-]
-
-{ #category : #accessing }
-RideService >> router [
-
-	^ router ifNil: [ self initializeRouter ]
-]
-
-{ #category : #accessing }
-RideService >> router: anObject [
-
-	router := anObject
 ]
 
 { #category : #accessing }
@@ -318,6 +341,20 @@ RideService >> server [
 RideService >> server: anObject [
 
 	server := anObject
+]
+
+{ #category : #accessing }
+RideService >> sessionGetter [
+
+	^ sessionGetter ifNil: [ 
+		  RideError signal:
+			  'This service has not definedd its required session getter' ]
+]
+
+{ #category : #accessing }
+RideService >> sessionGetter: anObject [
+
+	sessionGetter := anObject
 ]
 
 { #category : #accessing }
@@ -380,5 +417,5 @@ RideService >> stop [
 { #category : #accessing }
 RideService >> version [
 
-	^ OSEnvironment current at: 'VERSION' ifAbsent: [ 'v?.?.?' ]
+	^ Smalltalk os environment at: 'VERSION' ifAbsent: [ 'v?.?.?' ]
 ]

@@ -6,7 +6,9 @@ Class {
 	#superclass : #Object,
 	#classInstVars : [
 		'logLevelSymbols',
-		'service'
+		'service',
+		'isMaintenance',
+		'resource'
 	],
 	#category : #'Ride-Core'
 }
@@ -26,11 +28,17 @@ Ride class >> defaultLogLevel [
 ]
 
 { #category : #actions }
-Ride class >> draft [
+Ride class >> do [
 
 	"Answers a new Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"
 
 	^ RideDoer new
+]
+
+{ #category : #actions }
+Ride class >> draft [
+
+	^ self do
 ]
 
 { #category : #actions }
@@ -39,6 +47,13 @@ Ride class >> ensure [
 	"Goes to the file system and checks the src/config/ directory for settings that are needed to keep this image properly set for the app."
 
 	
+]
+
+{ #category : #initialization }
+Ride class >> initializeIsMaintenance [
+
+	^ isMaintenance := (Smalltalk os environment at: #MW ifAbsent: [ 0 ])
+		                   asInteger = 1
 ]
 
 { #category : #initialization }
@@ -64,15 +79,22 @@ Ride class >> isDevelopment [
 ]
 
 { #category : #testing }
+Ride class >> isMaintenance [
+
+	^ isMaintenance ifNil: [ self initializeIsMaintenance ]
+]
+
+{ #category : #testing }
 Ride class >> isProduction [
 
 	^ self mode asLowercase = 'production'
 ]
 
-{ #category : #testing }
-Ride class >> isUnderMaintenance [
-
-	^ (Smalltalk os environment at: #MW ifAbsent: [ 0 ]) asInteger = 1
+{ #category : #accessing }
+Ride class >> locator [
+	self deprecated: 'use resource'.
+	self halt.
+	^ RideResource
 ]
 
 { #category : #actions }
@@ -98,7 +120,7 @@ Ride class >> log: aString level: aSymbol [
 { #category : #accessing }
 Ride class >> logLevel [
 
-	^ OSEnvironment current
+	^ Smalltalk os environment
 		  at: 'LOGLEVEL'
 		  ifAbsent: [ self defaultLogLevel ]
 ]
@@ -118,7 +140,7 @@ Ride class >> logLevelSymbols: anObject [
 { #category : #accessing }
 Ride class >> mode [
 
-	^ OSEnvironment current at: #MODE ifAbsent: [ 
+	^ Smalltalk os environment at: #MODE ifAbsent: [ 
 		  RideError signal:
 			  'The environment needs to have defined the MODE env var as production, development or debug' ]
 ]
@@ -145,7 +167,25 @@ Ride class >> reset [
 	service ifNotNil: [ 
 		released := service.
 		service := nil ].
-	logLevelSymbols := nil
+	logLevelSymbols := nil.
+	isMaintenance := nil.
+	RideDeclarativeRouting reset.
+	Ride resource reset.
+	Ride isDevelopment ifTrue: [ Ride resource resetAssetsMapFile ]
+]
+
+{ #category : #accessing }
+Ride class >> resource [
+
+	^ resource ifNil: [ 
+		  RideError signal:
+			  'The application needs a specialized resource resolver and it was not set' ]
+]
+
+{ #category : #accessing }
+Ride class >> resource: aRideResourceClass [
+
+	resource := aRideResourceClass
 ]
 
 { #category : #actions }
@@ -154,12 +194,6 @@ Ride class >> restart [
 	self
 		stop;
 		start
-]
-
-{ #category : #actions }
-Ride class >> scaffold [
-
-	^ RideScaffold 
 ]
 
 { #category : #accessing }

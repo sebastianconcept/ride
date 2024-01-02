@@ -9,7 +9,8 @@ Class {
 
 { #category : #accessing }
 RideDirectoryResolver class >> baseDirectory [
-
+self deprecated: 'use resources projectRootPathString based on PROJECT_ROOT_PATH'.
+self halt.
 	^ OSEnvironment current
 		  at: 'RIDE_WORKING_DIR'
 		  ifAbsent: [ FileSystem workingDirectory ]
@@ -59,7 +60,8 @@ RideDirectoryResolver class >> sharedTemplatesDirectory [
 
 { #category : #accessing }
 RideDirectoryResolver class >> templatesDirectory [
-
+self deprecated: 'use resources'.
+self halt.
 	^ self baseDirectory / 'app' / 'templates'
 ]
 

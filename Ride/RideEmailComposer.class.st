@@ -17,7 +17,7 @@ Class {
 { #category : #accessing }
 RideEmailComposer class >> htmlTemplates [
 
-	^ htmlTemplates ifNil: [ htmlTemplates := Dictionary new ]
+	^ htmlTemplates ifNil: [ htmlTemplates := SmallDictionary new ]
 ]
 
 { #category : #accessing }
@@ -30,7 +30,7 @@ RideEmailComposer class >> reset [
 { #category : #accessing }
 RideEmailComposer class >> textTemplates [
 
-	^ textTemplates ifNil: [ textTemplates := Dictionary new ]
+	^ textTemplates ifNil: [ textTemplates := SmallDictionary new ]
 ]
 
 { #category : #accessing }
