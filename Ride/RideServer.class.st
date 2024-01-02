@@ -210,7 +210,7 @@ RideServer >> htmlMaintenancePage [
 
 	| templateModel maintenanceTemplate |
 	templateModel := {  } asDictionary.
-	maintenanceTemplate := Ride service locate sharedTemplates at:
+	maintenanceTemplate := Ride resource sharedTemplates at:
 		                       #maintenance.
 	(Smalltalk os environment at: #MW_TITLE ifAbsent: [ nil ]) ifNotNil: [ 
 		:string | templateModel at: #title put: string ].
@@ -220,7 +220,7 @@ RideServer >> htmlMaintenancePage [
 		:string | templateModel at: #notes put: string ].
 	^ maintenanceTemplate
 		  value: templateModel
-		  partials: Ride service locate sharedTemplates
+		  partials: Ride resource sharedTemplates
 ]
 
 { #category : #initialization }

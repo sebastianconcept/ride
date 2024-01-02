@@ -63,5 +63,5 @@ Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
 		  value: (aJsonObject
 				   at: #message put: self messageText;
 				   yourself)
-		  partials: Ride service locate sharedTemplates
+		  partials: Ride resource sharedTemplates
 ]
