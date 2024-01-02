@@ -124,7 +124,7 @@ RideResource class >> buildJavaScriptAssetsFor: assetsMap [
 			mappedJsFilename := (assetsMap js at: presenterSelector) at:
 				                    jsSelector.
 			destinationHash := (mappedJsFilename substrings: '.') first.
-			destinationFile := (self locator assetsFileDirectory / 'js'
+			destinationFile := (self assetsFileDirectory / 'js'
 			                    / (destinationHash , '.js')) asFileReference.
 			self makeJavaScriptAsset: jsFile to: destinationFile ] ].
 
