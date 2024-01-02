@@ -8,7 +8,7 @@ Essential core:
 ```Smalltalk
 Metacello new
   baseline: 'Ride';
-  repository: 'github://sebastianconcept/Ride';
+  repository: 'github://sebastianconcept/ride';
   load.
 ```
 
@@ -16,7 +16,7 @@ All optionals:
 ```Smalltalk
 Metacello new
   baseline: 'Ride';
-  repository: 'github://sebastianconcept/Ride';
+  repository: 'github://sebastianconcept/ride';
   load: #('Core' 'Examples' 'Tools').
 ```
 
@@ -63,21 +63,6 @@ Ride draft mvp withJs for: #CoffeeInvoice.
 
 "Have an unstyled but functioning CRUD for the CoffeeInvoice models based on MVP"
 Ride draft mvp crud for: #CoffeeInvoice.
-```
-
-## MVC
-
-If you prefer the completely stateless approach instead, Ride has that with its Model-View-Controller approach:
-
-```smalltalk
-"Create the model and controller classes and mustache template file for CoffeeInvoice"
-Ride draft mvc for: #CoffeeInvoice.
-
-"Same as before but in addition to that it has custom JavaScript"
-Ride draft mvc withJs for: #CoffeeInvoice.
-
-"Have an unstyled but functioning CRUD for the CoffeeInvoice models based on MVC"
-Ride draft mvc crud for: #CoffeeInvoice.
 ```
 
 ## API
