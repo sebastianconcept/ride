@@ -291,6 +291,12 @@ RideServer >> newHttpServer [
 			             (#notFoundHandlerClass -> RideNotFoundTeaHandler) }.
 	((newServer instVarNamed: 'compositeRouter') instVarNamed:
 		 'errorhandlers') removeLast.
+
+	"The application can serve controlled assets via Teapot's static delegate."
+	newServer staticRouter
+		urlPrefix: '/assets'
+		path: Ride resource assetsDirectoryString.
+		
 	^ newServer
 ]
 

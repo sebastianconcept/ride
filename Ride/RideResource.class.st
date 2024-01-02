@@ -199,16 +199,6 @@ RideResource class >> layoutTemplatesDirectory [
 ]
 
 { #category : #accessing }
-RideResource class >> outboxDirectory [
-
-	^ ([ 
-	   Smalltalk os environment
-		   at: 'OUTBOX_PATH'
-		   ifAbsent: [ Smalltalk imageDirectory / 'outbox' ] ] 
-		   systemValueAt: #outboxDirectory) asFileReference
-]
-
-{ #category : #accessing }
 RideResource class >> projectRootDirectory [
 
 	^ Path from: self projectRootDirectoryString

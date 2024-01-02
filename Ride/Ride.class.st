@@ -7,7 +7,8 @@ Class {
 	#classInstVars : [
 		'logLevelSymbols',
 		'service',
-		'isMaintenance'
+		'isMaintenance',
+		'resource'
 	],
 	#category : #'Ride-Core'
 }
@@ -176,7 +177,15 @@ Ride class >> reset [
 { #category : #accessing }
 Ride class >> resource [
 
-	^ RideResource
+	^ resource ifNil: [ 
+		  RideError signal:
+			  'The application needs a specialized resource resolver and it was not set' ]
+]
+
+{ #category : #accessing }
+Ride class >> resource: aRideResourceClass [
+
+	resource := aRideResourceClass
 ]
 
 { #category : #actions }
