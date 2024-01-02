@@ -60,6 +60,24 @@ RideResource class >> assetsMapFile [
 	^ self assetsMapDirectory / 'assets.json'
 ]
 
+{ #category : #actions }
+RideResource class >> assetsSetUp [
+
+	| map jsPath |
+	map := self assetsMap.
+	map ifEmpty: [ 
+		[ 'Assets map not found.' ] logWarning.
+		^ self rebuildJavaScriptAssets ].
+
+	[ 'JavaScript assets map found.' ] logInfo.
+
+	jsPath := (self assetsFileDirectory / 'js') asFileReference
+		          ensureCreateDirectory.
+	jsPath entries isEmpty ifTrue: [ 
+		[ 'No JavaScript assets found.' ] logWarning.
+		self buildJavaScriptAssetsFor: map ]
+]
+
 { #category : #accessing }
 RideResource class >> baseUrl [
 
@@ -67,6 +85,52 @@ RideResource class >> baseUrl [
 	  Smalltalk os environment
 		  at: #RIDE_BASE_URL
 		  ifAbsent: [ self defaultBaseUrl ] ] systemValueAt: #baseUrl
+]
+
+{ #category : #actions }
+RideResource class >> buildJavaScriptAssets [
+
+	| destinationHash destinationFile |
+	[ 'Building JavaScript assets and new map...' ] logInfo.
+	Ride resource javaScriptAssets keysAndValuesDo: [ 
+		:presenterSelector 
+		:assets | 
+		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
+			destinationHash := UUID new asString36.
+			destinationFile := (self assetsDirectory / 'js'
+			                    / (destinationHash , '.js')) asFileReference.
+			self makeJavaScriptAsset: jsFile to: destinationFile.
+			((self assetsMap
+				  at: 'js'
+				  ifAbsentPut: [ Dictionary new ])
+				 at: presenterSelector
+				 ifAbsentPut: [ Dictionary new ])
+				at: jsSelector
+				put: destinationFile basename ] ].
+
+	[ 'JavaScript assets ready.' ] logInfo.
+
+	self writeAssetsMap.
+	[ 'JavaScript assets map updated.' ] logInfo
+]
+
+{ #category : #actions }
+RideResource class >> buildJavaScriptAssetsFor: assetsMap [
+
+	| destinationHash destinationFile mappedJsFilename |
+	Ride log: 'Building JavaScript assets as mapped...' level: #INFO.
+	Ride resource javaScriptAssets keysAndValuesDo: [ 
+		:presenterSelector 
+		:assets | 
+		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
+			mappedJsFilename := (assetsMap js at: presenterSelector) at:
+				                    jsSelector.
+			destinationHash := (mappedJsFilename substrings: '.') first.
+			destinationFile := (self locator assetsFileDirectory / 'js'
+			                    / (destinationHash , '.js')) asFileReference.
+			self makeJavaScriptAsset: jsFile to: destinationFile ] ].
+
+	Ride log: 'JavaScript assets ready.' level: #INFO
 ]
 
 { #category : #defaults }
@@ -85,6 +149,13 @@ RideResource class >> defaultBaseUrl [
 RideResource class >> defaultUploadsBaseDirectoryString [
 
 	^ (Smalltalk imageDirectory / 'uploads') pathString
+]
+
+{ #category : #actions }
+RideResource class >> deleteJavaScriptAssets [
+
+	(self assetsDirectory / 'js') asFileReference ensureDeleteAllChildren.
+	[ 'JavaScript assets deleted.' ] logInfo
 ]
 
 { #category : #accessing }
@@ -198,6 +269,15 @@ RideResource class >> layoutTemplatesDirectory [
 	^ self templatesDirectory / 'layouts'
 ]
 
+{ #category : #actions }
+RideResource class >> makeJavaScriptAsset: jsSourceFile to: destinationFile [
+
+	"We can improve this by minifying it in the destination."
+	self flag: #minifyJs.
+	destinationFile parent ensureCreateDirectory.
+	jsSourceFile copyTo: destinationFile
+]
+
 { #category : #accessing }
 RideResource class >> projectRootDirectory [
 
@@ -223,7 +303,17 @@ RideResource class >> readAssetsMap [
 	file := self assetsMapFile.
 	^ file exists
 		  ifTrue: [ file readStreamDo: [ :stream | Json readFrom: stream ] ]
-		  ifFalse: [ SmallDictionary new asJsonObject ]
+		  ifFalse: [ Dictionary new asJsonObject ]
+]
+
+{ #category : #actions }
+RideResource class >> rebuildJavaScriptAssets [
+
+	[ 'Rebuilding JavaScript assets...' ] logWarning.
+
+	self
+		deleteJavaScriptAssets;
+		buildJavaScriptAssets
 ]
 
 { #category : #actions }
@@ -236,9 +326,9 @@ RideResource class >> reset [
 RideResource class >> resetAssetsMapFile [
 
 	self assetsMapFile deleteIfAbsent: [ 
-		^ Ride log: 'Assets map file not found' level: #WARNING ].
+		^ [ 'Assets map file not found' ] logWarning ].
 
-	Ride log: 'Assets map file deleted' level: #INFO
+	[ 'Assets map file deleted' ] logInfo
 ]
 
 { #category : #accessing }

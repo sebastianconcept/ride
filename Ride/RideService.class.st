@@ -102,68 +102,6 @@ RideService class >> setUp [
 	self log: 'Router setup...'
 ]
 
-{ #category : #actions }
-RideService >> assetsSetUp [
-
-	| map jsPath |
-	map := Ride resource assetsMap.
-	map ifEmpty: [ 
-		Ride log: 'Assets map not found.' level: #WARNING.
-		^ self rebuildJavaScriptAssets ].
-
-	Ride log: 'JavaScript assets map found.'.
-
-	jsPath := (Ride resource assetsFileDirectory / 'js') asFileReference
-		          ensureCreateDirectory.
-	jsPath entries isEmpty ifTrue: [ 
-		Ride log: 'No JavaScript assets found.' level: #WARNING.
-		self buildJavaScriptAssetsFor: map ]
-]
-
-{ #category : #actions }
-RideService >> buildJavaScriptAssets [
-
-	| destinationHash destinationFile |
-	Ride log: 'Building JavaScript assets and new map...' level: #INFO.
-	Ride resource javaScriptAssets keysAndValuesDo: [ 
-		:presenterSelector 
-		:assets | 
-		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
-			destinationHash := UUID new asString36.
-			destinationFile := (Ride resource assetsDirectory / 'js'
-			                    / (destinationHash , '.js')) asFileReference.
-			self makeJavaScriptAsset: jsFile to: destinationFile.
-			((Ride resource assetsMap at: 'js' ifAbsentPut: [ SmallDictionary new ])
-				 at: presenterSelector
-				 ifAbsentPut: [ SmallDictionary new ])
-				at: jsSelector
-				put: destinationFile basename ] ].
-
-	Ride log: 'JavaScript assets ready.' level: #INFO.
-
-	Ride resource writeAssetsMap.
-	Ride log: 'JavaScript assets map updated.' level: #INFO
-]
-
-{ #category : #actions }
-RideService >> buildJavaScriptAssetsFor: assetsMap [
-
-	| destinationHash destinationFile mappedJsFilename |
-	Ride log: 'Building JavaScript assets as mapped...' level: #INFO.
-	Ride resource javaScriptAssets keysAndValuesDo: [ 
-		:presenterSelector 
-		:assets | 
-		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
-			mappedJsFilename := (assetsMap js at: presenterSelector) at:
-				                    jsSelector.
-			destinationHash := (mappedJsFilename substrings: '.') first.
-			destinationFile := (self locator assetsFileDirectory / 'js'
-			                    / (destinationHash , '.js')) asFileReference.
-			self makeJavaScriptAsset: jsFile to: destinationFile ] ].
-
-	Ride log: 'JavaScript assets ready.' level: #INFO
-]
-
 { #category : #accessing }
 RideService >> cache [
 
@@ -181,14 +119,6 @@ RideService >> databaseStart [
 
 	Ride log: 'Database starting...'.
 	self repository databaseStartOn: self
-]
-
-{ #category : #actions }
-RideService >> deleteJavaScriptAssets [
-
-	(Ride resource assetsDirectory / 'js') asFileReference
-		ensureDeleteAllChildren.
-	Ride log: 'JavaScript assets deleted.' level: #INFO
 ]
 
 { #category : #accessing }
@@ -277,29 +207,10 @@ RideService >> maitre: anObject [
 	maitre := anObject
 ]
 
-{ #category : #actions }
-RideService >> makeJavaScriptAsset: jsSourceFile to: destinationFile [
-
-	"We can improve this by minifying it in the destination."
-
-	destinationFile parent ensureCreateDirectory.
-	jsSourceFile copyTo: destinationFile
-]
-
 { #category : #accessing }
 RideService >> newSessionId [
 
 	^ self class newSessionId
-]
-
-{ #category : #actions }
-RideService >> rebuildJavaScriptAssets [
-
-	Ride log: 'Rebuilding JavaScript assets...' level: #WARNING.
-
-	self
-		deleteJavaScriptAssets;
-		buildJavaScriptAssets
 ]
 
 { #category : #accessing }
@@ -372,12 +283,11 @@ RideService >> sessions: anObject [
 { #category : #actions }
 RideService >> setUp [
 
-	Ride log: ('{1} setup...' format: { self class name }).
+	[ '{1} setup...' format: { self class name } ] logInfo.
 	self class setUp.
-	
-	Ride log: 'Assets setup...'.
-	self assetsSetUp.
-	
+
+	[ 'Assets setup...' ] logInfo.
+	Ride resource assetsSetUp
 ]
 
 { #category : #actions }
