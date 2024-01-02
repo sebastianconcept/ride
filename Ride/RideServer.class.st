@@ -337,7 +337,7 @@ RideServer >> onWebSocketConnected: aWebSocket [
 { #category : #reactions }
 RideServer >> onWebSocketMessage: message for: aRideSession [
 
-	Ride log: 'onMessage' , message asString level: #DEBUG.
+	[ 'onMessage' , message asString ] logDebug.
 	aRideSession onWebSocketMessage: (Json readFrom: message readStream)
 ]
 
@@ -446,7 +446,7 @@ RideServer >> setExceptionHandlers [
 		exception: RideNotFoundError -> [ :ex :req | 
 				| templateModel |
 				response := TeaResponse notFound.
-				Ride log: ex printString level: #ERROR.
+				[ ex printString ] logError.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
 				templateModel := Ride resource sharedTemplates copy
 					                 at: #status put: response code asString;
@@ -457,8 +457,7 @@ RideServer >> setExceptionHandlers [
 						put: { (#messageText -> ex messageText) } asDictionary ].
 				response body: (ex
 						 renderHtmlWith: templateModel
-						 on:
-						 (Ride resource sharedTemplates at: response code asString)).
+						 on: (Ride resource sharedTemplates at: response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;
@@ -469,15 +468,13 @@ RideServer >> setExceptionHandlers [
 	self teapot
 		exception: Error -> [ :ex :req | 
 				response := TeaResponse serverError.
-				Ride log: ex printString level: #ERROR.
+				[ ex printString ] logError.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
 
 				response body: (ex
 							 renderHtmlWith:
 								 { (#status -> response code) } asDictionary asJsonObject
-							 on:
-								 (Ride resource sharedTemplates at:
-										  response code asString)).
+							 on: (Ride resource sharedTemplates at: response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;

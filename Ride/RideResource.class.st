@@ -13,7 +13,7 @@ Class {
 { #category : #accessing }
 RideResource class >> appDirectory [
 
-	^ self projectRootDirectory/ 'app'
+	^ self projectRootDirectory / 'app'
 ]
 
 { #category : #accessing }
@@ -92,7 +92,7 @@ RideResource class >> buildJavaScriptAssets [
 
 	| destinationHash destinationFile |
 	[ 'Building JavaScript assets and new map...' ] logInfo.
-	Ride resource javaScriptAssets keysAndValuesDo: [ 
+	self javaScriptAssets keysAndValuesDo: [ 
 		:presenterSelector 
 		:assets | 
 		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
@@ -118,10 +118,8 @@ RideResource class >> buildJavaScriptAssets [
 RideResource class >> buildJavaScriptAssetsFor: assetsMap [
 
 	| destinationHash destinationFile mappedJsFilename |
-	Ride log: 'Building JavaScript assets as mapped...' level: #INFO.
-	Ride resource javaScriptAssets keysAndValuesDo: [ 
-		:presenterSelector 
-		:assets | 
+	[ 'Building JavaScript assets as mapped...' ] logInfo.
+	self javaScriptAssets keysAndValuesDo: [ :presenterSelector :assets | 
 		assets copy keysAndValuesDo: [ :jsSelector :jsFile | 
 			mappedJsFilename := (assetsMap js at: presenterSelector) at:
 				                    jsSelector.
@@ -130,7 +128,7 @@ RideResource class >> buildJavaScriptAssetsFor: assetsMap [
 			                    / (destinationHash , '.js')) asFileReference.
 			self makeJavaScriptAsset: jsFile to: destinationFile ] ].
 
-	Ride log: 'JavaScript assets ready.' level: #INFO
+	[ 'JavaScript assets ready.' ] logInfo
 ]
 
 { #category : #defaults }
@@ -172,7 +170,7 @@ RideResource class >> getJavaScriptAssets [
 
 	| assets jsFiles presenterJavaScript |
 	assets := SmallDictionary new.
-	Ride resource viewTemplatesDirectory asFileReference directories do: [ 
+	self viewTemplatesDirectory asFileReference directories do: [ 
 		:path | 
 		jsFiles := path files select: [ :e | e extension = 'js' ].
 		presenterJavaScript := SmallDictionary new.
@@ -211,26 +209,26 @@ RideResource class >> getTemplates [
 	self layoutTemplatesDirectory asFileReference files do: [ :file | 
 		(newTemplates
 			 at:
-			 Ride resource layoutTemplatesDirectory basenameWithoutExtension
+			 self layoutTemplatesDirectory basenameWithoutExtension
 			 ifAbsentPut: [ JsonObject new ])
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].
-	Ride resource sharedTemplatesDirectory asFileReference files do: [ 
+	self sharedTemplatesDirectory asFileReference files do: [ 
 		:file | 
 		(newTemplates
 			 at:
-			 Ride resource sharedTemplatesDirectory basenameWithoutExtension
+			 self sharedTemplatesDirectory basenameWithoutExtension
 			 ifAbsentPut: [ JsonObject new ])
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].
 	newEmailTemplates := JsonObject new.
-	Ride resource emailTemplatesDirectory asFileReference directories 
+	self emailTemplatesDirectory asFileReference directories 
 		do: [ :path | 
 			newEmailTemplates
 				at: path basenameWithoutExtension
 				put: (self getTemplatesFrom: path) ].
 	newTemplates
-		at: Ride resource emailTemplatesDirectory basenameWithoutExtension
+		at: self emailTemplatesDirectory basenameWithoutExtension
 		put: newEmailTemplates.
 	^ newTemplates
 ]
@@ -319,6 +317,7 @@ RideResource class >> rebuildJavaScriptAssets [
 { #category : #actions }
 RideResource class >> reset [
 
+	[ '{1} values reset' format: { self name } ] logDebug.
 	values := nil
 ]
 

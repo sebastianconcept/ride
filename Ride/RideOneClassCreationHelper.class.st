@@ -39,11 +39,10 @@ RideOneClassCreationHelper >> newClassNamed: aSymbol [
 		assert: (Smalltalk includesKey: className asSymbol) not
 		description:
 		('{1} already exists in this image.' format: { className }).
-	Ride
-		log: ('Adding subclass {1} to {2} in package' format: { 
-					 className.
-					 targetedSuperclass name })
-		level: #INFO.
+	[ 
+	'Adding subclass {1} to {2} in package' format: { 
+			className.
+			targetedSuperclass name } ] logInfo.
 	^ self newClassNamed: className withSuperclass: targetedSuperclass
 ]
 
@@ -83,11 +82,10 @@ RideOneClassCreationHelper >> newClassNamed: className on: aSuperclass [
 		assert: (Smalltalk includesKey: subclassName asSymbol) not
 		description:
 		('{1} already exists in this image.' format: { subclassName }).
-	Ride
-		log: ('Adding subclass {1} to {2}' format: { 
-					 subclassName.
-					 aSuperclass name })
-		level: #INFO.
+	[ 
+	'Adding subclass {1} to {2}' format: { 
+			subclassName.
+			aSuperclass name } ] logInfo.
 	^ self
 		  newClassNamed: subclassName
 		  instVars: ''

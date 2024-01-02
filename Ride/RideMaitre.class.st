@@ -92,16 +92,14 @@ RideMaitre >> reset [
 RideMaitre >> start [
 
 	self actionsQueue start.
-	Ride
-		log:
-		('{1} started the actions queue...' format: { self class name })
-		level: #INFO.
+
+	[ '{1} started the actions queue...' format: { self class name } ]
+		logInfo.
 	self actionsPool start.
-	Ride
-		log: ('{1} prepared {2} workers for its action pool...' format: { 
-					 self class name.
-					 self class workersPoolSize asString })
-		level: #INFO
+	[ 
+	'{1} prepared {2} workers for its action pool...' format: { 
+			self class name.
+			self class workersPoolSize asString } ] logInfo
 ]
 
 { #category : #actions }

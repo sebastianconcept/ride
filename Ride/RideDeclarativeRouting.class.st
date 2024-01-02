@@ -49,7 +49,7 @@ RideDeclarativeRouting class >> handlerOfHttpMethod [
 	  path := methodAndPath value.
 	  association := path -> [ :req | 
 	                 | session presenter response renderedContent |
-	                 Ride log: req uri asString level: #DEBUG.
+	                 [ req uri asString ] logDebug.
 	                 currentRequest := RideCurrentRequest value.
 	                 session := Ride service getSessionFrom: req.
 	                 response := TeaResponse ok.
@@ -72,14 +72,13 @@ RideDeclarativeRouting class >> handlerOfHttpMethod [
 		  perform: ('{1}:' format: { method }) asSymbol with: association;
 		  output: outputType.
 
-	  Ride
-		  log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					   method.
-					   path.
-					   presenterClassAndMessage key.
-					   presenterClassAndMessage value.
-					   outputType })
-		  level: #INFO ]
+	  [ 
+	  'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			  method.
+			  path.
+			  presenterClassAndMessage key.
+			  presenterClassAndMessage value.
+			  outputType } ] logInfo ]
 ]
 
 { #category : #handlers }
@@ -207,7 +206,7 @@ RideDeclarativeRouting class >> setResourceRouteFor: modelClass handledBy: prese
 { #category : #handlers }
 RideDeclarativeRouting class >> setResourceRouteFor: modelClass handledBy: presenterClass path: path output: aSymbol on: rideServer [
 
-	| index withId newModel edit delete update presenter answer handler currentRequest |
+	| index withId newModel edit delete update presenter answer handler |
 	index := path.
 	withId := '{1}/<jobId>' format: { path }.
 	newModel := '{1}/new' format: { path }.
@@ -216,7 +215,7 @@ RideDeclarativeRouting class >> setResourceRouteFor: modelClass handledBy: prese
 
 	handler := [ :actionSelector :req | 
 	           | session |
-	           Ride log: req uri asString level: #DEBUG.
+	           [ req uri asString ] logDebug.
 	           RideCurrentRequest value: req during: [ 
 		           session := Ride service getSessionFrom: req.
 		           RideCurrentSession value: session during: [ 
@@ -228,111 +227,94 @@ RideDeclarativeRouting class >> setResourceRouteFor: modelClass handledBy: prese
 	rideServer teapot
 		GET: index -> [ :req | handler value: #index value: req ];
 		output: aSymbol.
-	"Ride log: ('Defined route GET {1}' format: { index }) level: #INFO."
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #GET.
-					 index.
-					 presenterClass name.
-					 #index.
-					 aSymbol })
-		level: #INFO.
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#GET.
+			index.
+			presenterClass name.
+			#index.
+			aSymbol } ] logInfo.
 
 
 	rideServer teapot
 		GET: withId -> [ :req | handler value: #show value: req ];
 		output: aSymbol.
-	"Ride log: ('Defined route GET {1}' format: { withId }) level: #INFO."
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #GET.
-					 withId.
-					 presenterClass name.
-					 #show.
-					 aSymbol })
-		level: #INFO.
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#GET.
+			withId.
+			presenterClass name.
+			#show.
+			aSymbol } ] logInfo.
 
 	rideServer teapot
 		GET: newModel -> [ :req | handler value: #newModel value: req ];
 		output: aSymbol.
-	"Ride log: ('Defined route GET {1}' format: { newModel }) level: #INFO."
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #GET.
-					 newModel.
-					 presenterClass name.
-					 #newModel.
-					 aSymbol })
-		level: #INFO.
+
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#GET.
+			newModel.
+			presenterClass name.
+			#newModel.
+			aSymbol } ] logInfo.
 
 	rideServer teapot
 		GET: edit -> [ :req | handler value: #edit value: req ];
 		output: aSymbol.
-	"Ride log: ('Defined route GET {1}' format: { edit }) level: #INFO."
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #GET.
-					 edit.
-					 presenterClass name.
-					 #edit.
-					 aSymbol })
-		level: #INFO.
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#GET.
+			edit.
+			presenterClass name.
+			#edit.
+			aSymbol } ] logInfo.
 
 	rideServer teapot
 		POST: path -> [ :req | handler value: #create value: req ];
 		output: aSymbol.
-	"Ride log: ('Defined route POST {1}' format: { path }) level: #INFO."
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #POST.
-					 path.
-					 presenterClass name.
-					 #create.
-					 aSymbol })
-		level: #INFO.
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#POST.
+			path.
+			presenterClass name.
+			#create.
+			aSymbol } ] logInfo.
 
 	update := path -> [ :req | handler value: #update value: req ].
 
 	rideServer teapot
 		PATCH: update;
 		output: aSymbol.
-	"Ride log: ('Defined route PATCH {1}' format: { path }) level: #INFO."
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #PATCH.
-					 path.
-					 presenterClass name.
-					 #update.
-					 aSymbol })
-		level: #INFO.
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#PATCH.
+			path.
+			presenterClass name.
+			#update.
+			aSymbol } ] logInfo.
 
 	rideServer teapot
 		PUT: update;
 		output: aSymbol.
-	"Ride log: ('Defined route PUT {1}' format: { path }) level: #INFO."
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #PUT.
-					 path.
-					 presenterClass name.
-					 #update.
-					 aSymbol })
-		level: #INFO.
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#PUT.
+			path.
+			presenterClass name.
+			#update.
+			aSymbol } ] logInfo.
 
 	rideServer teapot
 		DELETE: delete -> [ :req | handler value: #destroy value: req ];
 		output: aSymbol.
-	"Ride
-		log: ('Defined route DELETE {1}' format: { delete })
-		level: #INFO"
-	Ride
-		log: ('Route {1} {2} -> {3}>>{4} -> {5}' format: { 
-					 #DELETE.
-					 delete.
-					 presenterClass name.
-					 #destroy.
-					 aSymbol })
-		level: #INFO
+	[ 
+	'Route {1} {2} -> {3}>>{4} -> {5}' format: { 
+			#DELETE.
+			delete.
+			presenterClass name.
+			#destroy.
+			aSymbol } ] logInfo
 ]
 
 { #category : #handlers }

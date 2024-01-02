@@ -155,12 +155,6 @@ Ride class >> purgeUploadsDirectory [
 ]
 
 { #category : #actions }
-Ride class >> reportedError: aString [
-
-	self log: aString level: #ERROR
-]
-
-{ #category : #actions }
 Ride class >> reset [
 
 	| released |
@@ -212,7 +206,7 @@ Ride class >> service: anObject [
 Ride class >> shutDown [
 
 	super shutDown.
-	self log: 'Shutting down...' level: #INFO.
+	[ 'Shutting down...' ] logInfo.
 	self stop.
 	self reset
 ]
@@ -226,14 +220,14 @@ Ride class >> start [
 { #category : #actions }
 Ride class >> startUp [
 
-	| message |
 	super startUp.
-	self log: 'Pharo starting up...' level: #INFO.
-	Smalltalk vm maxExternalSemaphoresSilently: 32 *1000.
-	ZnOptions globalDefault at: #maximumNumberOfConcurrentConnections put: 1000.
+	[ 'Pharo starting up...' ] logInfo.
+	Smalltalk vm maxExternalSemaphoresSilently: 32 * 1000.
+	ZnOptions globalDefault
+		at: #maximumNumberOfConcurrentConnections
+		put: 1000.
 	self isDebugMode ifTrue: [ 
-		message := 'Starting up service in debug mode.'.
-		self log: message level: #WARNING ].
+		[ 'Starting up service in debug mode.' ] logWarning ].
 	self start
 ]
 
