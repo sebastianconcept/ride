@@ -44,12 +44,6 @@ RideDoer >> app [
 ]
 
 { #category : #accessing }
-RideDoer >> controller [
-
-	^ RideControllerHelper new
-]
-
-{ #category : #accessing }
 RideDoer >> db [
 
 	^ RideDatabaseHelper new
@@ -71,14 +65,6 @@ RideDoer >> initializePackageName [
 RideDoer >> model [
 
 	^ RideModelHelper new
-]
-
-{ #category : #accessing }
-RideDoer >> mvc [
-
-	^ RideMVCHelper new
-		  doer: self;
-		  yourself
 ]
 
 { #category : #accessing }

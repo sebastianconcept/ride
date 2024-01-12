@@ -12,12 +12,6 @@ Class {
 }
 
 { #category : #accessing }
-RideCompositeHelper >> controllerForModel: aSymbol [
-
-	^ Smalltalk at: (doer controller classNameFor: aSymbol) asSymbol
-]
-
-{ #category : #accessing }
 RideCompositeHelper >> doer [
 
 	^ doer

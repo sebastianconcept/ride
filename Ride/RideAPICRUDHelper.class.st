@@ -11,6 +11,6 @@ Class {
 RideAPICRUDHelper >> for: aSymbol [
 
 	super for: aSymbol.
-	doer controller for: aSymbol.	
-	self addCRUDMethodsTo: (self controllerForModel: aSymbol) for: aSymbol
+	doer presenter for: aSymbol.	
+	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol
 ]
