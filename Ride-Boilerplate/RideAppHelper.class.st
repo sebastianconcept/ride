@@ -38,11 +38,13 @@ RideAppHelper >> for: aSymbol [
 
 	self sessionClass for: aSymbol.
 	self maitreClass for: aSymbol.
+	self resourceClass for: aSymbol.
 	self appClass for: aSymbol.
 	self serverClass for: aSymbol.
 	self appErrorClass for: aSymbol.
 	self abstractModelClass for: aSymbol.
-	self abstractPresenterClass for: aSymbol
+	self abstractPresenterClass for: aSymbol.
+
 ]
 
 { #category : #testing }
@@ -55,6 +57,12 @@ RideAppHelper >> hasValidPackageName: aSymbol [
 RideAppHelper >> maitreClass [
 
 	^ RideMaitreClassHelper new
+]
+
+{ #category : #accessing }
+RideAppHelper >> resourceClass [
+
+	^ RideResourceClassHelper new
 ]
 
 { #category : #accessing }

@@ -8,6 +8,35 @@ Class {
 }
 
 { #category : #accessing }
+RideAppClassHelper class >> applicationResourceClassMethodFor: aSymbol [
+
+	^ 'applicationResourceClass
+	
+	^ {1}Resource' format: { aSymbol }
+]
+
+{ #category : #accessing }
+RideAppClassHelper class >> initializeRepositoryMethodFor: aSymbol [
+
+	^ 'initializeRepository
+
+	^ repository := MaplessSQLiteRepository
+		                for: ''{1}''
+		                with:
+		                (MaplessSQLitePool on:
+			                 Ride resource databaseFile pathString)' format:
+		  { aSymbol uncapitalized }
+]
+
+{ #category : #accessing }
+RideAppClassHelper class >> initializeServerMethodFor: aSymbol [
+
+	^ 'initializeServer
+
+	^ server := {1}Server new' format: { aSymbol }
+]
+
+{ #category : #accessing }
 RideAppClassHelper class >> installMethodFor: aSymbol [
 
 	^ 'install
@@ -17,7 +46,7 @@ RideAppClassHelper class >> installMethodFor: aSymbol [
 	Ride service maitre: {1}Maitre new' format: { aSymbol }
 ]
 
-{ #category : #'instance creation' }
+{ #category : #accessing }
 RideAppClassHelper class >> newSessionWith_UrlMethodFor: aSymbol [
 
 	^ 'newSessionWith: sessionId url: anUrl
@@ -26,6 +55,30 @@ RideAppClassHelper class >> newSessionWith_UrlMethodFor: aSymbol [
 
 	^ {1}Session newWith: sessionId url: anUrl
 ' format: { aSymbol }
+]
+
+{ #category : #actions }
+RideAppClassHelper >> addApplicationResourceClassMethodTo: aClass for: aSymbol [
+
+	aClass class compile:
+		(self class applicationResourceClassMethodFor: aSymbol).
+	aClass class organization
+		classify: #applicationResourceClass
+		under: 'accessing'
+]
+
+{ #category : #actions }
+RideAppClassHelper >> addInitializeRepositoryMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class initializeRepositoryMethodFor: aSymbol).
+	aClass organization classify: #initializeRepository under: 'initialization'
+]
+
+{ #category : #actions }
+RideAppClassHelper >> addInitializeServerMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class initializeServerMethodFor: aSymbol).
+	aClass organization classify: #initializeServer under: 'initialization'
 ]
 
 { #category : #actions }
@@ -60,8 +113,12 @@ RideAppClassHelper >> for: aSymbol [
 
 	| appClass |
 	appClass := super for: aSymbol.
+
 	self addNewSessionWith_UrlMethodTo: appClass for: aSymbol.
-	self addInstallMethodTo: appClass for: aSymbol
+	self addInstallMethodTo: appClass for: aSymbol.
+	self addApplicationResourceClassMethodTo: appClass for: aSymbol.
+	self addInitializeServerMethodTo: appClass for: aSymbol.
+	self addInitializeRepositoryMethodTo: appClass for: aSymbol
 ]
 
 { #category : #accessing }

@@ -27,25 +27,11 @@ Class {
 }
 
 { #category : #accessing }
-RideServer class >> databaseName [
-
-	^ Smalltalk os environment
-		  at: #DB_NAME
-		  ifAbsent: [ self defaultDatabaseName ]
-]
-
-{ #category : #accessing }
 RideServer class >> debugMode [
 
 	^ (Smalltalk os environment
 		   at: #HTTP_DEBUG
 		   ifAbsent: [ self defaultDebugMode ]) asInteger > 0
-]
-
-{ #category : #accessing }
-RideServer class >> defaultDatabaseName [
-
-	^ self subclassResponsibility
 ]
 
 { #category : #accessing }

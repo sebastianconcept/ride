@@ -10,7 +10,7 @@ Class {
 { #category : #actions }
 RideViewHelper >> for: aSymbol [
 
-	RideError signal:
+	RideBoilerplateError signal:
 		('You need to specify the type of view for {1}. Check my accessor methods to see what''s available.' 
 			 format: { aSymbol })
 ]

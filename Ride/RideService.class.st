@@ -20,6 +20,12 @@ Class {
 }
 
 { #category : #accessing }
+RideService class >> applicationResourceClass [
+
+	self subclassResponsibility
+]
+
+{ #category : #accessing }
 RideService class >> getSessionGetter [
 
 	^ [ :request | 
@@ -33,7 +39,9 @@ RideService class >> getSessionGetter [
 { #category : #accessing }
 RideService class >> install [
 
-	Ride service: self new
+	Ride
+		service: self new;
+		resource: self applicationResourceClass
 ]
 
 { #category : #actions }
@@ -71,6 +79,15 @@ RideService class >> newSessionId [
 RideService class >> newSessionWith: sessionId url: anUrl [
 
 	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideService class >> restart [
+
+	Ride stop.
+	Smalltalk garbageCollect.
+	self install.
+	Ride start
 ]
 
 { #category : #accessing }
@@ -113,6 +130,14 @@ RideService >> databaseStart [
 
 	Ride log: 'Database starting...'.
 	self repository databaseStartOn: self
+]
+
+{ #category : #actions }
+RideService >> databaseStop [
+
+	repository ifNotNil: [ 
+		Ride log: 'Database shutting down...'.
+		self repository shutDown ]
 ]
 
 { #category : #accessing }
@@ -228,6 +253,18 @@ RideService >> reset [
 		sessions := nil ]
 ]
 
+{ #category : #actions }
+RideService >> restart [
+
+	Ride stop.
+	Smalltalk garbageCollect.
+	self ~= RideService ifFalse: [ 
+		RideError signal:
+			'The Ride service should be the one for a concrete Ride-based application' ].
+	self install.
+	Ride start
+]
+
 { #category : #accessing }
 RideService >> server [
 
@@ -306,6 +343,7 @@ RideService >> stop [
 	Ride log: ('{1} stopping...' format: { self class name }).
 	self maitre stop.
 	self server stop.
+	self databaseStop.
 	Ride log: ('{1} stopped' format: { self class name }).
 	self reset
 ]
