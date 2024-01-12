@@ -20,6 +20,12 @@ RideAppHelper >> defaultCommentsFor: aSymbol [
 		  format: { aSymbol asString }
 ]
 
+{ #category : #accessing }
+RideAppHelper >> targetPackageNameTag [
+
+	^ 'Core'
+]
+
 { #category : #private }
 RideAppHelper >> targetedSuperclass [
 

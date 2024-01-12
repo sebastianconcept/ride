@@ -1,14 +1,14 @@
 "
-I help with the boilerplate of views made with mustache templates
+I help with the boilerplate of views made out of STTemplate
 "
 Class {
-	#name : #RideMustacheHelper,
+	#name : #RideSTTemplateHelper,
 	#superclass : #RideAbstractTemplateHelper,
 	#category : #'Ride-Boilerplate'
 }
 
 { #category : #accessing }
-RideMustacheHelper class >> defaultJavaScriptFor: aSymbol [
+RideSTTemplateHelper class >> defaultJavaScriptFor: aSymbol [
 
 	^ 'window.addEventListener("load", (event) => \{
   console.log("{1} initialized");
@@ -17,20 +17,20 @@ RideMustacheHelper class >> defaultJavaScriptFor: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> defaultViewTemplate [
+RideSTTemplateHelper class >> defaultViewTemplate [
 
 	^ '<h1>{{title}}</h1>'
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> defaultViewTemplateWithJs [
+RideSTTemplateHelper class >> defaultViewTemplateWithJs [
 
 	^ '<h1>{{title}}</h1>
 <script type="text/javascript" src="{{ indexJs }}"></script>'
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> editMustacheTemplateContent: aSymbol [
+RideSTTemplateHelper class >> editMustacheTemplateContent: aSymbol [
 
 	^ '<h1>Editing {1}</h1>
 \{\{>form{1}\}\}
@@ -47,7 +47,7 @@ RideMustacheHelper class >> editMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> formMustacheTemplateContent: aSymbol [
+RideSTTemplateHelper class >> formMustacheTemplateContent: aSymbol [
 
 	^ '<form action="/{1}/\{\{modelId\}\}" method="POST" accept-charset="UTF-8">
   \{\{>userFeedback\}\}
@@ -65,13 +65,13 @@ RideMustacheHelper class >> formMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> getPathFor: aSymbol [
+RideSTTemplateHelper class >> getPathFor: aSymbol [
 
 	^ Ride resource viewsDirectory / aSymbol asPlural asSnakeCase
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> indexMustacheTemplateContent: aSymbol [
+RideSTTemplateHelper class >> indexMustacheTemplateContent: aSymbol [
 
 	^ '\{\{#notice\}\}
   <p style="color: green">\{\{notice\}\}</p>
@@ -97,13 +97,13 @@ RideMustacheHelper class >> indexMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> loadCustomJsScriptElement [
+RideSTTemplateHelper class >> loadCustomJsScriptElement [
 
 	^ '<script type="text/javascript" src="{{ indexJs }}"></script>'
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> modelMustacheTemplateContent: aSymbol [
+RideSTTemplateHelper class >> modelMustacheTemplateContent: aSymbol [
 
 	^ '<div data-id="\{\{modelId\}\}">
   <p>
@@ -115,7 +115,7 @@ RideMustacheHelper class >> modelMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> newModelMustacheTemplateContent: aSymbol [
+RideSTTemplateHelper class >> newModelMustacheTemplateContent: aSymbol [
 
 	^ '<h1>New {1}</h1>
 \{\{>form{1}\}\}
@@ -130,7 +130,7 @@ RideMustacheHelper class >> newModelMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> showMustacheTemplateContent: aSymbol [
+RideSTTemplateHelper class >> showMustacheTemplateContent: aSymbol [
 
 	^ '\{\{#notice\}\}
   <p style="color: green">\{\{notice\}\}</p>
@@ -153,7 +153,7 @@ RideMustacheHelper class >> showMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudEditFor: aSymbol [
+RideSTTemplateHelper >> crudEditFor: aSymbol [
 
 	| targetPath rendered templateFilename |
 	"Find the right path for the view template"
@@ -177,7 +177,7 @@ RideMustacheHelper >> crudEditFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudFormFor: aSymbol [
+RideSTTemplateHelper >> crudFormFor: aSymbol [
 
 	| targetPath rendered templateFilename |
 	"Find the right path for the view template"
@@ -201,7 +201,7 @@ RideMustacheHelper >> crudFormFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudIndexFor: aSymbol [
+RideSTTemplateHelper >> crudIndexFor: aSymbol [
 
 	| targetPath rendered |
 	"Find the right path for the view template"
@@ -233,7 +233,7 @@ RideMustacheHelper >> crudIndexFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudModelFor: aSymbol [
+RideSTTemplateHelper >> crudModelFor: aSymbol [
 
 	| targetPath rendered templateFilename |
 	"Find the right path for the view template"
@@ -257,7 +257,7 @@ RideMustacheHelper >> crudModelFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudNewModelFor: aSymbol [
+RideSTTemplateHelper >> crudNewModelFor: aSymbol [
 
 	| targetPath rendered templateFilename |
 	"Find the right path for the view template"
@@ -281,7 +281,7 @@ RideMustacheHelper >> crudNewModelFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudShowFor: aSymbol [
+RideSTTemplateHelper >> crudShowFor: aSymbol [
 
 	| targetPath rendered templateFilename |
 	"Find the right path for the view template"
@@ -305,7 +305,7 @@ RideMustacheHelper >> crudShowFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> for: aSymbol [
+RideSTTemplateHelper >> for: aSymbol [
 
 	| targetPath rendered |
 	"Find the right path for the view template"

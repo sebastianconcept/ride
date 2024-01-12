@@ -29,7 +29,7 @@ RideOneClassCreationHelper >> for: aSymbol [
 	^ newClass
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: aSymbol [
 
 	| className targetedSuperclass |
@@ -43,11 +43,11 @@ RideOneClassCreationHelper >> newClassNamed: aSymbol [
 	'Adding new class {1} as subclass of {2} in {3} package' format: { 
 			className.
 			targetedSuperclass name.
-			Ride draft packageName } ] logInfo.
+			self targetPackageName } ] logInfo.
 	^ self newClassNamed: className withSuperclass: targetedSuperclass
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: className instVars: instVars classVars: classVars packageNamed: packageName [
 
 	^ self
@@ -58,7 +58,7 @@ RideOneClassCreationHelper >> newClassNamed: className instVars: instVars classV
 		  withSuperclass: Object
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: className instVars: instVars classVars: classVars packageNamed: packageName withSuperclass: aClass [
 
 	| template |
@@ -91,17 +91,37 @@ RideOneClassCreationHelper >> newClassNamed: className on: aSuperclass [
 		  newClassNamed: subclassName
 		  instVars: ''
 		  classVars: ''
-		  packageNamed: Ride draft packageName
+		  packageNamed: self targetPackageName
 		  withSuperclass: aSuperclass
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: className withSuperclass: aClass [
 
 	^ self
 		  newClassNamed: className
 		  instVars: ''
 		  classVars: ''
-		  packageNamed: Ride draft packageName
+		  packageNamed: self targetPackageName
 		  withSuperclass: aClass
+]
+
+{ #category : #accessing }
+RideOneClassCreationHelper >> targetPackageName [
+
+	^ '{1}-{2}' format: { 
+			  self targetPackageNameRoot.
+			  self targetPackageNameTag }
+]
+
+{ #category : #accessing }
+RideOneClassCreationHelper >> targetPackageNameRoot [
+
+	^ Ride draft packageName
+]
+
+{ #category : #accessing }
+RideOneClassCreationHelper >> targetPackageNameTag [
+
+	^ self subclassResponsibility
 ]

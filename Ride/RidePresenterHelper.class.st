@@ -19,6 +19,12 @@ RidePresenterHelper >> defaultCommentsFor: aSymbol [
 	^ 'I am the presenter for {1} models' format: { aSymbol asString }
 ]
 
+{ #category : #accessing }
+RidePresenterHelper >> targetPackageNameTag [
+
+	^ 'Presenters'
+]
+
 { #category : #private }
 RidePresenterHelper >> targetedSuperclass [
 

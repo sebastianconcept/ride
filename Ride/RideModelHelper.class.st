@@ -19,6 +19,12 @@ RideModelHelper >> defaultCommentsFor: aSymbol [
 	^ 'I am {1} model' format: { aSymbol asString }
 ]
 
+{ #category : #accessing }
+RideModelHelper >> targetPackageNameTag [
+
+	^ 'Models'
+]
+
 { #category : #private }
 RideModelHelper >> targetedSuperclass [
 
