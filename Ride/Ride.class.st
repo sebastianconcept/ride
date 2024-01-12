@@ -28,7 +28,7 @@ Ride class >> defaultLogLevel [
 ]
 
 { #category : #actions }
-Ride class >> do [
+Ride class >> doer [
 
 	"Answers a new Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"
 
@@ -38,7 +38,7 @@ Ride class >> do [
 { #category : #actions }
 Ride class >> draft [
 
-	^ self do
+	^ self doer
 ]
 
 { #category : #actions }
@@ -46,7 +46,7 @@ Ride class >> ensure [
 
 	"Goes to the file system and checks the src/config/ directory for settings that are needed to keep this image properly set for the app."
 
-	
+	self notYetImplemented
 ]
 
 { #category : #initialization }

@@ -19,18 +19,6 @@ Class {
 }
 
 { #category : #accessing }
-RideNameNormalizer class >> controllerNameFromModelName: aString [
-
-	^ self controllerNameFromURISegment: aString
-]
-
-{ #category : #accessing }
-RideNameNormalizer class >> controllerNameFromURISegment: aString [
-
-	^ self nameFromURISegment: aString suffixedWith: 'Controller'
-]
-
-{ #category : #accessing }
 RideNameNormalizer class >> nameFromURISegment: aString suffixedWith: anotherString [
 
 	"Camel cases and adds anotherString capitalized as suffix"

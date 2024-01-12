@@ -40,9 +40,10 @@ RideOneClassCreationHelper >> newClassNamed: aSymbol [
 		description:
 		('{1} already exists in this image.' format: { className }).
 	[ 
-	'Adding subclass {1} to {2} in package' format: { 
+	'Adding new class {1} as subclass of {2} in {3} package' format: { 
 			className.
-			targetedSuperclass name } ] logInfo.
+			targetedSuperclass name.
+			Ride draft packageName } ] logInfo.
 	^ self newClassNamed: className withSuperclass: targetedSuperclass
 ]
 
