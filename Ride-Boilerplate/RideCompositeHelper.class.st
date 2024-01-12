@@ -53,6 +53,15 @@ RideCompositeHelper >> presenterForModel: aSymbol [
 ]
 
 { #category : #actions }
+RideCompositeHelper >> sttTemplateFor: aSymbol [
+
+	| view |
+	view := doer view stt.
+	view js: js.
+	view for: aSymbol
+]
+
+{ #category : #actions }
 RideCompositeHelper >> withJs [
 
 	js := true

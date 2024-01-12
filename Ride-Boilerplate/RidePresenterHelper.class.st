@@ -25,8 +25,13 @@ RidePresenterHelper >> targetPackageNameTag [
 	^ 'Presenters'
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 RidePresenterHelper >> targetedSuperclass [
 
-	^ RidePresenter
+	| className |
+	className := '{1}Presenter' format: { RideDoer defaultPackageName }.
+	^ Smalltalk
+		  at: className asSymbol
+		  ifAbsent: [ 
+		  RideBoilerplateError signal: '{1} class is missing in this image' ]
 ]

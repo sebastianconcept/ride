@@ -13,7 +13,7 @@ RideMVPCRUDHelper >> for: aSymbol [
 	super for: aSymbol.
 	doer presenter for: aSymbol.
 	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
-	doer view mustache
+	doer view stt
 		js: js;
 		crudIndexFor: aSymbol;
 		crudModelFor: aSymbol;

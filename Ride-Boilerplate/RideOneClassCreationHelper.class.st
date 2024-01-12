@@ -24,7 +24,9 @@ RideOneClassCreationHelper >> for: aSymbol [
 
 	| snippet newClass |
 	snippet := self newClassNamed: aSymbol.
-	newClass := OpalCompiler new evaluate: snippet.
+	[ newClass := OpalCompiler new evaluate: snippet ]
+		on: Error
+		do: [ :x | RideBoilerplateError signal: x messageText ].
 	newClass comment: (self defaultCommentsFor: aSymbol).
 	^ newClass
 ]

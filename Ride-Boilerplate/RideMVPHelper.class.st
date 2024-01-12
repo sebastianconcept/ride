@@ -21,7 +21,7 @@ RideMVPHelper >> for: aSymbol [
 	| view |
 	doer model for: aSymbol.
 	doer presenter for: aSymbol.
-	view := doer view mustache.
+	view := doer view stt.
 	view js: js.
 	view for: aSymbol
 ]

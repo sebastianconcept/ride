@@ -7,7 +7,7 @@ Class {
 	#category : #'Ride-Boilerplate'
 }
 
-{ #category : #private }
+{ #category : #accessing }
 RideModelHelper >> classNameFor: aSymbol [
 
 	^ aSymbol
@@ -25,8 +25,13 @@ RideModelHelper >> targetPackageNameTag [
 	^ 'Models'
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 RideModelHelper >> targetedSuperclass [
 
-	^ RideModel
+	| className |
+	className := '{1}Model' format: { RideDoer defaultPackageName }.
+	^ Smalltalk
+		  at: className asSymbol
+		  ifAbsent: [ 
+		  RideBoilerplateError signal: '{1} class is missing in this image' ]
 ]

@@ -74,12 +74,6 @@ RideService class >> newSessionWith: sessionId url: anUrl [
 ]
 
 { #category : #accessing }
-RideService class >> rootPresenterClass [
-
-	self subclassResponsibility
-]
-
-{ #category : #accessing }
 RideService class >> sessionIdFromCookieOrNewFrom: aRequest [
 
 	"Answers the session ID taken from the cookie of the given aRequest.
