@@ -176,14 +176,6 @@ RideService >> invalidateSession: aRideSession [
 ]
 
 { #category : #accessing }
-RideService >> locate [
-
-	"Syntax sugar for delegating to the views and templates locator"
-
-	^ self locator
-]
-
-{ #category : #accessing }
 RideService >> locator [
 
 	^ locator ifNil: [ self initializeLocator ]

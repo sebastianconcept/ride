@@ -90,13 +90,6 @@ Ride class >> isProduction [
 	^ self mode asLowercase = 'production'
 ]
 
-{ #category : #accessing }
-Ride class >> locator [
-	self deprecated: 'use resource'.
-	self halt.
-	^ RideResource
-]
-
 { #category : #actions }
 Ride class >> log: aString [
 

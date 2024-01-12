@@ -118,12 +118,6 @@ RideSession >> invalidateAndRedirectTo: url [
 	(TeaAbort response: response) signal
 ]
 
-{ #category : #accessing }
-RideSession >> locate [
-
-	^ Ride service locate
-]
-
 { #category : #handlers }
 RideSession >> onWebSocketMessage: aJsonObject [
 
@@ -134,13 +128,6 @@ RideSession >> onWebSocketMessage: aJsonObject [
 RideSession >> remove: routeKey [
 
 	^ self presenters removeKey: routeKey ifAbsent: [ nil ]
-]
-
-{ #category : #accessing }
-RideSession >> rootPresenter [
-self deprecated: '?'
-self halt.
-	^ self presenters at: #/ ifAbsent: [ nil ]
 ]
 
 { #category : #accessing }

@@ -347,12 +347,6 @@ RidePresenter >> initializeFactory [
 ]
 
 { #category : #accessing }
-RidePresenter >> locate [
-
-	^ Ride service locate
-]
-
-{ #category : #accessing }
 RidePresenter >> maitre [
 
 	"Answers the maitre of the service"
