@@ -181,11 +181,12 @@ RideResource class >> getJavaScriptAssets [
 ]
 
 { #category : #accessing }
-RideResource class >> getMustacheTemplagesIn: aPath [
+RideResource class >> getMustacheTemplatesIn: aPath [
 
 	"Returns only the .mustache template files in aPath"
 
 	| accepted |
+		self deprecated: 'this is done by the right renderer now'.
 	accepted := #( mustache mst ms tmpl ).
 	^ aPath files select: [ :file | accepted includes: file extension ]
 ]
@@ -193,10 +194,11 @@ RideResource class >> getMustacheTemplagesIn: aPath [
 { #category : #accessing }
 RideResource class >> getTemplates [
 
-	"Returns a dictionary with keys being view names (views/ dsubirectory names) 
+	"Returns a dictionary with keys being view names (views/ subirectory names) 
 	and as value, a dictionary with mustache templates for every file found."
 
 	| newTemplates newViewTemplates newEmailTemplates |
+		self deprecated: 'this is done by the right renderer now'.
 	newTemplates := JsonObject new.
 	newViewTemplates := JsonObject new.
 	self viewTemplatesDirectory asFileReference directories do: [ :path | 
@@ -240,8 +242,9 @@ RideResource class >> getTemplatesFrom: aPath [
 	and as value, the mustache template based on its content."
 
 	| newTemplates |
+	self deprecated: 'this is done by the right renderer now'.
 	newTemplates := JsonObject new.
-	(self getMustacheTemplagesIn: aPath) do: [ :file | 
+	(self getMustacheTemplatesIn: aPath) do: [ :file | 
 		newTemplates
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].
@@ -353,7 +356,8 @@ RideResource class >> tempDirectory [
 
 { #category : #accessing }
 RideResource class >> templates [
-
+	self deprecated: 'this is done by the right renderer now'.
+	self halt.
 	^ [ self getTemplates ] systemValueAt: #templates
 ]
 
@@ -371,6 +375,8 @@ RideResource class >> templatesFor: aPresenter [
 	the presenter's model name in snake_case or kebab-case on disk."
 
 	| views modelName kebabized found |
+	self deprecated: 'this is done by the right renderer now'.
+	self halt.
 	views := self templates at: #views.
 	modelName := aPresenter class getModelName.
 	kebabized := '-' join: (modelName asSnakeCase substrings: '_').

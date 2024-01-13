@@ -77,7 +77,7 @@ RideViewPresenterLocator >> getJavaScriptAssets [
 ]
 
 { #category : #accessing }
-RideViewPresenterLocator >> getMustacheTemplagesIn: aPath [
+RideViewPresenterLocator >> getMustacheTemplatesIn: aPath [
 
 	"Returns only the .mustache template files in aPath"
 
@@ -166,7 +166,7 @@ RideViewPresenterLocator >> getTemplatesFrom: aPath [
 		self deprecated: 'using resources'.
 	self halt.
 	newTemplates := JsonObject new.
-	(self getMustacheTemplagesIn: aPath) do: [ :file | 
+	(self getMustacheTemplatesIn: aPath) do: [ :file | 
 		newTemplates
 			at: file basenameWithoutExtension
 			put: file contents asMustacheTemplate ].

@@ -14,7 +14,8 @@ Class {
 		'repository',
 		'locator',
 		'cache',
-		'sessionGetter'
+		'sessionGetter',
+		'renderers'
 	],
 	#category : #'Ride-Core'
 }
@@ -183,6 +184,19 @@ RideService >> initializeMaitre [
 ]
 
 { #category : #initialization }
+RideService >> initializeRenderers [
+
+	^ renderers := SmallDictionary new
+		               at: #html put: self newHTMLRenderer;
+		               at: #json put: self newJSONRenderer;
+		               at: #stt put: self newSTTRenderer;
+		               at: #mustache put: self newMustacheRenderer;
+		               at: #xml put: self newXMLRenderer;
+		               at: #rss put: self newRSSRenderer;
+		               yourself
+]
+
+{ #category : #initialization }
 RideService >> initializeRepository [
 
 	^ repository := RideMemoryRepository new
@@ -236,10 +250,52 @@ RideService >> maitre: anObject [
 	maitre := anObject
 ]
 
+{ #category : #actions }
+RideService >> newHTMLRenderer [
+
+	^ RideHTMLRenderer new
+]
+
+{ #category : #actions }
+RideService >> newJSONRenderer [
+
+	^ RideJSONRenderer new
+]
+
+{ #category : #actions }
+RideService >> newMustacheRenderer [
+
+	^ RideMustacheRenderer new
+]
+
+{ #category : #actions }
+RideService >> newRSSRenderer [
+
+	^ RideRSSRenderer new
+]
+
+{ #category : #actions }
+RideService >> newSTTRenderer [
+
+	^ RideSTTemplateRenderer new
+]
+
 { #category : #accessing }
 RideService >> newSessionId [
 
 	^ self class newSessionId
+]
+
+{ #category : #actions }
+RideService >> newXMLRenderer [
+
+	^ RideXMLRenderer new
+]
+
+{ #category : #initialization }
+RideService >> renderers [
+
+	^ renderers ifNil: [ self initializeRenderers ]
 ]
 
 { #category : #accessing }

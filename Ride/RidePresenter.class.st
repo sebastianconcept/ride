@@ -22,11 +22,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'model',
-		'views',
-		'focusedView',
-		'delegate',
 		'subpresenters',
-		'factory'
+		'renderer'
 	],
 	#category : #'Ride-Presenters'
 }
@@ -43,6 +40,14 @@ RidePresenter class >> basePath [
 RidePresenter class >> defaultModel [
 
 	^ nil
+]
+
+{ #category : #accessing }
+RidePresenter class >> defaultRendererSelector [
+
+	"Answers the selector of the default renderer"
+
+	^ #mustache
 ]
 
 { #category : #accessing }
@@ -108,7 +113,7 @@ RidePresenter >> ajaxReactionAndRender [
 
 	"If the current request is part of a Ride AJAX request, 
 	use the value sent and perform it as action in this presenter."
-
+	self deprecated: 'the concrete renderer knows about this'.
 	^ RideCurrentRequest value headers
 		  at: 'X-Ride-AJAX'
 		  ifPresent: [ self perform: self ajaxAction asSymbol ]
@@ -126,7 +131,7 @@ RidePresenter >> basicHTML [
 
 	"Answers the HTML for this presenter rendered using its template, 
 	its templateModel and its partials."
-
+	self deprecated: 'the renderer is responsible for this'.
 	^ self focusedView value: self templateModel partials: self partials
 ]
 
@@ -140,7 +145,7 @@ RidePresenter >> childAt: aSymbol [
 	a presenter that matches aSymbol route from what's found in
 	the templates/views directory and store it as child of this receiver.
 	If nothing of that worked, return nil."
-
+self deprecated: 'Ride will not mix routing strategy with presenter graph.'.
 	^ (subpresenters includesKey: aSymbol)
 		  ifTrue: [ subpresenters at: aSymbol ]
 		  ifFalse: [ 
@@ -159,12 +164,12 @@ RidePresenter >> children [
 
 { #category : #initialization }
 RidePresenter >> createViews [
-
-	views := Ride resource templatesFor: self.
+	self deprecated: 'Ride presenters create sub-presenters lazily'.
+"	views := Ride resource templatesFor: self.
 	views ifNil: [ 
 		RideMissingTemplateError signal:
 			('{1} template not found' format: { self class name }) ].
-	focusedView := views at: #index
+	focusedView := views at: #index"
 ]
 
 { #category : #accessing }
@@ -196,35 +201,11 @@ RidePresenter >> default [
 ]
 
 { #category : #accessing }
-RidePresenter >> delegate [
+RidePresenter >> getRenderer [
 
-	^ delegate
-]
+	"Returns the renderer that this presenter shuold use."
 
-{ #category : #accessing }
-RidePresenter >> delegate: anObject [
-
-	delegate := anObject
-]
-
-{ #category : #accessing }
-RidePresenter >> factory [
-
-	^ factory ifNil: [ self initializeFactory ]
-]
-
-{ #category : #accessing }
-RidePresenter >> focusedView [
-	"Answers the template that is the current view to be rendered for this presenter.
-	It starts by being #index and after that it might be changed by ushow the presenter
-	reactcs to user input."
-	^ focusedView
-]
-
-{ #category : #accessing }
-RidePresenter >> focusedView: anObject [
-
-	focusedView := anObject
+	^ Ride service renderers at: self class defaultRendererSelector
 ]
 
 { #category : #rendering }
@@ -232,8 +213,8 @@ RidePresenter >> html [
 
 	"Answers the HTML renderering of the model regarding to this presenter.
 	It will return the class name if for any reason there is no template found at #index"
-
-	^ delegate ifNotNil: [ delegate html ] ifNil: [ self basicHTML ]
+self deprecated: 'the concrete renderer knows about this'.
+	"^ delegate ifNotNil: [ delegate html ] ifNil: [ self basicHTML ]"
 ]
 
 { #category : #rendering }
@@ -250,8 +231,8 @@ RidePresenter >> htmlFor: nameOfAPartial on: aTemplateModel [
 
 	"Answers the HTML rendered using the given aTemplateModel 
 	on the partial named nameOfAPartial"
-
-	^ (views at: nameOfAPartial) value: aTemplateModel
+self deprecated: 'the concrete renderer knows about this'.
+	"^ (views at: nameOfAPartial) value: aTemplateModel"
 ]
 
 { #category : #'rest-html' }
@@ -259,7 +240,7 @@ RidePresenter >> htmlOnDELETE [
 
 	"Answers the HTML exclusive of this presenter.
 	See the GET comment. This is the same concept applied to DELETE."
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ self ajaxReactionAndRender
 ]
 
@@ -271,7 +252,7 @@ RidePresenter >> htmlOnGET [
 	then use it as a presenter action to be performed with an HTML answer.
 	If a delegate was assigned, then the action is still for this 
 	presenter but the answered HTML is for the delegate to render instead."
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ self ajaxReactionAndRender
 ]
 
@@ -281,7 +262,7 @@ RidePresenter >> htmlOnPATCH [
 	"Answers the HTML exclusive of this presenter.
 	See the GET comment. This is the same concept applied to PATCH."
 
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ self ajaxReactionAndRender
 ]
 
@@ -290,7 +271,7 @@ RidePresenter >> htmlOnPOST [
 
 	"If the current POST is part of an AJAX request, 
 	See the GET comment. This is the same concept applied to POST."
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ self ajaxReactionAndRender
 ]
 
@@ -299,7 +280,7 @@ RidePresenter >> htmlOnPUT [
 
 	"If the current PUT is part of an AJAX request, 
 	See the GET comment. This is the same concept applied to PUT."
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ self ajaxReactionAndRender
 ]
 
@@ -308,7 +289,7 @@ RidePresenter >> htmlPage [
 
 	"Answers the HTML content generated by this presenter, 
 	enclosed within the application layout template."
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ self applicationTemplate
 		  value: self pageTemplateModel
 		  partials: self pagePartials
@@ -319,16 +300,17 @@ RidePresenter >> htmlPageOnGET [
 
 	"Answers the HTML content generated by this presenter, 
 	enclosed within the application layout template."
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ self htmlPage 
 ]
 
 { #category : #actions }
 RidePresenter >> index [
 
-	"Returns the HTML of the receiver rendered as a full web page."
+	"Returns the rendered representation of the receiver in its main entry point.
+	For example, for an HTML representation what would be in it as index.html"
 
-	^ self htmlPage
+	^ renderer render: self at: #index
 ]
 
 { #category : #initialization }
@@ -336,14 +318,7 @@ RidePresenter >> initialize [
 
 	super initialize.
 	subpresenters := JsonObject new.
-	self createViews.
-
-]
-
-{ #category : #initialization }
-RidePresenter >> initializeFactory [
-
-	^ factory := SmallDictionary new
+	renderer := self getRenderer
 ]
 
 { #category : #accessing }
@@ -391,12 +366,12 @@ RidePresenter >> onBeforeAction [
 RidePresenter >> pagePartials [
 
 	"Answers the partials that are meant for the receiver rendering in a full page of HTML."
-
-	^ self partials
+self deprecated: 'the renderer is in charge of locating partials of a presenter'.
+"	^ self partials
 		  ifNil: [ { (#main -> (views at: #index)) } asDictionary ]
 		  ifNotNil: [ :partials | 
 			  partials at: #main put: (views at: #index) ];
-		  yourself
+		  yourself"
 ]
 
 { #category : #accessing }
@@ -415,7 +390,7 @@ RidePresenter >> partialOf: aSymbol [
 
 	"Answers the template of the subpresenter found at aSymbol 
 	ready to be sent as one of the partials for them to render."
-
+	self deprecated: 'the rendered is involved in how to find presenter partials'.
 	^ aSymbol -> (self children at: aSymbol) focusedView
 ]
 
@@ -429,19 +404,14 @@ RidePresenter >> partials [
 	presenter directory except index.mustache is going to be a partial."
 
 	| partials |
-	partials := views associationsSelect: [ :assoc | 
-		            assoc key ~= 'index' ].
+	self deprecated: 'the renderer is in charge of locating partials of a presenter'.
+"	partials := views associationsSelect: [ :assoc | 
+		            assoc key ~= 'index' ]."
 
 	"In addition to that, all shared partials are made available to the presenter"
 	^ partials
 		  addAll: Ride resource sharedTemplates;
 		  yourself
-]
-
-{ #category : #actions }
-RidePresenter >> resetDelegate [
-
-	delegate := nil
 ]
 
 { #category : #actions }
@@ -460,6 +430,7 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 	If still none found, return nil."
 
 	| presenterClass presenterSingularName presenterPluralName |
+	self deprecated: 'Ride will not mix routing strategy with presenter graph.'.
 	presenterSingularName := RideNameNormalizer 
 		                         presenterNameFromURISegment: aSymbol.
 	presenterPluralName := RideNameNormalizer 
@@ -511,10 +482,10 @@ RidePresenter >> subpresenters: anObject [
 
 { #category : #rendering }
 RidePresenter >> template [
-
-	^ views at: #index ifAbsent: [ 
+self deprecated: 'the renderer is in charge of locating partials of a presenter'.
+"	^ views at: #index ifAbsent: [ 
 		  RideMissingTemplateError signal:
-			  ('{1} has no main template' format: { self class name }) ]
+			  ('{1} has no main template' format: { self class name }) ]"
 ]
 
 { #category : #accessing }
@@ -524,6 +495,7 @@ RidePresenter >> templateModel [
 	will render only the HTML of this component (not the full page)."
 
 	| template presenterJsAssets |
+	self deprecated: 'the renderer is in charge of locating partials of a presenter'.
 	template := model asTemplateModel.
 	presenterJsAssets := Ride resource assetsMap js
 		                     at: self class getNormalizedModelName
