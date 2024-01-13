@@ -82,6 +82,12 @@ RideService class >> newSessionWith: sessionId url: anUrl [
 ]
 
 { #category : #actions }
+RideService class >> reset [
+
+	Ride reset
+]
+
+{ #category : #actions }
 RideService class >> restart [
 
 	Ride stop.
@@ -111,6 +117,18 @@ RideService class >> setUp [
 		yourself.
 
 	self log: 'Router setup...'
+]
+
+{ #category : #actions }
+RideService class >> start [
+
+	Ride start
+]
+
+{ #category : #actions }
+RideService class >> stop [
+
+	Ride stop
 ]
 
 { #category : #accessing }
@@ -316,7 +334,10 @@ RideService >> setUp [
 { #category : #actions }
 RideService >> sqlLiteDatabaseStart [
 
-	self class databaseDirectory ensureCreateDirectory.
+	Ride resource databaseDirectory exists ifFalse: [ 
+		RideError signal: ('Database directory not found: {1}' format:
+				 { Ride resource databaseDirectory pathString }) ].
+
 	(RideModel allSubclasses reject: #isAbstract) do: [ :each | 
 		(self repository hasTableFor: each) ifFalse: [ 
 			self repository ensureTableFor: each ] ]

@@ -1,5 +1,5 @@
 "
-I am the abstract Ride router strategy, my subclasses have the details
+I am the abstract Ride router strategy, my subclasses have the details.
 "
 Class {
 	#name : #RideRouterStrategy,

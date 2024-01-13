@@ -21,6 +21,14 @@ Ride class >> allowsLoglevel: aSymbol [
 	  <= (self logLevelSymbols keyAtValue: self logLevel)
 ]
 
+{ #category : #actions }
+Ride class >> beDevEnvironment [
+
+	"Sets the OS environment to be in #DEVELOPMENT mode"
+
+	Smalltalk os environment at: 'MODE' put: #DEVELOPMENT
+]
+
 { #category : #accessing }
 Ride class >> defaultLogLevel [
 
@@ -30,6 +38,7 @@ Ride class >> defaultLogLevel [
 { #category : #actions }
 Ride class >> draft [
 
+	self beDevEnvironment.
 	^ self doer
 ]
 
@@ -150,7 +159,8 @@ Ride class >> reset [
 	isMaintenance := nil.
 	RideDeclarativeRouting reset.
 	Ride resource reset.
-	Ride isDevelopment ifTrue: [ Ride resource resetAssetsMapFile ]
+	Ride isDevelopment ifTrue: [ Ride resource resetAssetsMapFile ].
+
 ]
 
 { #category : #accessing }
