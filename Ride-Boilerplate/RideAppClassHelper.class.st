@@ -128,7 +128,7 @@ RideAppClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideAppClassHelper >> targetedSuperclass [
+RideAppClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RideService
 ]

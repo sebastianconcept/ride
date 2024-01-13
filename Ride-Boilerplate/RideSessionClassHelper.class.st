@@ -27,7 +27,7 @@ RideSessionClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideSessionClassHelper >> targetedSuperclass [
+RideSessionClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RideSession
 ]

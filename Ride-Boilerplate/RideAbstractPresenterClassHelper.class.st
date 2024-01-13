@@ -1,3 +1,6 @@
+"
+I help creating the app Presenters superclass for all the concrete presenters of the app.
+"
 Class {
 	#name : #RideAbstractPresenterClassHelper,
 	#superclass : #RideOneClassCreationHelper,
@@ -7,7 +10,7 @@ Class {
 { #category : #accessing }
 RideAbstractPresenterClassHelper >> classNameFor: aSymbol [
 
-	^ '{1}Presenter' format: { aSymbol }
+	^ '{1}AbstractPresenter' format: { aSymbol }
 ]
 
 { #category : #actions }
@@ -24,7 +27,7 @@ RideAbstractPresenterClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideAbstractPresenterClassHelper >> targetedSuperclass [
+RideAbstractPresenterClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RidePresenter
 ]

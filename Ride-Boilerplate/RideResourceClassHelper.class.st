@@ -95,7 +95,7 @@ RideResourceClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideResourceClassHelper >> targetedSuperclass [
+RideResourceClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RideResource
 ]

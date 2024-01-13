@@ -7,6 +7,41 @@ Class {
 	#category : #'Ride-Boilerplate'
 }
 
+{ #category : #initialization }
+RideServerClassHelper class >> initializeMethodFor: aSymbol [
+
+	^ 'initialize
+
+	super initialize.
+	self router beDeclarative'
+]
+
+{ #category : #initialization }
+RideServerClassHelper class >> routesDeclarationMethodFor: aSymbol [
+
+	^ 'routesDeclaration
+	^ \{ 
+		  \{ 
+			  (#GET -> ''/'').
+			  ({1}HomePresenter -> #index) \}.
+		\}
+	' format: { aSymbol }
+]
+
+{ #category : #actions }
+RideServerClassHelper >> addInitializeMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class initializeMethodFor: aSymbol).
+	aClass organization classify: #initialize under: 'initialization'
+]
+
+{ #category : #actions }
+RideServerClassHelper >> addRoutesDeclarationMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class routesDeclarationMethodFor: aSymbol).
+	aClass organization classify: #routesDeclaration under: 'accessing'
+]
+
 { #category : #accessing }
 RideServerClassHelper >> classNameFor: aSymbol [
 
@@ -20,6 +55,16 @@ RideServerClassHelper >> defaultCommentsFor: aSymbol [
 		  { aSymbol asString }
 ]
 
+{ #category : #actions }
+RideServerClassHelper >> for: aSymbol [
+
+	| appClass |
+	appClass := super for: aSymbol.
+
+	self addInitializeMethodTo: appClass for: aSymbol.
+	self addRoutesDeclarationMethodTo: appClass for: aSymbol
+]
+
 { #category : #accessing }
 RideServerClassHelper >> targetPackageNameTag [
 
@@ -27,7 +72,7 @@ RideServerClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideServerClassHelper >> targetedSuperclass [
+RideServerClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RideServer 
 ]

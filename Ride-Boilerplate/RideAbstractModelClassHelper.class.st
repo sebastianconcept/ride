@@ -27,7 +27,7 @@ RideAbstractModelClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideAbstractModelClassHelper >> targetedSuperclass [
+RideAbstractModelClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RideModel
 ]

@@ -1,3 +1,6 @@
+"
+I help with the creation of the Error class for the application so app specific errors can be signaled or subclassified from it.
+"
 Class {
 	#name : #RideAppErrorClassHelper,
 	#superclass : #RideOneClassCreationHelper,
@@ -24,7 +27,7 @@ RideAppErrorClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideAppErrorClassHelper >> targetedSuperclass [
+RideAppErrorClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RideError
 ]

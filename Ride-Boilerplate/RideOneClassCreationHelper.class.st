@@ -36,7 +36,7 @@ RideOneClassCreationHelper >> newClassNamed: aSymbol [
 
 	| className targetedSuperclass |
 	className := self classNameFor: aSymbol.
-	targetedSuperclass := self targetedSuperclass.
+	targetedSuperclass := self targetedSuperclassFor: aSymbol.
 	self
 		assert: (Smalltalk includesKey: className asSymbol) not
 		description:

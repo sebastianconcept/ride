@@ -26,7 +26,7 @@ RideModelHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideModelHelper >> targetedSuperclass [
+RideModelHelper >> targetedSuperclassFor: aSymbol [
 
 	| className |
 	className := '{1}Model' format: { RideDoer defaultPackageName }.

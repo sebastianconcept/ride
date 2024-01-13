@@ -31,7 +31,7 @@ RideMaitreClassHelper >> targetPackageNameTag [
 ]
 
 { #category : #accessing }
-RideMaitreClassHelper >> targetedSuperclass [
+RideMaitreClassHelper >> targetedSuperclassFor: aSymbol [
 
 	^ RideMaitre
 ]
