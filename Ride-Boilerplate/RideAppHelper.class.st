@@ -130,7 +130,7 @@ RideAppHelper class >> fourTwentyTwoContentFor: aSymbol [
       <div>
         <h1>The change you wanted was rejected.</h1>
         <p>Maybe you tried to change something you didn''t have access to.</p>
-      </div>Ï
+      </div>
       <p>
         If you are the {1} application owner check the logs for more information.
       </p>
@@ -350,9 +350,9 @@ RideAppHelper >> abstractModelClass [
 ]
 
 { #category : #accessing }
-RideAppHelper >> abstractPresenterClass [
+RideAppHelper >> abstractWebApplicationPresenterClass [
 
-	^ RideAbstractPresenterClassHelper new
+	^ RideAbstractWebApplicationPresenterClassHelper new
 ]
 
 { #category : #accessing }
@@ -549,7 +549,7 @@ RideAppHelper >> ensureTemplatesLayoutsOn: directory for: aSymbol [
 
 	directory ensureCreateDirectory.
 
-	directory / 'application.stt' writeStreamDo: [ :stream | 
+	directory / 'application.html.est' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class applicationLayoutContentFor: aSymbol) ]
 ]
 
@@ -558,16 +558,16 @@ RideAppHelper >> ensureTemplatesSharedOn: directory for: aSymbol [
 
 	directory ensureCreateDirectory.
 
-	directory / '404.stt' writeStreamDo: [ :stream | 
+	directory / '404.html.est' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fourZeroFourContentFor: aSymbol) ].
 
-	directory / '422.stt' writeStreamDo: [ :stream | 
+	directory / '422.html.est' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fourTwentyTwoContentFor: aSymbol) ].
 
-	directory / '500.stt' writeStreamDo: [ :stream | 
+	directory / '500.html.est' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fiveHundredContentFor: aSymbol) ].
 
-	directory / 'maintenance.stt' writeStreamDo: [ :stream | 
+	directory / 'maintenance.html.est' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class maintenanceContentFor: aSymbol) ]
 ]
 
@@ -596,8 +596,9 @@ RideAppHelper >> for: aSymbol [
 	self serverClass for: aSymbol.
 	self appErrorClass for: aSymbol.
 	self abstractModelClass for: aSymbol.
-	self abstractPresenterClass for: aSymbol.
+	self abstractWebApplicationPresenterClass for: aSymbol.
 	self homePresenterClass for: aSymbol.
+	self homeTemplate for: aSymbol.
 	
 ]
 
@@ -611,6 +612,12 @@ RideAppHelper >> hasValidPackageName: aSymbol [
 RideAppHelper >> homePresenterClass [
 
 	^ RideAppHomePresenterClassHelper new
+]
+
+{ #category : #accessing }
+RideAppHelper >> homeTemplate [
+
+	^ RideAppHomeTemplateHelper new
 ]
 
 { #category : #accessing }

@@ -133,6 +133,12 @@ RideService class >> stop [
 ]
 
 { #category : #accessing }
+RideService class >> templatesSelector [
+
+	^ #stt
+]
+
+{ #category : #accessing }
 RideService >> cache [
 
 	^ cache ifNil: [ self initializeCache ]
@@ -436,6 +442,12 @@ RideService >> stop [
 	self databaseStop.
 	Ride log: ('{1} stopped' format: { self class name }).
 	self reset
+]
+
+{ #category : #accessing }
+RideService >> templates [
+
+	^ (Ride service renderers at: self class templatesSelector) templates
 ]
 
 { #category : #accessing }

@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #rendering }
-RideProgrammaticRenderer >> render: aRidePresenter at: anAspectVariantSelector [
+RideProgrammaticRenderer >> render: anAspectVariantSelector for: aRidePresenter [
 
 	"Since it can have many, use anAspectVariantSelector 
 	to decide in what aspect to render aRidePresenter."

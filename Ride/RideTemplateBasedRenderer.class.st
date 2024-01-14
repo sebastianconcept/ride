@@ -125,7 +125,7 @@ RideTemplateBasedRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideTemplateBasedRenderer >> render: aRidePresenter at: anAspectVariantSelector [
+RideTemplateBasedRenderer >> render: aPartialName for: aRidePresenter [
 
 	"Since it can have many, use anAspectVariantSelector 
 	to decide in what aspect to render aRidePresenter."

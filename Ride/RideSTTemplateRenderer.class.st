@@ -32,8 +32,7 @@ RideSTTemplateRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideSTTemplateRenderer >> render: aRidePresenter at: anAspectVariantSelector [
-
+RideSTTemplateRenderer >> render: aSTTemplateName for: aRidePresenter [
 	"Since it can have many, use anAspectVariantSelector 
 	to decide in what aspect to render aRidePresenter."
 

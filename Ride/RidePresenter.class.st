@@ -41,7 +41,7 @@ RidePresenter class >> defaultRendererSelector [
 
 	"Answers the selector of the default renderer for this class of presenters."
 
-	^ #mustache
+	^ #stt
 ]
 
 { #category : #accessing }
