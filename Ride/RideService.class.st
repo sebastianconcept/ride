@@ -180,6 +180,7 @@ RideService >> initializeCache [
 { #category : #initialization }
 RideService >> initializeLocator [
 
+	self deprecated: 'use Ride resource instead'.
 	^ locator := RideViewPresenterLocator new
 ]
 
@@ -241,7 +242,7 @@ RideService >> invalidateSession: aRideSession [
 
 { #category : #accessing }
 RideService >> locator [
-
+	self deprecated: 'use Ride resource instead'.
 	^ locator ifNil: [ self initializeLocator ]
 ]
 
