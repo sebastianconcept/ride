@@ -42,6 +42,20 @@ RideAppHomePresenterClassHelper >> addIndexMethodTo: aClass for: aSymbol [
 	aClass organization classify: #index under: 'accessing'
 ]
 
+{ #category : #actions }
+RideAppHomePresenterClassHelper >> addTemplatePathMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class templatePathMethodFor: aSymbol).
+	aClass organization classify: #templatePath under: 'accessing'
+]
+
+{ #category : #actions }
+RideAppHomePresenterClassHelper >> addWebAppNameMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class webAppNameMethodFor: aSymbol).
+	aClass organization classify: #webAppName under: 'accessing'
+]
+
 { #category : #accessing }
 RideAppHomePresenterClassHelper >> classNameFor: aSymbol [
 
@@ -61,7 +75,9 @@ RideAppHomePresenterClassHelper >> for: aSymbol [
 	| appClass |
 	appClass := super for: aSymbol.
 
-	self addIndexMethodTo: appClass for: aSymbol
+	self addIndexMethodTo: appClass for: aSymbol.
+	self addTemplatePathMethodTo: appClass for: aSymbol.
+	self addWebAppNameMethodTo: appClass for: aSymbol
 ]
 
 { #category : #actions }
