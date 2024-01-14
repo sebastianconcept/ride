@@ -4,17 +4,12 @@ I provide the commonalities of all types of presenters.
 See my child classes for concrete examples.
 
 ## Responsabilities:
-1. Be stateful, maintaining state related to presentation and GUI.
-2. Have a model, which I use to perform actions and use as my source of application domain state.
-3. Handle HTTP verbs.
-4. Define action methods that the frontend can provoke.
-5. Define which paramenters are acceptable in a received request.
-6. Define pagePartials and pageTemplateModel to have the receiver rendereable as a web page.
-7. Set observations on the models and their respective reaction methods.
-8. Define any other method that will return a rendered ouput to use in responses (HTML, JSON, XML, RSS, etc).
-9. I have a factory that allows me to create subpresenters lazily i.e.: when I try a `presenterForRoute:`.
-10. I can change my `focusedView` and with that render the model in different aspects.
-11. I might use a child as my delegate and it will respond in my place.
+1. Be rendereable on a layout after performing some action.
+2. Have a model and use it as my source of application domain state.
+3. Define the action methods.
+4. Define which paramenters are acceptable in a received request.
+5. Define pagePartials and pageTemplateModel to have the receiver rendereable.
+6. Be capable of using different renderers (HTML, JSON, XML, RSS, etc).
 
 "
 Class {
@@ -45,7 +40,7 @@ RidePresenter class >> defaultModel [
 { #category : #accessing }
 RidePresenter class >> defaultRendererSelector [
 
-	"Answers the selector of the default renderer"
+	"Answers the selector of the default renderer for this class of presenters."
 
 	^ #mustache
 ]
@@ -82,7 +77,7 @@ RidePresenter class >> getNormalizedModelName [
 ]
 
 { #category : #accessing }
-RidePresenter class >> mustacheLayoutName [
+RidePresenter class >> layoutName [
 
 	"Answer the layout name to be used when rendering instances of the receiver."
 
@@ -101,6 +96,14 @@ RidePresenter class >> on: aModel [
 	^ self basicNew
 		  initialize;
 		  model: aModel
+]
+
+{ #category : #accessing }
+RidePresenter class >> partialYieldTargetName [
+
+	"This is the name used when rendering the contents of the receiver a layout."
+
+	^ #yield
 ]
 
 { #category : #actions }
@@ -187,7 +190,7 @@ RidePresenter >> currentAction [
 	In Ride, this behavior can be overridden, but by default, URIs are interpreted 
 	such that their first segment determines the targeted presenter, 
 	and the second segment determines the corresponding selector to execute."
-
+self deprecated: 'no more implicits, the routed defines this'.
 	^ self currentRequest uri segments second asSymbol
 ]
 
@@ -212,8 +215,9 @@ RidePresenter >> default [
 { #category : #accessing }
 RidePresenter >> getRenderer [
 
-	"Returns the renderer that this presenter shuold use."
+	"Returns the renderer that this presenter has to use."
 
+	"In this version we're setting this by presenter class."
 	^ Ride service renderers at: self class defaultRendererSelector
 ]
 
@@ -319,7 +323,7 @@ RidePresenter >> index [
 	"Returns the rendered representation of the receiver in its main entry point.
 	For example, for an HTML representation what would be in it as index.html"
 
-	^ renderer render: self at: #index
+	^ renderer render: #index for: self
 ]
 
 { #category : #initialization }
@@ -356,7 +360,7 @@ RidePresenter >> mustachePagePartialsOn: pagePartials with: mustacheTemplate [
 
 	"Answers the partials to use to render a page including the
 	contents of the receiver as would be rendered by the mustacheTemplate."
-
+self deprecated: 'should use render:on:layout:for:'.
 	^ pagePartials
 		  at: #yield put: mustacheTemplate;
 		  yourself
@@ -370,9 +374,9 @@ RidePresenter >> mustachePageTemplateModel [
 
 	"We just get it wrapped by the application template in layouts/ 
 	which uses it as the partial named 'presenterContent'."
-
+	self deprecated: 'not needed when using render:inLayout:with:for:'.
 	^ self mustacheTemplateModel
-		  at: #presenterContent put: self mustacheTemplateModel;
+		  at: #yield put: self mustacheTemplateModel;
 		  yourself
 ]
 
@@ -383,10 +387,12 @@ RidePresenter >> mustacheTemplateModel [
 	will render only the HTML of this component (not the full page)."
 
 	| template presenterJsAssets |
+
 	template := model asMustacheTemplateModel.
 	presenterJsAssets := Ride resource assetsMap js
 		                     at: self class getNormalizedModelName
 		                     ifAbsent: [ nil ].
+
 	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
 		  ifFalse: [ template ]
 		  ifTrue: [ 
@@ -492,7 +498,7 @@ RidePresenter >> restfulSubPresenterOrNilFor: aSymbol [
 
 { #category : #accessing }
 RidePresenter >> router [
-
+	self deprecated: 'no need to deal with this. Would be wrong responsibility'.
 	^ Ride service router
 ]
 
