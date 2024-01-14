@@ -186,13 +186,20 @@ RideService >> initializeMaitre [
 { #category : #initialization }
 RideService >> initializeRenderers [
 
+	| createRenderers layoutWrappers |
+	createRenderers := [ 
+	                   SmallDictionary new
+		                   at: #html put: self newHTMLRenderer;
+		                   at: #json put: self newJSONRenderer;
+		                   at: #stt put: self newSTTRenderer;
+		                   at: #mustache put: self newMustacheRenderer;
+		                   at: #xml put: self newXMLRenderer;
+		                   at: #rss put: self newRSSRenderer;
+		                   yourself ].
+	layoutWrappers := createRenderers value do: [ :e | e beLayoutWrapper ].
 	^ renderers := SmallDictionary new
-		               at: #html put: self newHTMLRenderer;
-		               at: #json put: self newJSONRenderer;
-		               at: #stt put: self newSTTRenderer;
-		               at: #mustache put: self newMustacheRenderer;
-		               at: #xml put: self newXMLRenderer;
-		               at: #rss put: self newRSSRenderer;
+		               addAll: createRenderers value;
+		               at: #layoutWrappers put: layoutWrappers;
 		               yourself
 ]
 

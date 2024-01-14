@@ -17,8 +17,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'model',
-		'subpresenters',
-		'renderer'
+		'subpresenters'
 	],
 	#category : #'Ride-Presenters'
 }
@@ -320,18 +319,14 @@ self deprecated: 'the concrete renderer knows about this'.
 { #category : #actions }
 RidePresenter >> index [
 
-	"Returns the rendered representation of the receiver in its main entry point.
-	For example, for an HTML representation what would be in it as index.html"
-
-	^ renderer render: #index for: self
+	self subclassResponsibility
 ]
 
 { #category : #initialization }
 RidePresenter >> initialize [
 
 	super initialize.
-	subpresenters := JsonObject new.
-	renderer := self getRenderer
+	subpresenters := JsonObject new
 ]
 
 { #category : #accessing }

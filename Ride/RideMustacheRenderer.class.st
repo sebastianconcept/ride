@@ -121,10 +121,14 @@ RideMustacheRenderer >> render: aPartialName inLayout: aLayoutNameOrNil with: aM
 { #category : #rendering }
 RideMustacheRenderer >> render: aPartialName with: aMustacheContext for: aRidePresenter [
 
+	| layoutNameOrNil |
+	layoutNameOrNil := isLayoutWrapper ifTrue: [ 
+		                   aRidePresenter class layoutName ].
+
 	^ self
 		  render: aPartialName
 		  as: aRidePresenter class partialYieldTargetName
-		  inLayout: aRidePresenter class layoutName
+		  inLayout: layoutNameOrNil
 		  with: aMustacheContext
 		  for: aRidePresenter
 ]

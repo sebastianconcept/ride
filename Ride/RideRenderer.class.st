@@ -5,8 +5,30 @@ I'm the abstract class of renderers and a renderer is a strategy to get a format
 Class {
 	#name : #RideRenderer,
 	#superclass : #Object,
+	#instVars : [
+		'isLayoutWrapper'
+	],
 	#category : #'Ride-Renderers'
 }
+
+{ #category : #actions }
+RideRenderer >> beLayoutWrapper [
+
+	isLayoutWrapper := true
+]
+
+{ #category : #initialization }
+RideRenderer >> initialize [
+
+	super initialize.
+	isLayoutWrapper := false
+]
+
+{ #category : #testing }
+RideRenderer >> isLayoutWrapper [
+
+	^ isLayoutWrapper
+]
 
 { #category : #rendering }
 RideRenderer >> render: aRidePresenter at: anAspectVariantSelector [
