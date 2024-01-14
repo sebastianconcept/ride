@@ -134,24 +134,6 @@ RideMustacheRenderer >> render: aPartialName with: aMustacheContext for: aRidePr
 ]
 
 { #category : #'as yet unclassified' }
-RideMustacheRenderer >> renderOnPage: aRidePresenter with: mustacheTemplate partials: pagePartials [
-
-	"Render the given presenter as a full web page using the given mustache template and partials."
-
-	"Prepare all the partials needed in a full page render."
-self deprecated: 'should use render:on:layout:for:'.
-	pagePartials addAll: self templates shared.
-
-	"Since this is a full page render, use a layout wrapping the presenter content.
-	The rest of the inner rendering hppens in a partial named 'yield'"
-	^ (self getLayoutFor: aRidePresenter)
-		  value: aRidePresenter mustachePageTemplateModel
-		  partials: (aRidePresenter
-				   mustachePagePartialsOn: pagePartials
-				   with: mustacheTemplate)
-]
-
-{ #category : #'as yet unclassified' }
 RideMustacheRenderer >> showDisintegrateFor: aProductPresenter [
 
 	| partials |
