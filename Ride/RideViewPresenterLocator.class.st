@@ -262,7 +262,6 @@ RideViewPresenterLocator >> readAssetsMap [
 { #category : #accessing }
 RideViewPresenterLocator >> sharedTemplates [
 	self deprecated: 'using resources'.
-	self halt.
 	^ self templates
 		  at: #shared
 		  ifAbsent: [ 

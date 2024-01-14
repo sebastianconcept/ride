@@ -335,7 +335,7 @@ RideResource class >> resetAssetsMapFile [
 
 { #category : #accessing }
 RideResource class >> sharedTemplates [
-
+	self deprecated: 'use Ride service templates shared'.
 	^ self templates
 		  at: #shared
 		  ifAbsent: [ 

@@ -196,8 +196,7 @@ RideServer >> htmlMaintenancePage [
 
 	| templateModel maintenanceTemplate sharedTemplates |
 	templateModel := {  } asDictionary.
-	sharedTemplates := (Ride service renderers at: #mustache) templates
-		                   shared.
+	sharedTemplates := Ride service templates shared.
 	maintenanceTemplate := sharedTemplates at: #maintenance.
 	(Smalltalk os environment at: #MW_TITLE ifAbsent: [ nil ]) ifNotNil: [ 
 		:string | templateModel at: #title put: string ].
@@ -395,8 +394,7 @@ RideServer >> setCacheControlFilter [
 RideServer >> setExceptionHandlers [
 
 	| origin response sharedTemplates |
-	sharedTemplates := (Ride service renderers at: #mustache) templates
-		                   shared.
+	sharedTemplates := Ride service templates shared.
 	self teapot exception: TeaAbort -> [ :abort :req | 
 		origin := req headers at: 'origin' ifAbsent: [ '*' ].
 
