@@ -292,7 +292,7 @@ RideService >> newXMLRenderer [
 	^ RideXMLRenderer new
 ]
 
-{ #category : #initialization }
+{ #category : #accessing }
 RideService >> renderers [
 
 	^ renderers ifNil: [ self initializeRenderers ]
@@ -325,6 +325,12 @@ RideService >> reset [
 		| released |
 		released := sessions.
 		sessions := nil ]
+]
+
+{ #category : #actions }
+RideService >> resetRenderers [
+
+	self renderers do: [ :renderer | renderer reset ]
 ]
 
 { #category : #actions }

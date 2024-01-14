@@ -42,6 +42,10 @@ Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
 	"Answers the rendered template using the given aJsonObject as model and
 	loading it with the properties of the walkback and error message."
 
+	| sharedTemplates |
+	sharedTemplates := (Ride service renderers at: #mustache) templates
+		                   shared.
+
 	Ride service server debugMode ifTrue: [ 
 		| walkback lines |
 		aJsonObject title: self printString.
@@ -55,13 +59,11 @@ Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
 				at: #isDevelopment put: true;
 				at: #walkback
 				put: (lines collect: [ :line | { (#step -> line) } asDictionary ]) ].
-		^ aMustacheTemplate
-			  value: aJsonObject
-			  partials: Ride resource sharedTemplates ].
+		^ aMustacheTemplate value: aJsonObject partials: sharedTemplates ].
 
 	^ aMustacheTemplate
 		  value: (aJsonObject
 				   at: #message put: self messageText;
 				   yourself)
-		  partials: Ride resource sharedTemplates
+		  partials: sharedTemplates
 ]

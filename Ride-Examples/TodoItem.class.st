@@ -13,7 +13,7 @@ Class {
 }
 
 { #category : #converting }
-TodoItem >> asTemplateModel [
+TodoItem >> asMustacheTemplateModel [
 
 	^ { 
 		  (#taskId -> id).

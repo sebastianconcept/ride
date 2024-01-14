@@ -23,7 +23,7 @@ RideSTTemplateRenderer class >> templatesValueSelector [
 	^ #sttTemplates
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideSTTemplateRenderer >> newTemplateFrom: file [
 
 	"Answer a new instance of the template that comes from the source in the given file."

@@ -22,6 +22,20 @@ WelcomePresenter >> edit [
 	^ self html
 ]
 
+{ #category : #'rest-html' }
+WelcomePresenter >> mustacheTemplateModel [
+
+	"Answers the model that is meant for the receiver rendering in a full page of HTML."
+
+	| templateModel |
+	templateModel := JsonObject new.
+	model userFirstName ifNotNil: [ 
+		templateModel
+			hasFirstName: true;
+			userFirstName: model userFirstName ].
+	^ templateModel
+]
+
 { #category : #reactions }
 WelcomePresenter >> onUserFirstNameChanged [
 
@@ -84,18 +98,4 @@ WelcomePresenter >> setUserFirstName [
 
 	self focusedView: (views at: #intro).
 	^ self html
-]
-
-{ #category : #'rest-html' }
-WelcomePresenter >> templateModel [
-
-	"Answers the model that is meant for the receiver rendering in a full page of HTML."
-
-	| templateModel |
-	templateModel := JsonObject new.
-	model userFirstName ifNotNil: [ 
-		templateModel
-			hasFirstName: true;
-			userFirstName: model userFirstName ].
-	^ templateModel
 ]

@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #converting }
-RideMaplessModel >> asTemplateModel [
+RideMaplessModel >> asMustacheTemplateModel [
 
 	^ { (#name -> self class name) } asDictionary
 ]

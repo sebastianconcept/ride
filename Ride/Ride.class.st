@@ -158,9 +158,9 @@ Ride class >> reset [
 	logLevelSymbols := nil.
 	isMaintenance := nil.
 	RideDeclarativeRouting reset.
-	Ride resource reset.
-	Ride isDevelopment ifTrue: [ Ride resource resetAssetsMapFile ].
-
+	resource ifNotNil: [ 
+		Ride isDevelopment ifTrue: [ resource resetAssetsMapFile ].
+		resource reset ]
 ]
 
 { #category : #accessing }

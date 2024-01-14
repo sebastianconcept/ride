@@ -71,6 +71,26 @@ RideTemplateBasedRenderer >> getTemplates [
 ]
 
 { #category : #accessing }
+RideTemplateBasedRenderer >> getTemplatesFor: aRidePresenter [
+
+	"Answer the templates for the given presenter. 
+	It will be found it by the model name either kebabized or snake cased."
+
+	| modelName kebabized views found |
+	modelName := aRidePresenter class getModelName.
+	kebabized := '-' join: (modelName asSnakeCase substrings: '_').
+	views := self templates views.
+	found := views at: kebabized.
+	^ found
+		  ifNil: [ 
+			  views at: modelName asSnakeCase ifAbsent: [ 
+				  RideNotFoundError signal:
+					  ('Presenter views not found: {1}' format:
+						   { aRidePresenter class name }) ] ]
+		  ifNotNil: [ found ]
+]
+
+{ #category : #accessing }
 RideTemplateBasedRenderer >> getTemplatesFrom: aPath [
 
 	"Returns a dictionary with keys being the filenames (without extension) of aPath
@@ -102,6 +122,30 @@ RideTemplateBasedRenderer >> newTemplateFrom: file [
 	"Answer a new instance of the template that comes from the source in the given file."
 
 	self subclassResponsibility
+]
+
+{ #category : #rendering }
+RideTemplateBasedRenderer >> render: aRidePresenter at: anAspectVariantSelector [
+
+	"Since it can have many, use anAspectVariantSelector 
+	to decide in what aspect to render aRidePresenter."
+
+	self subclassResponsibility
+]
+
+{ #category : #accessing }
+RideTemplateBasedRenderer >> reset [
+
+	super reset.
+	self resetTemplates
+]
+
+{ #category : #accessing }
+RideTemplateBasedRenderer >> resetTemplates [
+
+	^ Ride resource values
+		  removeKey: self class templatesValueSelector
+		  ifAbsent: [ nil ]
 ]
 
 { #category : #accessing }

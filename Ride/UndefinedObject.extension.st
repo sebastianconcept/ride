@@ -1,7 +1,7 @@
 Extension { #name : #UndefinedObject }
 
 { #category : #'*Ride' }
-UndefinedObject >> asTemplateModel [
+UndefinedObject >> asMustacheTemplateModel [
 
 	^ Dictionary new
 ]

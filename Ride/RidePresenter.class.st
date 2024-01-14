@@ -81,6 +81,14 @@ RidePresenter class >> getNormalizedModelName [
 	^ self getKebabizedModelName
 ]
 
+{ #category : #accessing }
+RidePresenter class >> mustacheLayoutName [
+
+	"Answer the layout name to be used when rendering instances of the receiver."
+
+	^ #application
+]
+
 { #category : #'instance creation' }
 RidePresenter class >> new [
 
@@ -102,7 +110,7 @@ RidePresenter >> ajaxAction [
 	The convention is to use the value in 'X-Ride-AJAX' as the selector
 	that this controller would perform as a reaction. And, as #default is a no-op,
 	the default is to do nothing."
-
+self deprecated: 'No more default actions like this from AJAX calls. The presenter invoked in the right route defines the action selector always and each method knows what to do'.
 	^ RideCurrentRequest value headers
 		  at: 'X-Ride-AJAX'
 		  ifAbsent: [ #default ]
@@ -122,7 +130,7 @@ RidePresenter >> ajaxReactionAndRender [
 
 { #category : #accessing }
 RidePresenter >> applicationTemplate [
-
+self deprecated: 'the concrete renderer knows about this'.
 	^ Ride resource templates layouts application
 ]
 
@@ -132,7 +140,7 @@ RidePresenter >> basicHTML [
 	"Answers the HTML for this presenter rendered using its template, 
 	its templateModel and its partials."
 	self deprecated: 'the renderer is responsible for this'.
-	^ self focusedView value: self templateModel partials: self partials
+	^ self focusedView value: self mustacheTemplateModel partials: self partials
 ]
 
 { #category : #accessing }
@@ -198,6 +206,7 @@ RidePresenter >> currentSession [
 { #category : #actions }
 RidePresenter >> default [
 	"The default action is doing nothing."
+	self deprecated: 'No more default action?'.
 ]
 
 { #category : #accessing }
@@ -222,8 +231,8 @@ RidePresenter >> htmlFor: nameOfAPartial [
 
 	"Answers the HTML rendered using the receiver's 
 	templateModel on the partial named nameOfAPartial"
-
-	^ self htmlFor: nameOfAPartial on: self templateModel
+self deprecated: 'the concrete renderer knows about this'.
+	^ self htmlFor: nameOfAPartial on: self mustacheTemplateModel
 ]
 
 { #category : #rendering }
@@ -291,7 +300,7 @@ RidePresenter >> htmlPage [
 	enclosed within the application layout template."
 self deprecated: 'the concrete renderer knows about this'.
 	^ self applicationTemplate
-		  value: self pageTemplateModel
+		  value: self mustachePageTemplateModel
 		  partials: self pagePartials
 ]
 
@@ -342,6 +351,52 @@ RidePresenter >> model: aModel [
 	self setObservers	
 ]
 
+{ #category : #rendering }
+RidePresenter >> mustachePagePartialsOn: pagePartials with: mustacheTemplate [
+
+	"Answers the partials to use to render a page including the
+	contents of the receiver as would be rendered by the mustacheTemplate."
+
+	^ pagePartials
+		  at: #yield put: mustacheTemplate;
+		  yourself
+]
+
+{ #category : #accessing }
+RidePresenter >> mustachePageTemplateModel [
+
+	"Answers the model that is meant for the receiver rendering in a full page of HTML
+	by the Mustache template renderer."
+
+	"We just get it wrapped by the application template in layouts/ 
+	which uses it as the partial named 'presenterContent'."
+
+	^ self mustacheTemplateModel
+		  at: #presenterContent put: self mustacheTemplateModel;
+		  yourself
+]
+
+{ #category : #accessing }
+RidePresenter >> mustacheTemplateModel [
+
+	"Answers the model used for the template that 
+	will render only the HTML of this component (not the full page)."
+
+	| template presenterJsAssets |
+	template := model asMustacheTemplateModel.
+	presenterJsAssets := Ride resource assetsMap js
+		                     at: self class getNormalizedModelName
+		                     ifAbsent: [ nil ].
+	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
+		  ifFalse: [ template ]
+		  ifTrue: [ 
+			  presenterJsAssets keysAndValuesDo: [ :key :value | 
+				  template
+					  at: ('{1}Js' format: { key })
+					  put: ('/assets/js/{1}' format: { value }) ].
+			  template ]
+]
+
 { #category : #actions }
 RidePresenter >> onAboutToRespond [
 
@@ -372,17 +427,6 @@ self deprecated: 'the renderer is in charge of locating partials of a presenter'
 		  ifNotNil: [ :partials | 
 			  partials at: #main put: (views at: #index) ];
 		  yourself"
-]
-
-{ #category : #accessing }
-RidePresenter >> pageTemplateModel [
-
-	"Answers the model that is meant for the receiver rendering in a full page of HTML."
-
-	"We basically just get it wrapped by the application template used as partial named 'main'."
-	^ self templateModel
-		  at: #main put: self templateModel;
-		  yourself
 ]
 
 { #category : #accessing }
@@ -486,26 +530,4 @@ self deprecated: 'the renderer is in charge of locating partials of a presenter'
 "	^ views at: #index ifAbsent: [ 
 		  RideMissingTemplateError signal:
 			  ('{1} has no main template' format: { self class name }) ]"
-]
-
-{ #category : #accessing }
-RidePresenter >> templateModel [
-
-	"Answers the model used for the template that 
-	will render only the HTML of this component (not the full page)."
-
-	| template presenterJsAssets |
-	self deprecated: 'the renderer is in charge of locating partials of a presenter'.
-	template := model asTemplateModel.
-	presenterJsAssets := Ride resource assetsMap js
-		                     at: self class getNormalizedModelName
-		                     ifAbsent: [ nil ].
-	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
-		  ifFalse: [ template ]
-		  ifTrue: [ 
-			  presenterJsAssets keysAndValuesDo: [ :key :value | 
-				  template
-					  at: ('{1}Js' format: { key })
-					  put: ('/assets/js/{1}' format: { value }) ].
-			  template ]
 ]

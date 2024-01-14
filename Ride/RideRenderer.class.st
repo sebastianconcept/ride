@@ -16,3 +16,11 @@ RideRenderer >> render: aRidePresenter at: anAspectVariantSelector [
 
 	self subclassResponsibility
 ]
+
+{ #category : #actions }
+RideRenderer >> reset [
+
+	"No-op, compatibility"
+
+	[ '{1} reset' format: { self class name } ] logDebug
+]
