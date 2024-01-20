@@ -36,13 +36,6 @@ Ride class >> defaultLogLevel [
 ]
 
 { #category : #actions }
-Ride class >> draft [
-
-	self beDevEnvironment.
-	^ self doer
-]
-
-{ #category : #actions }
 Ride class >> ensure [
 
 	"Goes to the file system and checks the src/config/ directory for settings that are needed to keep this image properly set for the app."

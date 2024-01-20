@@ -17,7 +17,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'model',
-		'subpresenters'
+		'subpresenters',
+		'canvas'
 	],
 	#category : #'Ride-Presenters'
 }
@@ -25,8 +26,8 @@ Class {
 { #category : #accessing }
 RidePresenter class >> basePath [
 
-	"Answers the view name of this controller as snake case."
-
+	"Answers the view name of this presenter as snake case."
+	self deprecated: 'not in use'.
 	^ self getModelName asSnakeCase
 ]
 
@@ -72,7 +73,19 @@ RidePresenter class >> getModelName [
 { #category : #accessing }
 RidePresenter class >> getNormalizedModelName [
 
-	^ self getKebabizedModelName
+	^ self getSnakeCasedModelName
+]
+
+{ #category : #accessing }
+RidePresenter class >> getNormalizedModelNameForURLs [
+
+	^ self getKebabizedModelName asSnakeCase 
+]
+
+{ #category : #accessing }
+RidePresenter class >> getSnakeCasedModelName [
+
+	^ self getModelName asSnakeCase
 ]
 
 { #category : #accessing }
@@ -100,9 +113,21 @@ RidePresenter class >> on: aModel [
 { #category : #accessing }
 RidePresenter class >> partialYieldTargetName [
 
-	"This is the name used when rendering the contents of the receiver a layout."
+	"This is the name used when rendering the contents of the receiver in a layout."
 
 	^ #yield
+]
+
+{ #category : #accessing }
+RidePresenter >> canvas [
+
+	^ canvas
+]
+
+{ #category : #accessing }
+RidePresenter >> canvas: anObject [
+
+	canvas := anObject
 ]
 
 { #category : #accessing }
@@ -124,6 +149,18 @@ RidePresenter >> currentSession [
 ]
 
 { #category : #accessing }
+RidePresenter >> getLayoutName [
+
+	^ 'application.html'
+]
+
+{ #category : #rendering }
+RidePresenter >> getRenderContext [
+
+	^ self
+]
+
+{ #category : #accessing }
 RidePresenter >> getRenderer [
 
 	"Returns the renderer that this presenter has to use."
@@ -135,14 +172,19 @@ RidePresenter >> getRenderer [
 { #category : #actions }
 RidePresenter >> index [
 
-	self subclassResponsibility
+	"Returns the rendered representation of the receiver in its main entry point.
+	For example, for an HTML representation what would be in it as index.html
+	and for an JSON representation what would be in it as index.json"
+
+	^ self render: #index
 ]
 
 { #category : #initialization }
 RidePresenter >> initialize [
 
 	super initialize.
-	subpresenters := JsonObject new
+	subpresenters := JsonObject new.
+	canvas := self getRenderer
 ]
 
 { #category : #accessing }
@@ -209,6 +251,37 @@ RidePresenter >> onBeforeAction [
 	"no-op is the default"
 ]
 
+{ #category : #rendering }
+RidePresenter >> render [
+
+	^ self render: 'index.html' on: self getRenderContext
+]
+
+{ #category : #rendering }
+RidePresenter >> render: aSelector [
+
+	^ self render: aSelector on: self getRenderContext
+]
+
+{ #category : #rendering }
+RidePresenter >> render: aSelector inLayout: aLayoutNameOrNil on: aRenderContext [
+
+	^ canvas
+		  render: aSelector
+		  inLayout: aLayoutNameOrNil
+		  on: aRenderContext
+		  for: self
+]
+
+{ #category : #rendering }
+RidePresenter >> render: aSelector on: aRenderContext [
+
+	^ self
+		  render: aSelector
+		  inLayout: self getLayoutName
+		  on: aRenderContext
+]
+
 { #category : #actions }
 RidePresenter >> resetSession [
 
@@ -241,4 +314,29 @@ RidePresenter >> subpresenters [
 RidePresenter >> subpresenters: anObject [
 
 	subpresenters := anObject
+]
+
+{ #category : #accessing }
+RidePresenter >> templateContext [
+
+	"Answers the object used as context for the template that 
+	will render the HTML of this presenter (its strict content
+	not wrapped in a layout as in a full page render)."
+
+	| template presenterJsAssets |
+	template := model asTemplateModel.
+	Ride resource assetsMap js ifNil: [ ^ template ].
+
+	presenterJsAssets := Ride resource assetsMap js
+		                     at: self class getNormalizedModelName
+		                     ifAbsent: [ nil ].
+
+	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
+		  ifFalse: [ template ]
+		  ifTrue: [ 
+			  presenterJsAssets keysAndValuesDo: [ :key :value | 
+				  template
+					  at: ('{1}Js' format: { key })
+					  put: ('/assets/js/{1}' format: { value }) ].
+			  template ]
 ]

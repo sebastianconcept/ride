@@ -326,7 +326,7 @@ RideSTTemplateHelperReview >> for: aSymbol [
 		            ifTrue: [ self class defaultViewTemplateWithJs ]
 		            ifFalse: [ self class defaultViewTemplate ].
 
-	(targetPath / 'index.html.est') ensureCreateFile writeStreamDo: [ 
+	(targetPath / 'index.html.stt') ensureCreateFile writeStreamDo: [ 
 		:stream | stream nextPutAll: rendered ].
 
 	js ifTrue: [ 

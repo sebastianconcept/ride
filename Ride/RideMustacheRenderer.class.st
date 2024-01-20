@@ -46,7 +46,7 @@ RideMustacheRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideMustacheRenderer >> render: aTemplateName as: aPartialName inLayout: aLayoutNameOrNil with: aMustacheContext for: aRidePresenter [
+RideMustacheRenderer >> render: aTemplateName as: aPartialName inLayout: aLayoutNameOrNil on: aTemplateContext for: aRidePresenter [
 
 	| templateViews yieldTarget templateToRender |
 	templateViews := (self getTemplatesFor: aRidePresenter) copy.
@@ -69,40 +69,48 @@ RideMustacheRenderer >> render: aTemplateName as: aPartialName inLayout: aLayout
 	templateToRender := aLayoutNameOrNil
 		                    ifNil: [ yieldTarget ]
 		                    ifNotNil: [ self getLayoutAt: aLayoutNameOrNil ].
-	^ templateToRender value: aMustacheContext partials: templateViews
+	^ templateToRender value: aTemplateContext partials: templateViews
 ]
 
 { #category : #rendering }
-RideMustacheRenderer >> render: aPartialName for: aRidePresenter [
+RideMustacheRenderer >> render: aTemplateName for: aRidePresenter [
+
+	"Render the template found with aTemplateName for aRidePresenter."
 
 	^ self
-		  render: aPartialName
+		  render: aTemplateName
 		  with: aRidePresenter mustacheTemplateModel
 		  for: aRidePresenter
 ]
 
 { #category : #rendering }
-RideMustacheRenderer >> render: aPartialName inLayout: aLayoutNameOrNil for: aRidePresenter [
+RideMustacheRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil for: aRidePresenter [
+
+	"Render the template found with aTemplateName embedded 
+	in the layout at aLayoutNameOrNil for aRidePresenter."
 
 	^ self
-		  render: aPartialName
+		  render: aTemplateName
 		  inLayout: aLayoutNameOrNil
-		  with: aRidePresenter mustacheTemplateModel
+		  on: aRidePresenter mustacheTemplateModel
 		  for: aRidePresenter
 ]
 
 { #category : #rendering }
-RideMustacheRenderer >> render: aPartialName inLayout: aLayoutNameOrNil with: aMustacheContext for: aRidePresenter [
+RideMustacheRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: aTemplateContext for: aRidePresenter [
+
+	"Render the template found with aTemplateName embedded 
+	in the layout at aLayoutNameOrNil for aRidePresenter."
 
 	| templateViews yieldTarget templateToRender |
 	templateViews := (self getTemplatesFor: aRidePresenter) copy.
-	yieldTarget := templateViews at: aPartialName ifAbsent: [ 
+	yieldTarget := templateViews at: aTemplateName ifAbsent: [ 
 		               RideNotFoundError signal:
 			               ('Partial not found: {1} >> {2}' format: { 
 					                aRidePresenter class name.
-					                aPartialName }) ].
+					                aTemplateName }) ].
 
-	"1. Make the template found at aPartialName 
+	"1. Make the template found at aTemplateName 
 	available to be yield from the layout template.
 	
 	2. Make the shared partials, always available."
@@ -115,20 +123,20 @@ RideMustacheRenderer >> render: aPartialName inLayout: aLayoutNameOrNil with: aM
 	templateToRender := aLayoutNameOrNil
 		                    ifNil: [ yieldTarget ]
 		                    ifNotNil: [ self getLayoutAt: aLayoutNameOrNil ].
-	^ templateToRender value: aMustacheContext partials: templateViews
+	^ templateToRender value: aTemplateContext partials: templateViews
 ]
 
 { #category : #rendering }
-RideMustacheRenderer >> render: aPartialName with: aMustacheContext for: aRidePresenter [
+RideMustacheRenderer >> render: aTemplateName with: aMustacheContext for: aRidePresenter [
 
 	| layoutNameOrNil |
 	layoutNameOrNil := isLayoutWrapper ifTrue: [ 
 		                   aRidePresenter class layoutName ].
 
 	^ self
-		  render: aPartialName
+		  render: aTemplateName
 		  as: aRidePresenter class partialYieldTargetName
 		  inLayout: layoutNameOrNil
-		  with: aMustacheContext
+		  on: aMustacheContext
 		  for: aRidePresenter
 ]

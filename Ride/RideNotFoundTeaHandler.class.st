@@ -10,7 +10,7 @@ Class {
 { #category : #'not found handler' }
 RideNotFoundTeaHandler >> requestNotFound: aZnRequest [
 
-	| response feedbackMessage templateModel mustacheTemplate renderedContent origin |
+	| response feedbackMessage templateModel renderedContent origin template |
 	feedbackMessage := 'Not found: {1}' format:
 		                   { aZnRequest url asString }.
 	[ feedbackMessage ] logWarning.
@@ -21,9 +21,9 @@ RideNotFoundTeaHandler >> requestNotFound: aZnRequest [
 		templateModel
 			at: #error
 			put: { (#messageText -> feedbackMessage) } asDictionary ].
-	mustacheTemplate := Ride service templates shared at: 404 asString.
-	renderedContent := mustacheTemplate
-		                   value: templateModel
+	template := Ride service templates shared at: '404.html'.
+	renderedContent := template
+		                   renderOn: templateModel
 		                   partials: Ride service templates shared.
 
 	origin := aZnRequest headers at: 'origin' ifAbsent: [ '*' ].

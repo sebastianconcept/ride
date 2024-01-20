@@ -125,10 +125,9 @@ RideTemplateBasedRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideTemplateBasedRenderer >> render: aPartialName for: aRidePresenter [
+RideTemplateBasedRenderer >> render: aTemplateName for: aRidePresenter [
 
-	"Since it can have many, use anAspectVariantSelector 
-	to decide in what aspect to render aRidePresenter."
+	"Render the template found with aTemplateName for aRidePresenter."
 
 	self subclassResponsibility
 ]

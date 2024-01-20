@@ -37,14 +37,13 @@ Error >> htmlDescribeOn: aJsonObjectToRespond [
 ]
 
 { #category : #'*Ride-Pharo' }
-Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
+Error >> renderHtmlWith: aJsonObject on: anSTTemplate [
 
 	"Answers the rendered template using the given aJsonObject as model and
 	loading it with the properties of the walkback and error message."
 
 	| sharedTemplates |
-	sharedTemplates := (Ride service renderers at: #mustache) templates
-		                   shared.
+	sharedTemplates := (Ride service renderers at: #stt) templates shared.
 
 	Ride service server debugMode ifTrue: [ 
 		| walkback lines |
@@ -59,10 +58,10 @@ Error >> renderHtmlWith: aJsonObject on: aMustacheTemplate [
 				at: #isDevelopment put: true;
 				at: #walkback
 				put: (lines collect: [ :line | { (#step -> line) } asDictionary ]) ].
-		^ aMustacheTemplate value: aJsonObject partials: sharedTemplates ].
+		^ anSTTemplate renderOn: aJsonObject partials: sharedTemplates ].
 
-	^ aMustacheTemplate
-		  value: (aJsonObject
+	^ anSTTemplate
+		  renderOn: (aJsonObject
 				   at: #message put: self messageText;
 				   yourself)
 		  partials: sharedTemplates

@@ -8,6 +8,12 @@ Class {
 }
 
 { #category : #accessing }
+RideOneClassCreationHelper >> classFor: aSymbol [
+
+	^ Smalltalk at: (self classNameFor: aSymbol) asSymbol
+]
+
+{ #category : #accessing }
 RideOneClassCreationHelper >> classNameFor: className [
 
 	self subclassResponsibility
@@ -108,6 +114,15 @@ RideOneClassCreationHelper >> newClassNamed: className withSuperclass: aClass [
 		  withSuperclass: aClass
 ]
 
+{ #category : #actions }
+RideOneClassCreationHelper >> removeFor: aSymbol [
+
+	| targetedSuperclass targetedClass |
+	targetedSuperclass := self targetedSuperclassFor: aSymbol.
+	targetedClass := Smalltalk at: (self classNameFor: aSymbol) asSymbol.
+	targetedSuperclass removeSubclass: targetedClass
+]
+
 { #category : #accessing }
 RideOneClassCreationHelper >> targetPackageName [
 
@@ -119,11 +134,17 @@ RideOneClassCreationHelper >> targetPackageName [
 { #category : #accessing }
 RideOneClassCreationHelper >> targetPackageNameRoot [
 
-	^ Ride draft packageName
+	^ Ride builder packageName
 ]
 
 { #category : #accessing }
 RideOneClassCreationHelper >> targetPackageNameTag [
+
+	^ self subclassResponsibility
+]
+
+{ #category : #actions }
+RideOneClassCreationHelper >> targetedSuperclassFor: aSymbol [
 
 	^ self subclassResponsibility
 ]

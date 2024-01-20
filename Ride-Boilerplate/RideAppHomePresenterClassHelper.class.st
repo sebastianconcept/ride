@@ -12,7 +12,7 @@ RideAppHomePresenterClassHelper class >> indexMethodFor: aSymbol [
 
 	^ 'index
 
-	^ page render: #index for: self
+	^ self render: ''index.html''
 	' format: { aSymbol }
 ]
 

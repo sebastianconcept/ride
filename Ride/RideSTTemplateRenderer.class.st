@@ -32,11 +32,25 @@ RideSTTemplateRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideSTTemplateRenderer >> render: aSTTemplateName for: aRidePresenter [
-	"Since it can have many, use anAspectVariantSelector 
-	to decide in what aspect to render aRidePresenter."
+RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: aTemplateContext for: aRidePresenter [
 
-	self halt.
-	aRidePresenter getTemplatesFrom: self templates.
-	^ Ride resource
+	"Render the template found with aTemplateName embedded 
+	in the layout at aLayoutNameOrNil for aRidePresenter."
+
+	| layoutWrapper wrappedTemplate missingTemplate |
+	missingTemplate := [ :templateName | 
+	                   RideMissingTemplateError signal: templateName ].
+	layoutWrapper := (self templates at: #layouts)
+		                 at: aLayoutNameOrNil
+		                 ifAbsent: [ 
+		                 missingTemplate value: aLayoutNameOrNil ].
+	wrappedTemplate := ((self templates at: #views)
+		                    at: aRidePresenter class getNormalizedModelName
+		                    ifAbsent: [ 
+		                    missingTemplate value:
+			                    aRidePresenter class getNormalizedModelName ])
+		                   at: aTemplateName
+		                   ifAbsent: [ missingTemplate value: aTemplateName ].
+
+	^ layoutWrapper renderOn: aTemplateContext partial: wrappedTemplate
 ]

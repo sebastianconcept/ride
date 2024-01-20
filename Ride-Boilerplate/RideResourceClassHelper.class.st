@@ -88,6 +88,12 @@ RideResourceClassHelper >> for: aSymbol [
 	self addDatabaseFileMethodTo: appClass for: aSymbol
 ]
 
+{ #category : #actions }
+RideResourceClassHelper >> setFor: aSymbol [
+
+	Ride resource: (self classFor: aSymbol)
+]
+
 { #category : #accessing }
 RideResourceClassHelper >> targetPackageNameTag [
 

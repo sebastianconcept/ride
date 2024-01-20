@@ -12,7 +12,7 @@ Class {
 }
 
 { #category : #accessing }
-RideCompositeHelper >> doer [
+RideCompositeHelper >> builder [
 
 	^ doer
 ]

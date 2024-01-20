@@ -29,7 +29,7 @@ RidePresenterHelper >> targetPackageNameTag [
 RidePresenterHelper >> targetedSuperclassFor: aSymbol [
 
 	| className |
-	className := '{1}Presenter' format: { RideDoer defaultPackageName }.
+	className := '{1}Presenter' format: { RideBuilder defaultPackageName }.
 	^ Smalltalk
 		  at: className asSymbol
 		  ifAbsent: [ 

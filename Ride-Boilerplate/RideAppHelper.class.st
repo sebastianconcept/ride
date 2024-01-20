@@ -24,7 +24,7 @@ RideAppHelper class >> applicationLayoutContentFor: aSymbol [
   </head>
   <body>
     <main>
-      <st= self render: #main >
+      <st STT yield >
     </main>
   </body>
   <script
@@ -549,7 +549,7 @@ RideAppHelper >> ensureTemplatesLayoutsOn: directory for: aSymbol [
 
 	directory ensureCreateDirectory.
 
-	directory / 'application.html.est' writeStreamDo: [ :stream | 
+	directory / 'application.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class applicationLayoutContentFor: aSymbol) ]
 ]
 
@@ -558,16 +558,16 @@ RideAppHelper >> ensureTemplatesSharedOn: directory for: aSymbol [
 
 	directory ensureCreateDirectory.
 
-	directory / '404.html.est' writeStreamDo: [ :stream | 
+	directory / '404.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fourZeroFourContentFor: aSymbol) ].
 
-	directory / '422.html.est' writeStreamDo: [ :stream | 
+	directory / '422.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fourTwentyTwoContentFor: aSymbol) ].
 
-	directory / '500.html.est' writeStreamDo: [ :stream | 
+	directory / '500.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fiveHundredContentFor: aSymbol) ].
 
-	directory / 'maintenance.html.est' writeStreamDo: [ :stream | 
+	directory / 'maintenance.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class maintenanceContentFor: aSymbol) ]
 ]
 
@@ -586,20 +586,19 @@ RideAppHelper >> ensureUploadsDirectoryOn: projectRoot [
 RideAppHelper >> for: aSymbol [
 
 	self setPackageNameTo: aSymbol.
-	
+
+	self resourceClass for: aSymbol.
+	self resourceClass setFor: aSymbol.
 	self ensureAppFilesFor: aSymbol.
-	
 	self sessionClass for: aSymbol.
 	self maitreClass for: aSymbol.
-	self resourceClass for: aSymbol.
 	self appClass for: aSymbol.
 	self serverClass for: aSymbol.
 	self appErrorClass for: aSymbol.
 	self abstractModelClass for: aSymbol.
 	self abstractWebApplicationPresenterClass for: aSymbol.
 	self homePresenterClass for: aSymbol.
-	self homeTemplate for: aSymbol.
-	
+	self homeTemplate for: aSymbol
 ]
 
 { #category : #testing }
@@ -651,5 +650,5 @@ RideAppHelper >> setPackageNameTo: aSymbol [
 		RideBoilerplateError signal:
 			'The application name needs to be defined' ].
 
-	Ride draft defaultPackageName: aSymbol asString
+	Ride builder defaultPackageName: aSymbol asString
 ]
