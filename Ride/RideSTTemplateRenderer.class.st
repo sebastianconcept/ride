@@ -32,6 +32,19 @@ RideSTTemplateRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
+RideSTTemplateRenderer >> render: aTemplateName for: aRidePresenter [
+
+	"Render the template found with aTemplateName for aRidePresenter
+	using the layout and context that the presenter itself provides."
+
+	^ self
+		  render: aTemplateName
+		  inLayout: aRidePresenter getLayoutName
+		  on: aRidePresenter getRenderContext
+		  for: aRidePresenter
+]
+
+{ #category : #rendering }
 RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: aTemplateContext for: aRidePresenter [
 
 	"Render the template found with aTemplateName embedded 
