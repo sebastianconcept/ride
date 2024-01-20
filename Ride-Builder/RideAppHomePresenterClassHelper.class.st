@@ -4,7 +4,7 @@ I help creating the home app presenter
 Class {
 	#name : #RideAppHomePresenterClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #initialization }

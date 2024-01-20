@@ -4,7 +4,7 @@ I help with the creation of the server class of the Ride-based application
 Class {
 	#name : #RideServerClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #initialization }

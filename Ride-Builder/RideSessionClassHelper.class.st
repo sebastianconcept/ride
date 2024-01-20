@@ -4,7 +4,7 @@ I help with the creation of the session class of the Ride-based application
 Class {
 	#name : #RideSessionClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

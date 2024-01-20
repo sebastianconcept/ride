@@ -4,7 +4,7 @@ I help creating the app Presenters superclass for all the concrete presenters of
 Class {
 	#name : #RideAbstractWebApplicationPresenterClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

@@ -4,7 +4,7 @@ I help with the creating the boilerplate of a Model its and its Controllers to i
 Class {
 	#name : #RideAPIHelper,
 	#superclass : #RideCompositeHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

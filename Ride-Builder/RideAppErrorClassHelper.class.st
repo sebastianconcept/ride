@@ -4,7 +4,7 @@ I help with the creation of the Error class for the application so app specific 
 Class {
 	#name : #RideAppErrorClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

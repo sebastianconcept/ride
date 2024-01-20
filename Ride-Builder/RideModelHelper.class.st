@@ -4,7 +4,7 @@ I'm a Ride helper dedicated to boilerplate a model
 Class {
 	#name : #RideModelHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

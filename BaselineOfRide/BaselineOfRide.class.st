@@ -16,6 +16,7 @@ BaselineOfRide >> baseline: spec [
 		self setUpPackages: spec.
 		spec
 			group: 'Core' with: #( 'Ride' );
+			group: 'Builder' with: #( 'Ride-Builder' );
 			group: 'Tests' with: #( 'Ride-Tests' );
 			group: 'Examples' with: #( 'Ride-Examples' );
 			group: 'Tools' with: #( 'Ride-Tools' );
@@ -85,6 +86,7 @@ BaselineOfRide >> setUpPackages: spec [
 			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'JSON' 'Ride-Pharo'
 			   'Mapless' 'SingularizePluralize' 'STTemplate' ) ].
 
+	spec package: 'Ride-Builder' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Tools' with: [ spec requires: #( 'Ride' ) ]
@@ -104,7 +106,7 @@ BaselineOfRide >> sst: spec [
 
 	spec baseline: 'STTemplate' with: [ 
 		spec
-			repository: 'github://sebastianconcept/STTemplate:v0.0.2';
+			repository: 'github://sebastianconcept/STTemplate:v0.0.3';
 			loads: #( 'Core' ) ]
 ]
 

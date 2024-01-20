@@ -10,7 +10,7 @@ Class {
 	#classInstVars : [
 		'defaultPackageName'
 	],
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

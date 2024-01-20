@@ -1,11 +1,11 @@
 Extension { #name : #Ride }
 
-{ #category : #'*Ride-Boilerplate' }
+{ #category : #'*Ride-Builder' }
 Ride class >> builder [
 
 	"Answers a new Ride helper dedicated to keep types of actions being done 
 	by the specialists concerned in each subject. 
-	Today these are those who can create boilerplate code for: 
+	Today these are those which can create boilerplate code for: 
 	1. the Ride-based application, 
 	2. new models
 	3. new presenters
@@ -15,7 +15,7 @@ Ride class >> builder [
 	^ RideBuilder new
 ]
 
-{ #category : #'*Ride-Boilerplate' }
+{ #category : #'*Ride-Builder' }
 Ride class >> create [
 
 	self beDevEnvironment.

@@ -4,7 +4,7 @@ I'm a Ride helper dedicated to boilerplate a new Ride application
 Class {
 	#name : #RideAppHelper,
 	#superclass : #RideCompositeHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

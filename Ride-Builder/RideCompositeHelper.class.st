@@ -8,7 +8,7 @@ Class {
 		'js',
 		'doer'
 	],
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

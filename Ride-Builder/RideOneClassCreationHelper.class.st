@@ -4,7 +4,7 @@ I help with the boilerplate of things that end up creating one class
 Class {
 	#name : #RideOneClassCreationHelper,
 	#superclass : #RideBoilerplateHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

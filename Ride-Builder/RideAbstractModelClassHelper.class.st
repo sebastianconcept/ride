@@ -4,7 +4,7 @@ I help creating the app model superclass
 Class {
 	#name : #RideAbstractModelClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

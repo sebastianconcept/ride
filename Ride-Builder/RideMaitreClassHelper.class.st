@@ -4,7 +4,7 @@ I help with the creation of the concrete maitre class of the Ride-based applicat
 Class {
 	#name : #RideMaitreClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

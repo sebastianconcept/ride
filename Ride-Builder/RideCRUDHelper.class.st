@@ -4,7 +4,7 @@ I am an abstract class with the commonalities of CRUD boilerplate generators
 Class {
 	#name : #RideCRUDHelper,
 	#superclass : #RideCompositeHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

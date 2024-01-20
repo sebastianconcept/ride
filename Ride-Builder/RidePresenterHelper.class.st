@@ -4,7 +4,7 @@ I'm a Ride helper dedicated to boilerplate a presenter
 Class {
 	#name : #RidePresenterHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

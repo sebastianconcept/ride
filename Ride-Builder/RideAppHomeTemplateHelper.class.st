@@ -4,7 +4,7 @@ I help creating the app Presenter class for the home path of a boilerplated app
 Class {
 	#name : #RideAppHomeTemplateHelper,
 	#superclass : #RideBoilerplateHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

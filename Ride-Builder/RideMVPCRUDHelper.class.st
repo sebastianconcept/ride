@@ -4,7 +4,7 @@ I help to draft the model, views and presenters needed for a basic CRUD around t
 Class {
 	#name : #RideMVPCRUDHelper,
 	#superclass : #RideCRUDHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #actions }

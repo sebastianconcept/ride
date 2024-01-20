@@ -4,7 +4,7 @@ I help with the creation of the main application helper class
 Class {
 	#name : #RideAppClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

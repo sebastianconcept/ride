@@ -4,7 +4,7 @@ I help creating the class that helps resolving resources for the Ride-based app
 Class {
 	#name : #RideResourceClassHelper,
 	#superclass : #RideOneClassCreationHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

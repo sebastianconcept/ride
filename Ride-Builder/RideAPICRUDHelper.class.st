@@ -4,7 +4,7 @@ I help to draft the model and controllers needed for a basic CRUD actions around
 Class {
 	#name : #RideAPICRUDHelper,
 	#superclass : #RideCRUDHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #'instance creation' }

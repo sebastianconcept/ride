@@ -4,7 +4,7 @@ I'm a Ride helper dedicated to database actions
 Class {
 	#name : #RideDatabaseHelper,
 	#superclass : #Object,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #actions }

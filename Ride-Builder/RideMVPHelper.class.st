@@ -4,7 +4,7 @@ I help with the creating the boilerplate of a Model its View and its Presenter f
 Class {
 	#name : #RideMVPHelper,
 	#superclass : #RideCompositeHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }

@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'js'
 	],
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #initialization }
