@@ -21,6 +21,14 @@ Ride class >> allowsLoglevel: aSymbol [
 	  <= (self logLevelSymbols keyAtValue: self logLevel)
 ]
 
+{ #category : #actions }
+Ride class >> beDevEnvironment [
+
+	"Sets the OS environment to be in #DEVELOPMENT mode"
+
+	Smalltalk os environment at: 'MODE' put: #DEVELOPMENT
+]
+
 { #category : #accessing }
 Ride class >> defaultLogLevel [
 
@@ -28,25 +36,11 @@ Ride class >> defaultLogLevel [
 ]
 
 { #category : #actions }
-Ride class >> do [
-
-	"Answers a new Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, these who can create boilerplate for model, presenter , crud, database actions, etc"
-
-	^ RideDoer new
-]
-
-{ #category : #actions }
-Ride class >> draft [
-
-	^ self do
-]
-
-{ #category : #actions }
 Ride class >> ensure [
 
 	"Goes to the file system and checks the src/config/ directory for settings that are needed to keep this image properly set for the app."
 
-	
+	self notYetImplemented
 ]
 
 { #category : #initialization }
@@ -88,13 +82,6 @@ Ride class >> isMaintenance [
 Ride class >> isProduction [
 
 	^ self mode asLowercase = 'production'
-]
-
-{ #category : #accessing }
-Ride class >> locator [
-	self deprecated: 'use resource'.
-	self halt.
-	^ RideResource
 ]
 
 { #category : #actions }
@@ -164,8 +151,9 @@ Ride class >> reset [
 	logLevelSymbols := nil.
 	isMaintenance := nil.
 	RideDeclarativeRouting reset.
-	Ride resource reset.
-	Ride isDevelopment ifTrue: [ Ride resource resetAssetsMapFile ]
+	resource ifNotNil: [ 
+		Ride isDevelopment ifTrue: [ resource resetAssetsMapFile ].
+		resource reset ]
 ]
 
 { #category : #accessing }

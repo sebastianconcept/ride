@@ -4,8 +4,14 @@ I help with the boilerplate of things that end up creating one class
 Class {
 	#name : #RideOneClassCreationHelper,
 	#superclass : #RideBoilerplateHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
+
+{ #category : #accessing }
+RideOneClassCreationHelper >> classFor: aSymbol [
+
+	^ Smalltalk at: (self classNameFor: aSymbol) asSymbol
+]
 
 { #category : #accessing }
 RideOneClassCreationHelper >> classNameFor: className [
@@ -24,29 +30,32 @@ RideOneClassCreationHelper >> for: aSymbol [
 
 	| snippet newClass |
 	snippet := self newClassNamed: aSymbol.
-	newClass := OpalCompiler new evaluate: snippet.
+	[ newClass := OpalCompiler new evaluate: snippet ]
+		on: Error
+		do: [ :x | RideBoilerplateError signal: x messageText ].
 	newClass comment: (self defaultCommentsFor: aSymbol).
 	^ newClass
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: aSymbol [
 
 	| className targetedSuperclass |
 	className := self classNameFor: aSymbol.
-	targetedSuperclass := self targetedSuperclass.
+	targetedSuperclass := self targetedSuperclassFor: aSymbol.
 	self
 		assert: (Smalltalk includesKey: className asSymbol) not
 		description:
 		('{1} already exists in this image.' format: { className }).
 	[ 
-	'Adding subclass {1} to {2} in package' format: { 
+	'Adding new class {1} as subclass of {2} in {3} package' format: { 
 			className.
-			targetedSuperclass name } ] logInfo.
+			targetedSuperclass name.
+			self targetPackageName } ] logInfo.
 	^ self newClassNamed: className withSuperclass: targetedSuperclass
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: className instVars: instVars classVars: classVars packageNamed: packageName [
 
 	^ self
@@ -57,7 +66,7 @@ RideOneClassCreationHelper >> newClassNamed: className instVars: instVars classV
 		  withSuperclass: Object
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: className instVars: instVars classVars: classVars packageNamed: packageName withSuperclass: aClass [
 
 	| template |
@@ -90,17 +99,52 @@ RideOneClassCreationHelper >> newClassNamed: className on: aSuperclass [
 		  newClassNamed: subclassName
 		  instVars: ''
 		  classVars: ''
-		  packageNamed: Ride draft packageName
+		  packageNamed: self targetPackageName
 		  withSuperclass: aSuperclass
 ]
 
-{ #category : #'instance creation' }
+{ #category : #actions }
 RideOneClassCreationHelper >> newClassNamed: className withSuperclass: aClass [
 
 	^ self
 		  newClassNamed: className
 		  instVars: ''
 		  classVars: ''
-		  packageNamed: Ride draft packageName
+		  packageNamed: self targetPackageName
 		  withSuperclass: aClass
+]
+
+{ #category : #actions }
+RideOneClassCreationHelper >> removeFor: aSymbol [
+
+	| targetedSuperclass targetedClass |
+	targetedSuperclass := self targetedSuperclassFor: aSymbol.
+	targetedClass := Smalltalk at: (self classNameFor: aSymbol) asSymbol.
+	targetedSuperclass removeSubclass: targetedClass
+]
+
+{ #category : #accessing }
+RideOneClassCreationHelper >> targetPackageName [
+
+	^ '{1}-{2}' format: { 
+			  self targetPackageNameRoot.
+			  self targetPackageNameTag }
+]
+
+{ #category : #accessing }
+RideOneClassCreationHelper >> targetPackageNameRoot [
+
+	^ Ride builder packageName
+]
+
+{ #category : #accessing }
+RideOneClassCreationHelper >> targetPackageNameTag [
+
+	^ self subclassResponsibility
+]
+
+{ #category : #actions }
+RideOneClassCreationHelper >> targetedSuperclassFor: aSymbol [
+
+	^ self subclassResponsibility
 ]

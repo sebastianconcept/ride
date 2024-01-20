@@ -8,17 +8,11 @@ Class {
 		'js',
 		'doer'
 	],
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }
-RideCompositeHelper >> controllerForModel: aSymbol [
-
-	^ Smalltalk at: (doer controller classNameFor: aSymbol) asSymbol
-]
-
-{ #category : #accessing }
-RideCompositeHelper >> doer [
+RideCompositeHelper >> builder [
 
 	^ doer
 ]
@@ -56,6 +50,15 @@ RideCompositeHelper >> mustacheTemplateFor: aSymbol [
 RideCompositeHelper >> presenterForModel: aSymbol [
 
 	^ Smalltalk at: (doer presenter classNameFor: aSymbol) asSymbol
+]
+
+{ #category : #actions }
+RideCompositeHelper >> sttTemplateFor: aSymbol [
+
+	| view |
+	view := doer view stt.
+	view js: js.
+	view for: aSymbol
 ]
 
 { #category : #actions }

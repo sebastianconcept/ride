@@ -24,7 +24,7 @@ String >> asSnakeCase [
 									  nextPut: $_;
 									  nextPut: char asLowercase ] ]
 					  ifFalse: [ 
-						  char = Character space
+						  (char = Character space or: [ char = $- ])
 							  ifFalse: [ output nextPut: char ]
 							  ifTrue: [ output nextPut: $_ ] ] ] ] ]
 ]

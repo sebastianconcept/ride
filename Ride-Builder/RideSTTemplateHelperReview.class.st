@@ -1,17 +1,14 @@
 "
-I help with the boilerplate of views made with mustache templates
+I help with the boilerplate of views made out of STTemplate
 "
 Class {
-	#name : #RideMustacheHelper,
-	#superclass : #RideBoilerplateHelper,
-	#instVars : [
-		'js'
-	],
-	#category : #'Ride-Boilerplate'
+	#name : #RideSTTemplateHelperReview,
+	#superclass : #RideAbstractTemplateHelper,
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }
-RideMustacheHelper class >> defaultJavaScriptFor: aSymbol [
+RideSTTemplateHelperReview class >> defaultJavaScriptFor: aSymbol [
 
 	^ 'window.addEventListener("load", (event) => \{
   console.log("{1} initialized");
@@ -20,20 +17,20 @@ RideMustacheHelper class >> defaultJavaScriptFor: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> defaultViewTemplate [
+RideSTTemplateHelperReview class >> defaultViewTemplate [
 
 	^ '<h1>{{title}}</h1>'
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> defaultViewTemplateWithJs [
+RideSTTemplateHelperReview class >> defaultViewTemplateWithJs [
 
 	^ '<h1>{{title}}</h1>
 <script type="text/javascript" src="{{ indexJs }}"></script>'
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> editMustacheTemplateContent: aSymbol [
+RideSTTemplateHelperReview class >> editMustacheTemplateContent: aSymbol [
 
 	^ '<h1>Editing {1}</h1>
 \{\{>form{1}\}\}
@@ -50,7 +47,7 @@ RideMustacheHelper class >> editMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> formMustacheTemplateContent: aSymbol [
+RideSTTemplateHelperReview class >> formMustacheTemplateContent: aSymbol [
 
 	^ '<form action="/{1}/\{\{modelId\}\}" method="POST" accept-charset="UTF-8">
   \{\{>userFeedback\}\}
@@ -68,13 +65,13 @@ RideMustacheHelper class >> formMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> getPathFor: aSymbol [
+RideSTTemplateHelperReview class >> getPathFor: aSymbol [
 
 	^ Ride resource viewsDirectory / aSymbol asPlural asSnakeCase
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> indexMustacheTemplateContent: aSymbol [
+RideSTTemplateHelperReview class >> indexMustacheTemplateContent: aSymbol [
 
 	^ '\{\{#notice\}\}
   <p style="color: green">\{\{notice\}\}</p>
@@ -100,13 +97,13 @@ RideMustacheHelper class >> indexMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> loadCustomJsScriptElement [
+RideSTTemplateHelperReview class >> loadCustomJsScriptElement [
 
 	^ '<script type="text/javascript" src="{{ indexJs }}"></script>'
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> modelMustacheTemplateContent: aSymbol [
+RideSTTemplateHelperReview class >> modelMustacheTemplateContent: aSymbol [
 
 	^ '<div data-id="\{\{modelId\}\}">
   <p>
@@ -118,7 +115,7 @@ RideMustacheHelper class >> modelMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> newModelMustacheTemplateContent: aSymbol [
+RideSTTemplateHelperReview class >> newModelMustacheTemplateContent: aSymbol [
 
 	^ '<h1>New {1}</h1>
 \{\{>form{1}\}\}
@@ -133,7 +130,7 @@ RideMustacheHelper class >> newModelMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> showMustacheTemplateContent: aSymbol [
+RideSTTemplateHelperReview class >> showMustacheTemplateContent: aSymbol [
 
 	^ '\{\{#notice\}\}
   <p style="color: green">\{\{notice\}\}</p>
@@ -156,9 +153,10 @@ RideMustacheHelper class >> showMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudEditFor: aSymbol [
+RideSTTemplateHelperReview >> crudEditFor: aSymbol [
 
 	| targetPath rendered templateFilename |
+	self halt.
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
@@ -180,9 +178,10 @@ RideMustacheHelper >> crudEditFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudFormFor: aSymbol [
+RideSTTemplateHelperReview >> crudFormFor: aSymbol [
 
 	| targetPath rendered templateFilename |
+	self halt.
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
@@ -204,19 +203,19 @@ RideMustacheHelper >> crudFormFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudIndexFor: aSymbol [
+RideSTTemplateHelperReview >> crudIndexFor: aSymbol [
 
 	| targetPath rendered |
+	self halt.
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
 	"Verify lack of preexistence to protect possible existing work."
-	self
-		assert: targetPath exists not
-		description:
+	targetPath exists ifTrue: [ 
+		RideBoilerplateError signal:
 			('The template for {1} already exists in {2}' format: { 
 					 aSymbol.
-					 targetPath pathString }).
+					 targetPath pathString }) ].
 
 	"Create the template file using the default template for a model"
 	rendered := self class indexMustacheTemplateContent: aSymbol.
@@ -236,21 +235,21 @@ RideMustacheHelper >> crudIndexFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudModelFor: aSymbol [
+RideSTTemplateHelperReview >> crudModelFor: aSymbol [
 
 	| targetPath rendered templateFilename |
+	self halt.
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
 	"Verify lack of preexistence to protect possible existing work."
 	templateFilename := '{1}.mustache' format: { aSymbol uncapitalized }.
 
-	self
-		assert: (targetPath / templateFilename) exists not
-		description:
+	(targetPath / templateFilename) exists ifTrue: [ 
+		RideBoilerplateError signal:
 			('The template for {1} already exists in {2}' format: { 
 					 aSymbol.
-					 targetPath pathString }).
+					 targetPath pathString }) ].
 
 	"Get the template content"
 	rendered := self class modelMustacheTemplateContent: aSymbol.
@@ -260,21 +259,21 @@ RideMustacheHelper >> crudModelFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudNewModelFor: aSymbol [
+RideSTTemplateHelperReview >> crudNewModelFor: aSymbol [
 
 	| targetPath rendered templateFilename |
+	self halt.
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
 	"Verify lack of preexistence to protect possible existing work."
 	templateFilename := 'new{1}.mustache' format: { aSymbol }.
 
-	self
-		assert: (targetPath / templateFilename) exists not
-		description:
+	(targetPath / templateFilename) exists ifTrue: [ 
+		RideBoilerplateError signal:
 			('The template for {1} already exists in {2}' format: { 
 					 aSymbol.
-					 targetPath pathString }).
+					 targetPath pathString }) ].
 
 	"Get the template content"
 	rendered := self class newModelMustacheTemplateContent: aSymbol.
@@ -284,21 +283,21 @@ RideMustacheHelper >> crudNewModelFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> crudShowFor: aSymbol [
+RideSTTemplateHelperReview >> crudShowFor: aSymbol [
 
 	| targetPath rendered templateFilename |
+	self halt.
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
 	"Verify lack of preexistence to protect possible existing work."
 	templateFilename := 'show{1}.mustache' format: { aSymbol }.
 
-	self
-		assert: (targetPath / templateFilename) exists not
-		description:
+	(targetPath / templateFilename) exists ifTrue: [ 
+		RideBoilerplateError signal:
 			('The template for {1} already exists in {2}' format: { 
 					 aSymbol.
-					 targetPath pathString }).
+					 targetPath pathString }) ].
 
 	"Get the template content"
 	rendered := self class showMustacheTemplateContent: aSymbol.
@@ -308,59 +307,29 @@ RideMustacheHelper >> crudShowFor: aSymbol [
 ]
 
 { #category : #actions }
-RideMustacheHelper >> for: aSymbol [
+RideSTTemplateHelperReview >> for: aSymbol [
 
 	| targetPath rendered |
+	self halt.
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
 	"Verify lack of preexistence to protect possible existing work."
-	self
-		assert: targetPath exists not
-		description:
+	targetPath exists ifTrue: [ 
+		RideBoilerplateError signal:
 			('The template for {1} already exists in {2}' format: { 
 					 aSymbol.
-					 targetPath pathString }).
+					 targetPath pathString }) ].
 
 	"Create the template file using the default template for a model"
 	rendered := js
 		            ifTrue: [ self class defaultViewTemplateWithJs ]
 		            ifFalse: [ self class defaultViewTemplate ].
 
-	(targetPath / 'index.mustache') ensureCreateFile writeStreamDo: [ 
+	(targetPath / 'index.html.stt') ensureCreateFile writeStreamDo: [ 
 		:stream | stream nextPutAll: rendered ].
 
 	js ifTrue: [ 
 		(targetPath / 'index.js') ensureCreateFile writeStreamDo: [ :stream | 
 			stream nextPutAll: (self class defaultJavaScriptFor: aSymbol) ] ]
-]
-
-{ #category : #initialization }
-RideMustacheHelper >> initialize [
-
-	js := false
-]
-
-{ #category : #accessing }
-RideMustacheHelper >> js [
-
-	^ js
-]
-
-{ #category : #accessing }
-RideMustacheHelper >> js: anObject [
-
-	js := anObject
-]
-
-{ #category : #actions }
-RideMustacheHelper >> withJs [
-
-	js := true
-]
-
-{ #category : #actions }
-RideMustacheHelper >> withoutJs [
-
-	js := false
 ]

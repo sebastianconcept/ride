@@ -2,7 +2,7 @@
 I'm a Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, model, presenter, crud, database, etc
 "
 Class {
-	#name : #RideDoer,
+	#name : #RideBuilder,
 	#superclass : #Object,
 	#instVars : [
 		'packageName'
@@ -10,11 +10,11 @@ Class {
 	#classInstVars : [
 		'defaultPackageName'
 	],
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #accessing }
-RideDoer class >> defaultPackageName [
+RideBuilder class >> defaultPackageName [
 
 	^ defaultPackageName ifNil: [ 
 		  self error:
@@ -22,13 +22,13 @@ RideDoer class >> defaultPackageName [
 ]
 
 { #category : #accessing }
-RideDoer class >> defaultPackageName: anObject [
+RideBuilder class >> defaultPackageName: anObject [
 
 	defaultPackageName := anObject
 ]
 
 { #category : #accessing }
-RideDoer >> api [
+RideBuilder >> api [
 
 	^ RideAPIHelper new
 		  doer: self;
@@ -36,7 +36,7 @@ RideDoer >> api [
 ]
 
 { #category : #accessing }
-RideDoer >> app [
+RideBuilder >> app [
 
 	^ RideAppHelper new
 		  doer: self;
@@ -44,45 +44,31 @@ RideDoer >> app [
 ]
 
 { #category : #accessing }
-RideDoer >> controller [
-
-	^ RideControllerHelper new
-]
-
-{ #category : #accessing }
-RideDoer >> db [
+RideBuilder >> db [
 
 	^ RideDatabaseHelper new
 ]
 
 { #category : #accessing }
-RideDoer >> defaultPackageName: aString [
+RideBuilder >> defaultPackageName: aString [
 
 	self class defaultPackageName: aString
 ]
 
 { #category : #initialization }
-RideDoer >> initializePackageName [
+RideBuilder >> initializePackageName [
 
 	^ packageName := self class defaultPackageName
 ]
 
 { #category : #accessing }
-RideDoer >> model [
+RideBuilder >> model [
 
 	^ RideModelHelper new
 ]
 
 { #category : #accessing }
-RideDoer >> mvc [
-
-	^ RideMVCHelper new
-		  doer: self;
-		  yourself
-]
-
-{ #category : #accessing }
-RideDoer >> mvp [
+RideBuilder >> mvp [
 
 	^ RideMVPHelper new
 		  doer: self;
@@ -90,32 +76,32 @@ RideDoer >> mvp [
 ]
 
 { #category : #actions }
-RideDoer >> newApp: aSymbol [
+RideBuilder >> newApp: aSymbol [
 
 	self defaultPackageName: aSymbol.
 	self app for: aSymbol
 ]
 
 { #category : #accessing }
-RideDoer >> packageName [
+RideBuilder >> packageName [
 
 	^ packageName ifNil: [ self initializePackageName ]
 ]
 
 { #category : #accessing }
-RideDoer >> packageName: anObject [
+RideBuilder >> packageName: anObject [
 
 	packageName := anObject
 ]
 
 { #category : #accessing }
-RideDoer >> presenter [
+RideBuilder >> presenter [
 
 	^ RidePresenterHelper new
 ]
 
 { #category : #accessing }
-RideDoer >> view [
+RideBuilder >> view [
 
 	^ RideViewHelper new
 ]

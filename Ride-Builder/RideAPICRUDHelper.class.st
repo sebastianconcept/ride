@@ -4,13 +4,13 @@ I help to draft the model and controllers needed for a basic CRUD actions around
 Class {
 	#name : #RideAPICRUDHelper,
 	#superclass : #RideCRUDHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #'instance creation' }
 RideAPICRUDHelper >> for: aSymbol [
 
 	super for: aSymbol.
-	doer controller for: aSymbol.	
-	self addCRUDMethodsTo: (self controllerForModel: aSymbol) for: aSymbol
+	doer presenter for: aSymbol.	
+	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol
 ]

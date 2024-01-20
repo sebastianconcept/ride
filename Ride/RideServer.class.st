@@ -27,25 +27,11 @@ Class {
 }
 
 { #category : #accessing }
-RideServer class >> databaseName [
-
-	^ Smalltalk os environment
-		  at: #DB_NAME
-		  ifAbsent: [ self defaultDatabaseName ]
-]
-
-{ #category : #accessing }
 RideServer class >> debugMode [
 
 	^ (Smalltalk os environment
 		   at: #HTTP_DEBUG
 		   ifAbsent: [ self defaultDebugMode ]) asInteger > 0
-]
-
-{ #category : #accessing }
-RideServer class >> defaultDatabaseName [
-
-	^ self subclassResponsibility
 ]
 
 { #category : #accessing }
@@ -208,19 +194,17 @@ RideServer >> debugMode [
 { #category : #actions }
 RideServer >> htmlMaintenancePage [
 
-	| templateModel maintenanceTemplate |
+	| templateModel maintenanceTemplate sharedTemplates |
 	templateModel := {  } asDictionary.
-	maintenanceTemplate := Ride resource sharedTemplates at:
-		                       #maintenance.
+	sharedTemplates := Ride service templates shared.
+	maintenanceTemplate := sharedTemplates at: #maintenance.
 	(Smalltalk os environment at: #MW_TITLE ifAbsent: [ nil ]) ifNotNil: [ 
 		:string | templateModel at: #title put: string ].
 	(Smalltalk os environment at: #MW_DETAILS ifAbsent: [ nil ]) 
 		ifNotNil: [ :string | templateModel at: #details put: string ].
 	(Smalltalk os environment at: #MW_NOTES ifAbsent: [ nil ]) ifNotNil: [ 
 		:string | templateModel at: #notes put: string ].
-	^ maintenanceTemplate
-		  value: templateModel
-		  partials: Ride resource sharedTemplates
+	^ maintenanceTemplate value: templateModel partials: sharedTemplates
 ]
 
 { #category : #initialization }
@@ -409,7 +393,8 @@ RideServer >> setCacheControlFilter [
 { #category : #actions }
 RideServer >> setExceptionHandlers [
 
-	| origin response |
+	| origin response sharedTemplates |
+	sharedTemplates := Ride service templates shared.
 	self teapot exception: TeaAbort -> [ :abort :req | 
 		origin := req headers at: 'origin' ifAbsent: [ '*' ].
 
@@ -444,20 +429,20 @@ RideServer >> setExceptionHandlers [
 
 	self teapot
 		exception: RideNotFoundError -> [ :ex :req | 
-				| templateModel |
+				| templateContext |
 				response := TeaResponse notFound.
 				[ ex printString ] logError.
 				origin := req headers at: 'origin' ifAbsent: [ '*' ].
-				templateModel := Ride resource sharedTemplates copy
-					                 at: #status put: response code asString;
-					                 yourself.
+				templateContext := sharedTemplates copy
+					                   at: #status put: response code asString;
+					                   yourself.
 				Ride isDevelopment ifTrue: [ 
-					templateModel
+					templateContext
 						at: #error
 						put: { (#messageText -> ex messageText) } asDictionary ].
 				response body: (ex
-						 renderHtmlWith: templateModel
-						 on: (Ride resource sharedTemplates at: response code asString)).
+						 renderHtmlWith: templateContext
+						 on: (sharedTemplates at: response code asString)).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;
@@ -474,7 +459,9 @@ RideServer >> setExceptionHandlers [
 				response body: (ex
 							 renderHtmlWith:
 								 { (#status -> response code) } asDictionary asJsonObject
-							 on: (Ride resource sharedTemplates at: response code asString)).
+							 on:
+								 (sharedTemplates at:
+										  ('{1}.html' format: { response code asString }))).
 				response headers
 					at: 'Access-Control-Allow-Credentials' put: 'true';
 					at: 'Access-Control-Allow-Origin' put: origin;

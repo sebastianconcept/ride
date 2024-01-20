@@ -30,9 +30,19 @@ CounterPresenter >> increment [
 ]
 
 { #category : #'as yet unclassified' }
-CounterPresenter >> pageTemplateModel [
+CounterPresenter >> mustachePageTemplateModel [
 
-	^ self templateModel
+	^ self mustacheTemplateModel
+]
+
+{ #category : #'as yet unclassified' }
+CounterPresenter >> mustacheTemplateModel [
+
+	"Answer the model needed by the receiver's template."
+
+	^ { 
+		  (#userFirstName -> model userFirstName).
+		  (#count -> model count asString) } asDictionary
 ]
 
 { #category : #'as yet unclassified' }
@@ -53,14 +63,4 @@ CounterPresenter >> resultTemplateModel [
 	"Answer the model needed by the receiver's result partial."
 
 	^ { (#count -> model count asString) } asDictionary
-]
-
-{ #category : #'as yet unclassified' }
-CounterPresenter >> templateModel [
-
-	"Answer the model needed by the receiver's template."
-
-	^ { 
-		  (#userFirstName -> model userFirstName).
-		  (#count -> model count asString) } asDictionary
 ]

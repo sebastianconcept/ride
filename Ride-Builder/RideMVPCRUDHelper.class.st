@@ -4,7 +4,7 @@ I help to draft the model, views and presenters needed for a basic CRUD around t
 Class {
 	#name : #RideMVPCRUDHelper,
 	#superclass : #RideCRUDHelper,
-	#category : #'Ride-Boilerplate'
+	#category : #'Ride-Builder'
 }
 
 { #category : #actions }
@@ -13,7 +13,7 @@ RideMVPCRUDHelper >> for: aSymbol [
 	super for: aSymbol.
 	doer presenter for: aSymbol.
 	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
-	doer view mustache
+	doer view stt
 		js: js;
 		crudIndexFor: aSymbol;
 		crudModelFor: aSymbol;

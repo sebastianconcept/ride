@@ -26,13 +26,7 @@ self halt.
 ]
 
 { #category : #accessing }
-ChatPresenter >> sendMessage [
-
-	self halt
-]
-
-{ #category : #accessing }
-ChatPresenter >> templateModel [
+ChatPresenter >> mustacheTemplateModel [
 
 	"Answers the model that is meant for the receiver rendering in a full page of HTML."
 
@@ -43,4 +37,10 @@ ChatPresenter >> templateModel [
 			hasFirstName: true;
 			userFirstName: model userFirstName ].
 	^ templateModel
+]
+
+{ #category : #accessing }
+ChatPresenter >> sendMessage [
+
+	self halt
 ]

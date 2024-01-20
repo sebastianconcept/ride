@@ -1,3 +1,7 @@
+"
+For signaling when a validation was not satisfied.
+See RideValidator
+"
 Class {
 	#name : #RideValidationError,
 	#superclass : #RideError,

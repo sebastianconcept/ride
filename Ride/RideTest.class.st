@@ -13,23 +13,6 @@ RideTest >> testCamelCaseToSnakeCase [
 ]
 
 { #category : #tests }
-RideTest >> testSnakeCaseRouteToCamelCaseControllerName [
-
-	self
-		assert: (RideNameNormalizer controllerNameFromURISegment: 'some')
-		equals: 'SomeController'.
-	self
-		assert:
-		(RideNameNormalizer controllerNameFromURISegment: 'some_thing')
-		equals: 'SomeThingController'.
-	self
-		assert:
-		(RideNameNormalizer controllerNameFromURISegment:
-			 'some_thing_modeled')
-		equals: 'SomeThingModeledController'
-]
-
-{ #category : #tests }
 RideTest >> testSnakeCaseRouteToCamelCasePresenterName [
 
 	self

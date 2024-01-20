@@ -14,6 +14,13 @@ RideModel class >> getRepository [
 ]
 
 { #category : #converting }
+RideModel >> asMustacheTemplateModel [
+
+	self deprecated: 'use asTemplateModel'.
+	^ { (#name -> self class name) } asDictionary
+]
+
+{ #category : #converting }
 RideModel >> asTemplateModel [
 
 	^ { (#name -> self class name) } asDictionary

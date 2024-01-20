@@ -5,13 +5,13 @@ For example, I can make
 
 GET /admin/dashboard
 
-To be processed as sending the message to DashboardController>>index
+To be processed as sending the message to DashboardPresenter>>index
 
 and 
 
 POST /admin/jobs/1/beCompleted
 
-To be processed as sending the message JobController>>beCompleted after settig its model to be the Job with ID 1.
+To be processed as sending the message JobPresenter>>beCompleted after settig its model to be the Job with ID 1.
 
 "
 Class {

@@ -1,3 +1,6 @@
+"
+When emails cannot be send
+"
 Class {
 	#name : #RideNoEmailServiceError,
 	#superclass : #RideError,

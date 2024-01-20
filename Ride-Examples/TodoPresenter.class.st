@@ -41,8 +41,21 @@ TodoPresenter >> itemHTMLFor: taskId [
 TodoPresenter >> itemsHTML [
 
 	^ (views at: #items)
-		  value: self templateModel
+		  value: self mustacheTemplateModel
 		  partials: self partials
+]
+
+{ #category : #accessing }
+TodoPresenter >> mustacheTemplateModel [
+
+	"Answer the model needed by the receiver's template."
+
+	| templateModel |
+	templateModel := JsonObject new.
+	templateModel
+		userFirstName: model userFirstName;
+		items: (model items collect: [ :e | e asMustacheTemplateModel ]).
+	^ templateModel
 ]
 
 { #category : #accessing }
@@ -52,19 +65,6 @@ TodoPresenter >> partials [
 		  (#todoList -> (views at: #todoList)).
 		  (#items -> (views at: #items)).
 		  (#item -> (views at: #item)) } asDictionary
-]
-
-{ #category : #accessing }
-TodoPresenter >> templateModel [
-
-	"Answer the model needed by the receiver's template."
-
-	| templateModel |
-	templateModel := JsonObject new.
-	templateModel
-		userFirstName: model userFirstName;
-		items: (model items collect: [ :e | e asTemplateModel ]).
-	^ templateModel
 ]
 
 { #category : #actions }

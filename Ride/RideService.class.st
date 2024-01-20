@@ -14,10 +14,17 @@ Class {
 		'repository',
 		'locator',
 		'cache',
-		'sessionGetter'
+		'sessionGetter',
+		'renderers'
 	],
 	#category : #'Ride-Core'
 }
+
+{ #category : #accessing }
+RideService class >> applicationResourceClass [
+
+	self subclassResponsibility
+]
 
 { #category : #accessing }
 RideService class >> getSessionGetter [
@@ -33,7 +40,9 @@ RideService class >> getSessionGetter [
 { #category : #accessing }
 RideService class >> install [
 
-	Ride service: self new
+	Ride
+		service: self new;
+		resource: self applicationResourceClass
 ]
 
 { #category : #actions }
@@ -73,10 +82,19 @@ RideService class >> newSessionWith: sessionId url: anUrl [
 	self subclassResponsibility
 ]
 
-{ #category : #accessing }
-RideService class >> rootPresenterClass [
+{ #category : #actions }
+RideService class >> reset [
 
-	self subclassResponsibility
+	Ride reset
+]
+
+{ #category : #actions }
+RideService class >> restart [
+
+	Ride stop.
+	Smalltalk garbageCollect.
+	self install.
+	Ride start
 ]
 
 { #category : #accessing }
@@ -102,6 +120,24 @@ RideService class >> setUp [
 	self log: 'Router setup...'
 ]
 
+{ #category : #actions }
+RideService class >> start [
+
+	Ride start
+]
+
+{ #category : #actions }
+RideService class >> stop [
+
+	Ride stop
+]
+
+{ #category : #accessing }
+RideService class >> templatesSelector [
+
+	^ #stt
+]
+
 { #category : #accessing }
 RideService >> cache [
 
@@ -121,6 +157,14 @@ RideService >> databaseStart [
 	self repository databaseStartOn: self
 ]
 
+{ #category : #actions }
+RideService >> databaseStop [
+
+	repository ifNotNil: [ 
+		Ride log: 'Database shutting down...'.
+		self repository shutDown ]
+]
+
 { #category : #accessing }
 RideService >> getSessionFrom: request [
 
@@ -136,6 +180,7 @@ RideService >> initializeCache [
 { #category : #initialization }
 RideService >> initializeLocator [
 
+	self deprecated: 'use Ride resource instead'.
 	^ locator := RideViewPresenterLocator new
 ]
 
@@ -143,6 +188,26 @@ RideService >> initializeLocator [
 RideService >> initializeMaitre [
 
 	^ maitre := RideMaitre new
+]
+
+{ #category : #initialization }
+RideService >> initializeRenderers [
+
+	| createRenderers layoutWrappers |
+	createRenderers := [ 
+	                   SmallDictionary new
+		                   at: #html put: self newHTMLRenderer;
+		                   at: #json put: self newJSONRenderer;
+		                   at: #stt put: self newSTTRenderer;
+		                   at: #mustache put: self newMustacheRenderer;
+		                   at: #xml put: self newXMLRenderer;
+		                   at: #rss put: self newRSSRenderer;
+		                   yourself ].
+	layoutWrappers := createRenderers value do: [ :e | e beLayoutWrapper ].
+	^ renderers := SmallDictionary new
+		               addAll: createRenderers value;
+		               at: #layoutWrappers put: layoutWrappers;
+		               yourself
 ]
 
 { #category : #initialization }
@@ -176,16 +241,8 @@ RideService >> invalidateSession: aRideSession [
 ]
 
 { #category : #accessing }
-RideService >> locate [
-
-	"Syntax sugar for delegating to the views and templates locator"
-
-	^ self locator
-]
-
-{ #category : #accessing }
 RideService >> locator [
-
+	self deprecated: 'use Ride resource instead'.
 	^ locator ifNil: [ self initializeLocator ]
 ]
 
@@ -207,10 +264,52 @@ RideService >> maitre: anObject [
 	maitre := anObject
 ]
 
+{ #category : #actions }
+RideService >> newHTMLRenderer [
+
+	^ RideHTMLRenderer new
+]
+
+{ #category : #actions }
+RideService >> newJSONRenderer [
+
+	^ RideJSONRenderer new
+]
+
+{ #category : #actions }
+RideService >> newMustacheRenderer [
+
+	^ RideMustacheRenderer new
+]
+
+{ #category : #actions }
+RideService >> newRSSRenderer [
+
+	^ RideRSSRenderer new
+]
+
+{ #category : #actions }
+RideService >> newSTTRenderer [
+
+	^ RideSTTemplateRenderer new
+]
+
 { #category : #accessing }
 RideService >> newSessionId [
 
 	^ self class newSessionId
+]
+
+{ #category : #actions }
+RideService >> newXMLRenderer [
+
+	^ RideXMLRenderer new
+]
+
+{ #category : #accessing }
+RideService >> renderers [
+
+	^ renderers ifNil: [ self initializeRenderers ]
 ]
 
 { #category : #accessing }
@@ -240,6 +339,24 @@ RideService >> reset [
 		| released |
 		released := sessions.
 		sessions := nil ]
+]
+
+{ #category : #actions }
+RideService >> resetRenderers [
+
+	self renderers do: [ :renderer | renderer reset ]
+]
+
+{ #category : #actions }
+RideService >> restart [
+
+	Ride stop.
+	Smalltalk garbageCollect.
+	self ~= RideService ifFalse: [ 
+		RideError signal:
+			'The Ride service should be the one for a concrete Ride-based application' ].
+	self install.
+	Ride start
 ]
 
 { #category : #accessing }
@@ -293,7 +410,10 @@ RideService >> setUp [
 { #category : #actions }
 RideService >> sqlLiteDatabaseStart [
 
-	self class databaseDirectory ensureCreateDirectory.
+	Ride resource databaseDirectory exists ifFalse: [ 
+		RideError signal: ('Database directory not found: {1}' format:
+				 { Ride resource databaseDirectory pathString }) ].
+
 	(RideModel allSubclasses reject: #isAbstract) do: [ :each | 
 		(self repository hasTableFor: each) ifFalse: [ 
 			self repository ensureTableFor: each ] ]
@@ -320,8 +440,15 @@ RideService >> stop [
 	Ride log: ('{1} stopping...' format: { self class name }).
 	self maitre stop.
 	self server stop.
+	self databaseStop.
 	Ride log: ('{1} stopped' format: { self class name }).
 	self reset
+]
+
+{ #category : #accessing }
+RideService >> templates [
+
+	^ (Ride service renderers at: self class templatesSelector) templates
 ]
 
 { #category : #accessing }
