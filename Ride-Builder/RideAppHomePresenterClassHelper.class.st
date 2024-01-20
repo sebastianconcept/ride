@@ -7,6 +7,12 @@ Class {
 	#category : #'Ride-Builder'
 }
 
+{ #category : #accessing }
+RideAppHomePresenterClassHelper class >> classNameFor: aSymbol [
+
+	^ '{1}HomePresenter' format: { aSymbol }
+]
+
 { #category : #initialization }
 RideAppHomePresenterClassHelper class >> indexMethodFor: aSymbol [
 
@@ -19,11 +25,18 @@ RideAppHomePresenterClassHelper class >> indexMethodFor: aSymbol [
 { #category : #initialization }
 RideAppHomePresenterClassHelper class >> templatePathMethodFor: aSymbol [
 
+	| viewName |
+	"The convention is to find the view at the normalized model name."
+	viewName := (Smalltalk at: (self classNameFor: aSymbol) asSymbol ifAbsent: [ 
+		             RideBoilerplateError signal:
+			             ('A presenter class for {1} was expected but not found' 
+				              format: { aSymbol asString }) ])
+		            getNormalizedModelName.
+
 	^ 'templatePath
 
 	^ ''{1}''
-	' format:
-		  { (RideResource viewsDirectory / aSymbol asSnakeCase) pathString }
+	' format: { (RideResource viewsDirectory / viewName) pathString }
 ]
 
 { #category : #initialization }
@@ -59,7 +72,7 @@ RideAppHomePresenterClassHelper >> addWebAppNameMethodTo: aClass for: aSymbol [
 { #category : #accessing }
 RideAppHomePresenterClassHelper >> classNameFor: aSymbol [
 
-	^ '{1}HomePresenter' format: { aSymbol }
+	^ self class classNameFor: aSymbol
 ]
 
 { #category : #actions }
