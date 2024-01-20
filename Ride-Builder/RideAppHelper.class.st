@@ -264,82 +264,95 @@ RideAppHelper class >> readmeContentFor: aSymbol [
 
 A Ride-based application.
 
-### Install in a Pharo image
+### Development Setup
 
-Essential core:
+In a new directory for your project, get a fresh Pharo image and run it:
+```
+mkdir {2}
+cd {2}
+curl get.pharo.org/64/100 | bash
+curl get.pharo.org/64/vm100 | bash
+./pharo-ui Pharo.image
+```
 
+### Install {1}App in a Pharo image
+
+If you check in `BaselineOf{1}App`, with `development` it will install the project''s `Core`, `Builder` and `Tests` packages and with `deploy`, just the `Core` package:
 ```Smalltalk
 Metacello new
   baseline: ''{1}'';
-  repository: ''github://{2}/{1}'';
-  load.
+  repository: ''github://{3}/{1}'';
+  load: #( #development ).
 ```
 
-### Snippets
-Handy to start stop the {1} Ride-based application:
+### Handy snippets
+```Smalltalk
+"Force your environment to have `MODE` as `deveopment`:"
+Ride beDevEnvironment.
+```
+
 ```Smalltalk
 "Stop and reset what any previously running Ride-based service:"
 Ride stop; reset.
 
-"Install the Ride-based application in the image:"
+"Tell Ride to work with your application in the image:"
 {1}App install.
 
-"Start and stop this service:"
+"You can also start and stop the service with the main helper of your app:"
 {1}App stop.
 {1}App start.
 
 {1}App restart.
 
-"One-liner clean and restart:"
-{1}App stop; reset. 100 milliSeconds asDelay wait. {1}App install; restart.
+"One-liner stop, reset and restart:"
+{1}App stop; reset. {1}App install; restart.
 ```
 
-### Enhancing developer productivity
-Ride offers you a convenient way to quickly draft the basic elements needed for implementing a feature based in a new model for {1}. For example, if the {1} web application needs to implement a feature regarding to invoiced coffee, you will think in a `CoffeeInvoice` model. And you have available these boilerplate commands:
+### Starting {1}App''s next feature fast
+Ride offers a convenient way to quickly draft the basic elements needed for implementing "the next feature" of an API or Web App. While developing {1} as a service, it won''t be rare that you need to create a new model and to have some consumable representation of it hence need a new presenter for that model. For example, if the {1} web application needs to implement a feature regarding to publishing articles, you will think in an `Article` model and eventually an `ArticlesPresenter` to show and manipulate many `Article`s. 
+
+In that scenario, Ride''s builder helps by making available the following methods:
 
 ```Smalltalk
 "Set the default package that will be the destination of the generated code:"
-Ride draft defaultPackageName: ''{1}''.
+Ride builder defaultPackageName: ''{1}''.
 
-"Create a {1}Model subclass CoffeeInvoice to use as app domain state:"
-Ride draft model for: #CoffeeInvoice.
+"Create the {1}Model subclass Article"
+Ride create model for: #Article.
 
-"Create a {1}Presenter subclass CoffeeInvoicePresenter"
-Ride draft presenter for: #CoffeeInvoice.
+"Create {1}Presenter subclass ArticlesPresenter"
+Ride create presenter for: #Article.
 
-"Create the STTemplate-based template in: templates/views/coffee_invoices/index.stt"
-Ride draft view stt for: #CoffeeInvoice.
-
-"Create the Mustache-based template in: templates/views/coffee_invoices/index.mustache"
-Ride draft view mustache for: #CoffeeInvoice.
+"Create the STTemplate-based template in: templates/views/articles/index.html.stt"
+Ride create view stt for: #Article.
 ```
 
 ## MVP
 
-Using these basic code generators, Ride also can create the elemental Model-View-Presenter triad for a given model in one shot:
+By using these basic code generators, Ride also can create the elemental Model-View-Presenter triad for a given model in one shot:
 
 ```Smalltalk
-"Create the model and presenter classes and stt template file for `CoffeeInvoice`:"
-Ride draft mvp for: #CoffeeInvoice.
+"Create the model and presenter classes and the stt template file for `Article`
+at `projectRoot/app/templates/views/articles/index.html.stt`:"
+Ride create mvp for: #Article.
 
-"Same as before but `CoffeeInvoicePresenter` loads custom JavaScript:"
-Ride draft mvp withJs for: #CoffeeInvoice.
+"Same as before but `ArticlesPresenter` loads custom JavaScript:"
+Ride create mvp withJs for: #Article.
 
-"Have an unstyled but functioning CRUD for the `CoffeeInvoice` models based on MVP:"
-Ride draft mvp crud for: #CoffeeInvoice.
+"Have an unstyled functioning CRUD for the `Article` models:"
+Ride create mvp crud for: #Article.
 ```
 
 ## API
-If you don''t need HTML for an UI and an API is enough, Ride helps you to keep concerns organized with MVP too.
+Ride can also help when a service doesn''t need HTML for a UI and an API is enough.
 
-For example, say you need to make a system to invoices coffee, this is how to boilerplate an endpoint doing a CRUD for `CoffeeInvoice`:
+Following the Article example, say you need to make a system to offer fetching and manipulating these articles, this is how to boilerplate a RESTful endpoint doing the basic CRUD operations for `Article`:
 ```Smalltalk
-Ride draft api crud for: #CoffeeInvoice.
+Ride create api crud for: #Article.
 ```
-
-And you can adjust in the `CoffeeInvoicesPresenter` the methods so it renders in JSON for example.
 ' format: { 
 			  aSymbol.
+			  aSymbol uncapitalized.
 			  'yourgithubusername' }
 ]
 
