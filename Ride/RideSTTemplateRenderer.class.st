@@ -52,7 +52,10 @@ RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: a
 
 	| layoutWrapper wrappedTemplate missingTemplate |
 	missingTemplate := [ :templateName | 
-	                   RideMissingTemplateError signal: templateName ].
+	                   RideMissingTemplateError signal:
+		                   ('{2} >> {1}' format: { 
+				                    templateName.
+				                    aRidePresenter class name }) ].
 	layoutWrapper := (self templates at: #layouts)
 		                 at: aLayoutNameOrNil
 		                 ifAbsent: [ 

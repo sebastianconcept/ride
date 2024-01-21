@@ -10,6 +10,12 @@ Class {
 	#category : #'Ride-Builder'
 }
 
+{ #category : #accessing }
+RideAbstractTemplateHelper class >> getPathFor: aSymbol [
+
+	^ Ride resource viewsDirectory / aSymbol asPlural asSnakeCase
+]
+
 { #category : #initialization }
 RideAbstractTemplateHelper >> initialize [
 
