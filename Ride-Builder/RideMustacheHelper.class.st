@@ -65,12 +65,6 @@ RideMustacheHelper class >> formMustacheTemplateContent: aSymbol [
 ]
 
 { #category : #accessing }
-RideMustacheHelper class >> getPathFor: aSymbol [
-
-	^ Ride resource viewsDirectory / aSymbol asPlural asSnakeCase
-]
-
-{ #category : #accessing }
 RideMustacheHelper class >> indexMustacheTemplateContent: aSymbol [
 
 	^ '\{\{#notice\}\}
