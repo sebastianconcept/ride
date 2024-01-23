@@ -117,7 +117,7 @@ Ride create mvp crud for: #Post.
 ```
 
 ## API
-If you need an API and you like to keep concerns organized with MVC, this is how you can generate its boilerplate code:
+If you need an API and you like to keep concerns organized with MVP, this is how you can generate its boilerplate code:
 ```smalltalk
 Ride create api crud for: #Post.
 ```
