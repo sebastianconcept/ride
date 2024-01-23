@@ -19,7 +19,6 @@ BaselineOfRide >> baseline: spec [
 			group: 'Builder' with: #( 'Ride-Builder' );
 			group: 'Tests' with: #( 'Ride-Tests' );
 			group: 'Examples' with: #( 'Ride-Examples' );
-			group: 'Tools' with: #( 'Ride-Tools' );
 			group: 'default' with: #( 'Core' ) ]
 ]
 
@@ -87,9 +86,11 @@ BaselineOfRide >> setUpPackages: spec [
 			   'Mapless' 'SingularizePluralize' 'STTemplate' ) ].
 
 	spec package: 'Ride-Builder' with: [ spec requires: #( 'Ride' ) ].
-	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
+	spec
+		package: 'Ride-Tests'
+		with: [ spec requires: #( 'Ride' 'STTemplate-Tests' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
-	spec package: 'Ride-Tools' with: [ spec requires: #( 'Ride' ) ]
+	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ]
 ]
 
 { #category : #dependencies }
@@ -107,7 +108,14 @@ BaselineOfRide >> sst: spec [
 	spec baseline: 'STTemplate' with: [ 
 		spec
 			repository: 'github://sebastianconcept/STTemplate:v0.0.5';
-			loads: #( 'Core' ) ]
+			loads: #( 'Core' ) ].
+
+	spec
+		package: 'STTemplate-Core'
+		with: [ spec requires: #( 'STTemplate' ) ].
+	spec
+		package: 'STTemplate-Tests'
+		with: [ spec requires: #( 'STTemplate-Core' ) ]
 ]
 
 { #category : #dependencies }
