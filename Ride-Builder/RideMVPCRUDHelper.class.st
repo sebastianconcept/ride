@@ -7,19 +7,42 @@ Class {
 	#category : #'Ride-Builder'
 }
 
-{ #category : #actions }
-RideMVPCRUDHelper >> for: aSymbol [
+{ #category : #adding }
+RideMVPCRUDHelper >> addEditTemplateFor: aSymbol [
 
-	super for: aSymbol.
-	doer presenter for: aSymbol.
-	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
-	doer view stt
+	builder view stt
 		js: js;
-		crudIndexFor: aSymbol;
-		crudModelFor: aSymbol;
-		crudShowFor: aSymbol;
-		crudNewModelFor: aSymbol;
-		crudEditFor: aSymbol;
-		crudFormFor: aSymbol;
-		yourself
+		crudEditFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addFormTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudFormFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addIndexTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudIndexFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addNewTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudNewFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addShowTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudShowFor: aSymbol
 ]

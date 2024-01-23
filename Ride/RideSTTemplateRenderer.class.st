@@ -50,7 +50,7 @@ RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: a
 	"Render the template found with aTemplateName embedded 
 	in the layout at aLayoutNameOrNil for aRidePresenter."
 
-	| layoutWrapper wrappedTemplate missingTemplate |
+	| layoutWrapper wrappedTemplate missingTemplate partials |
 	missingTemplate := [ :templateName | 
 	                   RideMissingTemplateError signal:
 		                   ('{2} >> {1}' format: { 
@@ -67,6 +67,9 @@ RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: a
 			                    aRidePresenter class getNormalizedModelName ])
 		                   at: aTemplateName
 		                   ifAbsent: [ missingTemplate value: aTemplateName ].
+	partials := { (#_yield -> wrappedTemplate) } asDictionary
+		            at: #shared put: self templates shared;
+		            yourself.
 
-	^ layoutWrapper renderOn: aTemplateContext partial: wrappedTemplate
+	^ layoutWrapper renderOn: aTemplateContext partials: partials
 ]

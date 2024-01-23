@@ -11,7 +11,7 @@ Class {
 RideAPIHelper >> crud [
 
 	^ RideAPICRUDHelper new
-		  doer: doer;
+		  doer: builder;
 		  yourself
 ]
 

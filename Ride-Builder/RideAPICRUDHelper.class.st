@@ -6,11 +6,3 @@ Class {
 	#superclass : #RideCRUDHelper,
 	#category : #'Ride-Builder'
 }
-
-{ #category : #'instance creation' }
-RideAPICRUDHelper >> for: aSymbol [
-
-	super for: aSymbol.
-	doer presenter for: aSymbol.	
-	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol
-]

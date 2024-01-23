@@ -53,7 +53,9 @@ RideCRUDHelper class >> editMethodFor: aSymbol [
 	"GET /{2}/edit"
 	
 	model ifNil: [
-		model := {1} findId: (self currentRequest uri segments reversed second) ]
+		model := {1} findId: (self currentRequest uri segments reversed second) ].
+	
+	^ self render: ''edit.html''	
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -66,10 +68,14 @@ RideCRUDHelper class >> indexMethodFor: aSymbol [
 
 	"GET /{2}"
 	
-	model := {1} findAll
+	model := self {3}.
+	
+	^ self render: ''index.html''
+	
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase }
+			  aSymbol asLowercase asPlural asSnakeCase.
+			  aSymbol uncapitalized asPlural }
 ]
 
 { #category : #accessing }
@@ -79,7 +85,9 @@ RideCRUDHelper class >> newModelMethodFor: aSymbol [
 
 	"GET /{2}/new"
 	
-	model := {1} new
+	model := {1} new.
+	
+	^ self render: ''new.html''
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -93,7 +101,9 @@ RideCRUDHelper class >> showMethodFor: aSymbol [
 	"GET /{2}/<id>"
 
 	model ifNil: [
-		model := {1} findId: (self currentRequest uri segments last) ]
+		model := {1} findId: (self currentRequest uri segments last) ].
+	
+	^ self render: ''show.html''	
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -110,7 +120,7 @@ RideCRUDHelper class >> updateMethodFor: aSymbol [
 
 	[ model save ] on: Error do: [ :x |
 		RideUnprocessableEntity signal: x messageText ].
-	self redirectTo: #{2}_url notice: ''{1} was successfully updated.''
+	^ self redirectTo: #{2}_url notice: ''{1} was successfully updated.''
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -120,12 +130,23 @@ RideCRUDHelper class >> updateMethodFor: aSymbol [
 RideCRUDHelper >> addCRUDMethodsTo: aClass for: aSymbol [
 
 	self addIndexMethodTo: aClass for: aSymbol.
+	self addModelsAccessorMethodTo: aClass for: aSymbol.
 	self addShowMethodTo: aClass for: aSymbol.
 	self addNewModelMethodTo: aClass for: aSymbol.
 	self addEditMethodTo: aClass for: aSymbol.
 	self addCreateMethodTo: aClass for: aSymbol.
 	self addUpdateMethodTo: aClass for: aSymbol.
 	self addDestroyMethodTo: aClass for: aSymbol
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addCRUDTemplatesTo: aClass for: aSymbol [
+
+	self addIndexTemplateFor: aSymbol.
+	self addShowTemplateFor: aSymbol.
+	self addNewTemplateFor: aSymbol.
+	self addEditTemplateFor: aSymbol.
+	self addFormTemplateFor: aSymbol
 ]
 
 { #category : #actions }
@@ -150,10 +171,48 @@ RideCRUDHelper >> addEditMethodTo: aClass for: aSymbol [
 ]
 
 { #category : #actions }
+RideCRUDHelper >> addEditTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addFormTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
 RideCRUDHelper >> addIndexMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class indexMethodFor: aSymbol).
 	aClass organization classify: #index under: 'actions'	
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addIndexTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addModelsAccessorMethodTo: aClass for: aSymbol [
+
+	| selector source |
+	selector := aSymbol uncapitalized asPlural asSymbol.
+
+	source := '{3}
+
+	"Answers all {1} in the system."
+
+	^ {1} findAll
+' format: { 
+			          aSymbol.
+			          aSymbol asLowercase asPlural asSnakeCase.
+			          selector }.
+
+	aClass compile: source.
+	aClass organization classify: selector under: 'accessing'
 ]
 
 { #category : #actions }
@@ -164,10 +223,22 @@ RideCRUDHelper >> addNewModelMethodTo: aClass for: aSymbol [
 ]
 
 { #category : #actions }
+RideCRUDHelper >> addNewTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
 RideCRUDHelper >> addShowMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class showMethodFor: aSymbol).
 	aClass organization classify: #show under: 'actions'	
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addShowTemplateFor: aSymbol [
+
+	self subclassResponsibility
 ]
 
 { #category : #actions }
@@ -180,5 +251,9 @@ RideCRUDHelper >> addUpdateMethodTo: aClass for: aSymbol [
 { #category : #actions }
 RideCRUDHelper >> for: aSymbol [
 
-	doer model for: aSymbol
+	builder model for: aSymbol.
+	builder presenter for: aSymbol.
+	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
+	self addCRUDTemplatesTo: (self presenterForModel: aSymbol) for: aSymbol
+	
 ]

@@ -92,6 +92,16 @@ MW_NOTES="This is a maintenance window that we had programmed to keep all workin
 ]
 
 { #category : #accessing }
+RideAppHelper class >> feedbackContentFor: aSymbol [
+
+	^ '<div class="feedback">
+	<h4>Feedback</h4>
+	<p>This UI needs to get this feedback displayed.</p>
+</div>
+' format: { aSymbol }
+]
+
+{ #category : #accessing }
 RideAppHelper class >> fiveHundredContentFor: aSymbol [
 
 	^ '<!DOCTYPE html>
@@ -579,6 +589,9 @@ RideAppHelper >> ensureTemplatesSharedOn: directory for: aSymbol [
 
 	directory / '500.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fiveHundredContentFor: aSymbol) ].
+
+	directory / 'feedback.html.stt' writeStreamDo: [ :stream | 
+		stream nextPutAll: (self class feedbackContentFor: aSymbol) ].
 
 	directory / 'maintenance.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class maintenanceContentFor: aSymbol) ]
