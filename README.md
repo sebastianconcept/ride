@@ -89,7 +89,7 @@ Ride offers you a convenient way to quickly create the basic elements needed for
 
 ```smalltalk
 "Set the default package that will be the destination of the generated code"
-Ride create defaultPackageName: 'MyBlog'.
+Ride create defaultPackageName: 'Blog'.
 
 "Create a RideModel subclass Post used as app domain state"
 Ride create model for: #Post.
