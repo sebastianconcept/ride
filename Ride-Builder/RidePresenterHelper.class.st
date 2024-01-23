@@ -54,7 +54,7 @@ RidePresenterHelper >> targetPackageNameTag [
 RidePresenterHelper >> targetedSuperclassFor: aSymbol [
 
 	| targetClassName |
-	targetClassName := '{1}WebApplicationPresenter' format:
+	targetClassName := '{1}Presenter' format:
 		                   { Ride builder packageName }.
 	^ Smalltalk at: targetClassName asSymbol ifAbsent: [ 
 		  RideBoilerplateError signal:

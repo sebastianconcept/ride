@@ -10,7 +10,7 @@ Class {
 { #category : #accessing }
 RideAbstractWebApplicationPresenterClassHelper >> classNameFor: aSymbol [
 
-	^ '{1}WebApplicationPresenter' format: { aSymbol }
+	^ '{1}Presenter' format: { aSymbol }
 ]
 
 { #category : #actions }
@@ -29,5 +29,5 @@ RideAbstractWebApplicationPresenterClassHelper >> targetPackageNameTag [
 { #category : #accessing }
 RideAbstractWebApplicationPresenterClassHelper >> targetedSuperclassFor: aSymbol [
 
-	^ RideWebApplicationPresenter
+	^ RidePresenter
 ]

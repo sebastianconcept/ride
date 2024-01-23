@@ -1,5 +1,33 @@
 "
-I'm a Ride helper dedicated to keep types of actions being done by the specialists concerned in each subject. For example, model, presenter, crud, database, etc
+I'm a Ride helper dedicated to access types of building actions needed for a Web App or API.
+
+It might be doing something to the database or it could be creating a new class to use as model or a presenter for it.
+
+It could also mean to use these as the step to build something that requires several steps.
+
+Example:
+
+```
+""Create the RideModel subclass for Article""
+Ride create model for: #Article.
+
+""Create the RidePresenter subclass for Article""
+Ride create presenter for: #Article.
+```
+
+```
+""Create the model and presenter classes for Article and one template as view
+so you have html out of ArticlePresenter >> index.""
+
+Ride create mvp for: #Article.
+```
+
+```
+""Create the model and presenter classes for Article and the templates
+that allow you to Create, Read, Update and Delete Article models.""
+
+Ride create mvp crud for: #Article.
+```
 "
 Class {
 	#name : #RideBuilder,

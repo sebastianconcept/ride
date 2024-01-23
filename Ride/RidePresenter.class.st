@@ -274,12 +274,31 @@ RidePresenter >> render: aSelector inLayout: aLayoutNameOrNil on: aRenderContext
 ]
 
 { #category : #rendering }
+RidePresenter >> render: aSelector model: aRideModel [
+
+	"Render the given model using aSelector to decide how it should be rendered."
+
+	self halt.
+	^ canvas render: aSelector model: aRideModel for: self
+]
+
+{ #category : #rendering }
 RidePresenter >> render: aSelector on: aRenderContext [
 
 	^ self
 		  render: aSelector
 		  inLayout: self getLayoutName
 		  on: aRenderContext
+]
+
+{ #category : #rendering }
+RidePresenter >> renderModel: aRideModel [
+
+	"Render the given model using its own default way to do it."
+	self deprecated: 'not used'.
+	aRideModel ifNil: [ RideNotFoundError signal: 'Model not found ' ].
+	self halt.
+	^ self render: aRideModel getDefaultRenderSelector model: aRideModel
 ]
 
 { #category : #actions }
