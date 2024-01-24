@@ -1,13 +1,15 @@
 name: Unit Tests
 
-on:
-  pull_request:
-    types: [opened]
+on: [push,pull_request,workflow_dispatch]
 
-  push:
-    branches:
-      - develop
-      - master
+# on:
+#   pull_request:
+#     types: [opened]
+
+#   push:
+#     branches:
+#       - develop
+#       - master
 
 jobs:
   unit-tests:
