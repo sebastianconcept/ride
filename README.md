@@ -1,12 +1,15 @@
 # Ride
 The Smalltalk web application framework with productivity as a feature.
 
+
 [![Unit Tests](https://github.com/sebastianconcept/ride/actions/workflows/build.yml/badge.svg)](https://github.com/sebastianconcept/ride/actions/workflows/build.yml)
 ![Tests](https://img.shields.io/badge/tests-3-green)
 [![Coverage Status](https://codecov.io/github/sebastianconcept/ride/coverage.svg?branch=main)](https://codecov.io/gh/sebastianconcept/ride/branch/master)
 
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE.txt)
 [![Release](https://img.shields.io/github/v/tag/sebastianconcept/ride?label=release)](https://github.com/sebastianconcept/ride/releases)
+
+[![Commits](https://img.shields.io/github/commit-activity/m/sebastianconcept/ride)](https://github.com/sebastianconcept/ride/graphs/commit-activity)
 
 [![Pharo 10](https://img.shields.io/badge/Pharo-10-%23aac9ff.svg)](https://pharo.org/download)
 
