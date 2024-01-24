@@ -78,7 +78,7 @@ BaselineOfRide >> setUpPackages: spec [
 	spec package: 'Ride-Builder' with: [ spec requires: #( 'Ride' ) ].
 	spec
 		package: 'Ride-Tests'
-		with: [ spec requires: #( 'Ride' 'STTemplate-Tests' ) ].
+		with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ]
 ]
@@ -98,14 +98,7 @@ BaselineOfRide >> sst: spec [
 	spec baseline: 'STTemplate' with: [ 
 		spec
 			repository: 'github://sebastianconcept/STTemplate:v0.0.5';
-			loads: #( 'Core' ) ].
-
-	spec
-		package: 'STTemplate-Core'
-		with: [ spec requires: #( 'STTemplate' ) ].
-	spec
-		package: 'STTemplate-Tests'
-		with: [ spec requires: #( 'STTemplate-Core' ) ]
+			loads: #( 'Core' ) ]
 ]
 
 { #category : #dependencies }
