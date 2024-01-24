@@ -31,7 +31,7 @@ RideRenderer >> isLayoutWrapper [
 ]
 
 { #category : #rendering }
-RideRenderer >> render: anAspectVariantSelector for: aRidePresenter [
+RideRenderer >> renderUsing: anAspectVariantSelector for: aRidePresenter [
 
 	"Since it can have many, use anAspectVariantSelector 
 	to decide in what aspect to render aRidePresenter."

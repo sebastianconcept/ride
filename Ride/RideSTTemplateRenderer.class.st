@@ -32,20 +32,7 @@ RideSTTemplateRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideSTTemplateRenderer >> render: aTemplateName for: aRidePresenter [
-
-	"Render the template found with aTemplateName for aRidePresenter
-	using the layout and context that the presenter itself provides."
-
-	^ self
-		  render: aTemplateName
-		  inLayout: aRidePresenter getLayoutName
-		  on: aRidePresenter getRenderContext
-		  for: aRidePresenter
-]
-
-{ #category : #rendering }
-RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: aTemplateContext for: aRidePresenter [
+RideSTTemplateRenderer >> render: aTemplateContext using: aTemplateName in: aLayoutNameOrNil for: aRidePresenter [
 
 	"Render the template found with aTemplateName embedded 
 	in the layout at aLayoutNameOrNil for aRidePresenter."
@@ -88,4 +75,17 @@ RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: a
 
 	"Complete the rendering"
 	^ templateToRender renderOn: aTemplateContext partials: partials
+]
+
+{ #category : #rendering }
+RideSTTemplateRenderer >> renderUsing: aTemplateName for: aRidePresenter [
+
+	"Render the template found with aTemplateName for aRidePresenter
+	using the layout and context that the presenter itself provides."
+
+	^ self
+		  render: aRidePresenter getRenderContext
+		  using: aTemplateName
+		  in: aRidePresenter getLayoutName
+		  for: aRidePresenter
 ]

@@ -125,7 +125,7 @@ RideTemplateBasedRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideTemplateBasedRenderer >> render: aTemplateName for: aRidePresenter [
+RideTemplateBasedRenderer >> renderUsing: aTemplateName for: aRidePresenter [
 
 	"Render the template found with aTemplateName for aRidePresenter."
 

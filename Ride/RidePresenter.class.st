@@ -18,7 +18,7 @@ Class {
 	#instVars : [
 		'model',
 		'subpresenters',
-		'canvas'
+		'renderer'
 	],
 	#category : #'Ride-Presenters'
 }
@@ -83,6 +83,14 @@ RidePresenter class >> getNormalizedModelNameForURLs [
 ]
 
 { #category : #accessing }
+RidePresenter class >> getRenderSelector [
+
+	"Answer the selector that detemines the rendered aspect defined for the receiver."
+
+	^ 'index.html'
+]
+
+{ #category : #accessing }
 RidePresenter class >> getSnakeCasedModelName [
 
 	^ self getModelName asSnakeCase
@@ -119,18 +127,6 @@ RidePresenter class >> partialYieldTargetName [
 ]
 
 { #category : #accessing }
-RidePresenter >> canvas [
-
-	^ canvas
-]
-
-{ #category : #accessing }
-RidePresenter >> canvas: anObject [
-
-	canvas := anObject
-]
-
-{ #category : #accessing }
 RidePresenter >> children [
 
 	^ subpresenters
@@ -161,6 +157,14 @@ RidePresenter >> getRenderContext [
 ]
 
 { #category : #accessing }
+RidePresenter >> getRenderSelector [
+
+	"Answer the selector that detemines the rendered aspect defined for the receiver."
+
+	^ self class getRenderSelector
+]
+
+{ #category : #accessing }
 RidePresenter >> getRenderer [
 
 	"Returns the renderer that this presenter has to use."
@@ -172,11 +176,12 @@ RidePresenter >> getRenderer [
 { #category : #actions }
 RidePresenter >> index [
 
-	"Returns the rendered representation of the receiver in its main entry point.
-	For example, for an HTML representation what would be in it as index.html
+	"Returns the default rendered representation of the receiver in its main entry point.
+	For example, for an HTML representation what would be this 
+	presenter rendered as intended by its corresponding index.html
 	and for an JSON representation what would be in it as index.json"
 
-	^ self render: #index
+	^ self render
 ]
 
 { #category : #initialization }
@@ -184,7 +189,7 @@ RidePresenter >> initialize [
 
 	super initialize.
 	subpresenters := JsonObject new.
-	canvas := self getRenderer
+	renderer := self getRenderer
 ]
 
 { #category : #accessing }
@@ -254,22 +259,23 @@ RidePresenter >> onBeforeAction [
 { #category : #rendering }
 RidePresenter >> render [
 
-	^ self render: 'index.html' on: self getRenderContext
+	^ self render: self getRenderContext
 ]
 
 { #category : #rendering }
-RidePresenter >> render: aSelector [
+RidePresenter >> render: aRenderContext [
 
-	^ self render: aSelector on: self getRenderContext
+	^ self render: aRenderContext using: aRenderContext getRenderSelector
 ]
 
 { #category : #rendering }
 RidePresenter >> render: aSelector inLayout: aLayoutNameOrNil on: aRenderContext [
 
-	^ canvas
+	self deprecated: 'use render:using:in:'.
+	^ renderer
 		  render: aSelector
-		  inLayout: aLayoutNameOrNil
-		  on: aRenderContext
+		  using: aLayoutNameOrNil
+		  in: aRenderContext
 		  for: self
 ]
 
@@ -278,17 +284,34 @@ RidePresenter >> render: aSelector model: aRideModel [
 
 	"Render the given model using aSelector to decide how it should be rendered."
 
-	self halt.
-	^ canvas render: aSelector model: aRideModel for: self
+	self deprecated: 'use render:using:'.
+	^ renderer render: aSelector model: aRideModel for: self
 ]
 
 { #category : #rendering }
 RidePresenter >> render: aSelector on: aRenderContext [
 
+	self deprecated: 'use render:in:'.
 	^ self
 		  render: aSelector
 		  inLayout: self getLayoutName
 		  on: aRenderContext
+]
+
+{ #category : #rendering }
+RidePresenter >> render: aRenderContext using: aSelector [
+
+	^ self render: aRenderContext using: aSelector in: nil
+]
+
+{ #category : #rendering }
+RidePresenter >> render: aRenderContext using: aSelector in: aLayoutNameOrNil [
+
+	^ renderer
+		  render: aRenderContext
+		  using: aSelector
+		  in: aLayoutNameOrNil
+		  for: self
 ]
 
 { #category : #rendering }
@@ -299,6 +322,12 @@ RidePresenter >> renderModel: aRideModel [
 	aRideModel ifNil: [ RideNotFoundError signal: 'Model not found ' ].
 	self halt.
 	^ self render: aRideModel getDefaultRenderSelector model: aRideModel
+]
+
+{ #category : #rendering }
+RidePresenter >> renderUsing: aSelector [
+
+	^ self render: self getRenderContext using: aSelector
 ]
 
 { #category : #actions }

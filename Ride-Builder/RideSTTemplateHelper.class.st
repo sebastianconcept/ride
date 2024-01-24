@@ -19,17 +19,17 @@ RideSTTemplateHelper class >> defaultViewTemplate [
 RideSTTemplateHelper class >> defaultViewTemplateWithJs [
 
 	^ self defaultViewTemplate
-	  , '<script type="text/javascript" src="<st= self >"></script>'
+	  , '<script type="text/javascript" src="<st= self>"></script>'
 ]
 
 { #category : #accessing }
 RideSTTemplateHelper class >> editContentFor: aSymbol [
 
-	^ '<st STT yield: ''shared/feedback.html'' on: self >
+	^ '<st STT yield: self using: ''shared/feedback.html'' >
 <div class="container">
 	<h1>Editing {3}</h1>
 	<div>
-		<st= self render: ''form.html'' on: model>	
+		<st= self render: model using: ''form.html''>	
 	</div>
 	<a href="/{4}/<st= model id>">Show this {3}</a>
 	<a href="/{4}">Back to {2}</a>
@@ -60,7 +60,7 @@ RideSTTemplateHelper class >> formContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> indexContentFor: aSymbol [
 
-	^ '<st STT yield: ''shared/feedback.html'' on: self >
+	^ '<st STT yield: self using: ''shared/feedback.html'' >
 <div class="container">
 	<h1>{1}</h1>
 	<div>
@@ -95,11 +95,11 @@ RideSTTemplateHelper class >> indexContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> newContentFor: aSymbol [
 
-	^ '<st STT yield: ''shared/feedback.html'' on: self >
+	^ '<st STT yield: self using: ''shared/feedback.html'' >
 <div class="container">
 	<h1>New {3}</h1>
 	<div>
-		<st= self render: ''form.html'' on: model>	
+		<st= self render: model using: ''form.html'' >	
 	</div>
 	<a href="/{4}">Back to {2}</a>
 </div>	
@@ -113,7 +113,7 @@ RideSTTemplateHelper class >> newContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> showContentFor: aSymbol [
 
-	^ '<st STT yield: ''shared/feedback.html'' on: self >
+	^ '<st= self render: self using: ''shared/feedback.html'' >
 <div class="container">
 	<h1>{1}</h1>
 	<st= self render: model>

@@ -55,7 +55,7 @@ RideCRUDHelper class >> editMethodFor: aSymbol [
 	model ifNil: [
 		model := {1} findId: (self currentRequest uri segments reversed second) ].
 	
-	^ self render: ''edit.html''	
+	^ self renderUsing: ''edit.html''	
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -70,7 +70,7 @@ RideCRUDHelper class >> indexMethodFor: aSymbol [
 	
 	model := self {3}.
 	
-	^ self render: ''index.html''
+	^ self render
 	
 ' format: { 
 			  aSymbol.
@@ -87,7 +87,7 @@ RideCRUDHelper class >> newModelMethodFor: aSymbol [
 	
 	model := {1} new.
 	
-	^ self render: ''new.html''
+	^ self renderUsing: ''new.html''
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -103,7 +103,7 @@ RideCRUDHelper class >> showMethodFor: aSymbol [
 	model ifNil: [
 		model := {1} findId: (self currentRequest uri segments last) ].
 	
-	^ self render: ''show.html''	
+	^ self renderUsing: ''show.html''	
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
