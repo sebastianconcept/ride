@@ -50,26 +50,42 @@ RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: a
 	"Render the template found with aTemplateName embedded 
 	in the layout at aLayoutNameOrNil for aRidePresenter."
 
-	| layoutWrapper wrappedTemplate missingTemplate partials |
+	| templateToRender layoutWrapper wrappedTemplate missingTemplate partials targetedTemplate targetedTemplates |
+	"Prepare missing template handler just in case."
 	missingTemplate := [ :templateName | 
 	                   RideMissingTemplateError signal:
 		                   ('{2} >> {1}' format: { 
 				                    templateName.
 				                    aRidePresenter class name }) ].
-	layoutWrapper := (self templates at: #layouts)
-		                 at: aLayoutNameOrNil
-		                 ifAbsent: [ 
-		                 missingTemplate value: aLayoutNameOrNil ].
-	wrappedTemplate := ((self templates at: #views)
-		                    at: aRidePresenter class getNormalizedModelName
-		                    ifAbsent: [ 
-		                    missingTemplate value:
-			                    aRidePresenter class getNormalizedModelName ])
-		                   at: aTemplateName
-		                   ifAbsent: [ missingTemplate value: aTemplateName ].
-	partials := { (#_yield -> wrappedTemplate) } asDictionary
+
+	"Keep a reference to the template that is the actual main target of a rendering."
+	targetedTemplates := (self templates at: #views)
+		                     at: aRidePresenter class getNormalizedModelName
+		                     ifAbsent: [ 
+		                     missingTemplate value:
+			                     aRidePresenter class getNormalizedModelName ].
+	targetedTemplate := targetedTemplates at: aTemplateName.
+
+	"Unless changed, make the targeted template to be the one to render"
+	templateToRender := targetedTemplate.
+
+	"Initialize the partials dictionary with the shared ones 
+	that are usually needed to complete a rendering."
+	partials := {  } asDictionary
 		            at: #shared put: self templates shared;
 		            yourself.
 
-	^ layoutWrapper renderOn: aTemplateContext partials: partials
+	"If it's a case to wrap the targeted template 
+	in a layout then prepare that accordingly"
+	aLayoutNameOrNil ifNotNil: [ 
+		layoutWrapper := (self templates at: #layouts)
+			                 at: aLayoutNameOrNil
+			                 ifAbsent: [ 
+			                 missingTemplate value: aLayoutNameOrNil ].
+		wrappedTemplate := targetedTemplate.
+		partials at: #_yield put: wrappedTemplate.
+		templateToRender := layoutWrapper ].
+
+	"Complete the rendering"
+	^ templateToRender renderOn: aTemplateContext partials: partials
 ]
