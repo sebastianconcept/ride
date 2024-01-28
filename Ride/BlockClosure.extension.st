@@ -46,6 +46,12 @@ BlockClosure >> sessionCacheAt: aKey [
 ]
 
 { #category : #'*Ride' }
+BlockClosure >> sessionValueAt: aKey [
+
+	^ RideCurrentSession value values at: aKey ifAbsentPut: self
+]
+
+{ #category : #'*Ride' }
 BlockClosure >> systemValueAt: aKey [
 
 	^ Ride resource values at: aKey ifAbsentPut: self

@@ -29,7 +29,7 @@ RideSTTemplateHelper class >> editContentFor: aSymbol [
 <div class="container">
 	<h1>Editing {3}</h1>
 	<div>
-		<st= self render: model using: ''form.html''>	
+		<st= self render: model using: ''formEdit.html''>	
 	</div>
 	<a href="/{4}/<st= model id>">Show this {3}</a>
 	<a href="/{4}">Back to {2}</a>
@@ -44,9 +44,54 @@ RideSTTemplateHelper class >> editContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> formContentFor: aSymbol [
 
+	self deprecated: 'use either formNew or formEdit'.
 	^ '<form action="/{4}/">
 	<label for="title">{3}</label>
 	<input type="text" name="{3}" id="{3}" autocomplete="{3}" placeholder="{5}">
+	<button type="submit">Submit</button>
+</form>
+' format: { 
+			  aSymbol asPlural.
+			  aSymbol asPlural uncapitalized.
+			  aSymbol uncapitalized.
+			  aSymbol asPlural asSnakeCase.
+			  aSymbol }
+]
+
+{ #category : #accessing }
+RideSTTemplateHelper class >> formEditContentFor: aSymbol [
+
+	^ '<form action="/{4}/<st= model id>" method="PUT">
+	<st= self render: model using: ''formFields.html''>
+	<button type="submit">Submit</button>
+</form>
+' format: { 
+			  aSymbol asPlural.
+			  aSymbol asPlural uncapitalized.
+			  aSymbol uncapitalized.
+			  aSymbol asPlural asSnakeCase.
+			  aSymbol }
+]
+
+{ #category : #accessing }
+RideSTTemplateHelper class >> formFieldsContentFor: aSymbol [
+
+	^ '
+	<label for="title">{3}</label>
+	<input type="text" name="title" id="title" autocomplete="title" placeholder="{5}" value="<st= self title>">
+' format: { 
+			  aSymbol asPlural.
+			  aSymbol asPlural uncapitalized.
+			  aSymbol uncapitalized.
+			  aSymbol asPlural asSnakeCase.
+			  aSymbol }
+]
+
+{ #category : #accessing }
+RideSTTemplateHelper class >> formNewContentFor: aSymbol [
+
+	^ '<form action="/{4}/" method="POST">
+	<st= self render: model using: ''formFields.html''>
 	<button type="submit">Submit</button>
 </form>
 ' format: { 
@@ -71,7 +116,7 @@ RideSTTemplateHelper class >> indexContentFor: aSymbol [
 					<st= self render: {3}>
 					<ul>
 						<li>
-							<a href="/{4}/<st= {3} id>/show">Show this {3}</a>
+							<a href="/{4}/<st= {3} id>">Show this {3}</a>
 						</li>
 						<li>
 							<a href="/{4}/<st= {3} id>/edit">Edit this {3}</a>
@@ -93,13 +138,26 @@ RideSTTemplateHelper class >> indexContentFor: aSymbol [
 ]
 
 { #category : #accessing }
+RideSTTemplateHelper class >> modelDisplayContentFor: aSymbol [
+
+	^ '
+	<h2><div>Title:</div><div><st= self title></div></h2>
+' format: { 
+			  aSymbol asPlural.
+			  aSymbol asPlural uncapitalized.
+			  aSymbol uncapitalized.
+			  aSymbol asPlural asSnakeCase.
+			  aSymbol }
+]
+
+{ #category : #accessing }
 RideSTTemplateHelper class >> newContentFor: aSymbol [
 
 	^ '<st STT yield: self using: ''shared/feedback.html'' >
 <div class="container">
 	<h1>New {3}</h1>
 	<div>
-		<st= self render: model using: ''form.html'' >	
+		<st= self renderUsing: ''formNew.html'' >	
 	</div>
 	<a href="/{4}">Back to {2}</a>
 </div>	
@@ -123,7 +181,9 @@ RideSTTemplateHelper class >> showContentFor: aSymbol [
 				<a href="/{4}/<st= model id>/edit">Edit this {3}</a>
 			</li>
 			<li>
-				<a href="/{4}/<st= model id>/delete">Delete this {3}</a>
+				<form action="/{4}/<st= model id>" method="DELETE">
+					<button type="submit">Delete this {3}</button>
+				</form>
 			</li>
 		</ul>
 	</div>
@@ -150,15 +210,52 @@ RideSTTemplateHelper >> crudEditFor: aSymbol [
 ]
 
 { #category : #actions }
+RideSTTemplateHelper >> crudFormEditFor: aSymbol [
+
+	"Creates the template file for the view showing the form that updates an existing model named aSymbol.
+	Find it as formEdit.html.stt"
+
+	self
+		template: #formEdit
+		for: aSymbol
+		contents: (self class formEditContentFor: aSymbol)
+]
+
+{ #category : #actions }
+RideSTTemplateHelper >> crudFormFieldsFor: aSymbol [
+
+	"Creates the template file for the view showing the common fields in the forms
+	typically used in creating and editing aSymbol models.
+	Find it as formFields.html.stt"
+
+	self
+		template: #formFields
+		for: aSymbol
+		contents: (self class formFieldsContentFor: aSymbol)
+]
+
+{ #category : #actions }
 RideSTTemplateHelper >> crudFormFor: aSymbol [
 
 	"Creates the template file for the view showing the form on a model named aSymbol.
 	Find it as form.html.stt"
-
+	self deprecated: 'use either formNew or formEdit'.
 	self
 		template: #form
 		for: aSymbol
 		contents: (self class formContentFor: aSymbol)
+]
+
+{ #category : #actions }
+RideSTTemplateHelper >> crudFormNewFor: aSymbol [
+
+	"Creates the template file for the view showing the form that creates a new model named aSymbol.
+	Find it as formNew.html.stt"
+
+	self
+		template: #formNew
+		for: aSymbol
+		contents: (self class formNewContentFor: aSymbol)
 ]
 
 { #category : #actions }
@@ -171,6 +268,18 @@ RideSTTemplateHelper >> crudIndexFor: aSymbol [
 		template: #index
 		for: aSymbol
 		contents: (self class indexContentFor: aSymbol)
+]
+
+{ #category : #actions }
+RideSTTemplateHelper >> crudModelDisplayContentFor: aSymbol [
+
+	"Creates the template file for the view showing one model named aSymbol.
+	Find it as <aSymbol asSnakeCase>.html.stt"
+
+	self
+		template: aSymbol uncapitalized asSnakeCase
+		for: aSymbol
+		contents: (self class modelDisplayContentFor: aSymbol)
 ]
 
 { #category : #actions }

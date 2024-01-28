@@ -16,8 +16,33 @@ RideMVPCRUDHelper >> addEditTemplateFor: aSymbol [
 ]
 
 { #category : #adding }
+RideMVPCRUDHelper >> addFormEditTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudFormEditFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addFormFieldsTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudFormFieldsFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addFormNewTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudFormNewFor: aSymbol
+]
+
+{ #category : #adding }
 RideMVPCRUDHelper >> addFormTemplateFor: aSymbol [
 
+	self deprecated: 'use either formNew or formEdit'.
 	builder view stt
 		js: js;
 		crudFormFor: aSymbol
@@ -29,6 +54,14 @@ RideMVPCRUDHelper >> addIndexTemplateFor: aSymbol [
 	builder view stt
 		js: js;
 		crudIndexFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addModelDisplayContentFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudModelDisplayContentFor: aSymbol
 ]
 
 { #category : #adding }

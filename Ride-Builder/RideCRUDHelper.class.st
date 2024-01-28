@@ -14,11 +14,18 @@ RideCRUDHelper class >> createMethodFor: aSymbol [
 
 	"POST /{2}"
 
-	model := {1} fromRequest: self currentRequest.
+	| request |
+	request := self currentRequest.
 
-	[ model save ] on: Error do: [ :x |
-		RideUnprocessableEntity signal: x messageText ].
-	self redirectTo: #{2}_url notice: ''{1} was successfully created.''.
+	model := {1} new.
+
+	request entity fields keysAndValuesDo: [ :k :v | model at: k put: v ].
+
+	model saveOrSignal.
+
+	self addNoticeSuccess: ''{1} was successfully created.''.
+
+	self redirectFor: model	
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -29,17 +36,23 @@ RideCRUDHelper class >> destroyMethodFor: aSymbol [
 
 	^ 'destroy
 
-	"DELETE /{2}"
+	"DELETE /{2}/<id>"
 	
-	model ifNil: [ 
-		model := {1} findId: self currentRequest uri segments last.
-		model ifNotNil: [ 
-			[ model destroy ]
-				on: Error
-				do: [ :x | RideUnprocessableEntity signal: x messageText ].
-			self
-				redirectTo: #{2}_url
-				notice: ''{1} was successfully destroyed.'' ] ]	
+	| id notFound |
+
+	notFound := [ :v | 
+	            RideNotFoundError signal:
+		            (''No \{1\} found at \{2\}'' format: \{ v asString. id asString \}) ].
+
+	id := self currentRequest at: #id ifAbsent: notFound.
+		
+	model 
+		ifNotNil: [ model destroyOrSignal ] 
+		ifNil:[ notFound value: {1} name ].
+
+	self addNoticeSuccess: ''{1} was successfully deleted.''.		
+
+	self redirectToIndex
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -50,10 +63,20 @@ RideCRUDHelper class >> editMethodFor: aSymbol [
 
 	^ 'edit
 
-	"GET /{2}/edit"
-	
-	model ifNil: [
-		model := {1} findId: (self currentRequest uri segments reversed second) ].
+	"GET /{2}/<id>/edit"
+
+	| id notFound |
+
+	notFound := [ :v | 
+	            RideNotFoundError signal:
+		            (''No \{1\} found at \{2\}'' format: \{ v asString. id asString \}) ].
+
+	id := self currentRequest at: #id ifAbsent: notFound.
+
+	model := {1} findId: id.
+
+	model ifNil:[ 
+		notFound value: {1} name ].
 	
 	^ self renderUsing: ''edit.html''	
 ' format: { 
@@ -100,8 +123,18 @@ RideCRUDHelper class >> showMethodFor: aSymbol [
 
 	"GET /{2}/<id>"
 
-	model ifNil: [
-		model := {1} findId: (self currentRequest uri segments last) ].
+	| id notFound |
+
+	notFound := [ :v | 
+	            RideNotFoundError signal:
+		            (''No \{1\} found at \{2\}'' format: \{ v asString. id asString \}) ].
+
+	id := self currentRequest at: #id ifAbsent: notFound.
+
+	model := {1} findId: id.
+
+	model ifNil:[ 
+		notFound value: {1} name ].	
 	
 	^ self renderUsing: ''show.html''	
 ' format: { 
@@ -114,13 +147,15 @@ RideCRUDHelper class >> updateMethodFor: aSymbol [
 
 	^ 'update
 
-	"PATCH/PUT /{2}"
+	"PATCH/PUT /{2}/<id>"
 
 	model updateFromRequest: self currentRequest.
 
-	[ model save ] on: Error do: [ :x |
-		RideUnprocessableEntity signal: x messageText ].
-	^ self redirectTo: #{2}_url notice: ''{1} was successfully updated.''
+	model saveOrSignal.
+	
+	self addNoticeSuccess: ''{1} was successfully updated.''.
+
+	self redirectFor: model
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -146,7 +181,10 @@ RideCRUDHelper >> addCRUDTemplatesTo: aClass for: aSymbol [
 	self addShowTemplateFor: aSymbol.
 	self addNewTemplateFor: aSymbol.
 	self addEditTemplateFor: aSymbol.
-	self addFormTemplateFor: aSymbol
+	self addFormNewTemplateFor: aSymbol.
+	self addFormEditTemplateFor: aSymbol.
+	self addFormFieldsTemplateFor: aSymbol.
+	self addModelDisplayContentFor: aSymbol
 ]
 
 { #category : #actions }
@@ -177,8 +215,27 @@ RideCRUDHelper >> addEditTemplateFor: aSymbol [
 ]
 
 { #category : #actions }
+RideCRUDHelper >> addFormEditTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addFormFieldsTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addFormNewTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
 RideCRUDHelper >> addFormTemplateFor: aSymbol [
 
+	self deprecated: 'use either formNew or formEdit'.
 	self subclassResponsibility
 ]
 
@@ -191,6 +248,12 @@ RideCRUDHelper >> addIndexMethodTo: aClass for: aSymbol [
 
 { #category : #actions }
 RideCRUDHelper >> addIndexTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addModelDisplayContentFor: aSymbol [
 
 	self subclassResponsibility
 ]

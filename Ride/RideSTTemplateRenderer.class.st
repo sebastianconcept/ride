@@ -23,6 +23,15 @@ RideSTTemplateRenderer class >> templatesValueSelector [
 	^ #sttTemplates
 ]
 
+{ #category : #accessing }
+RideSTTemplateRenderer >> getTemplatesFor: aTemplateName ifAbsent: aBlock [
+
+"(self templates at: #views)
+		                     at: aRidePresenter class getNormalizedModelName
+		                     ifAbsent: ."
+	
+]
+
 { #category : #actions }
 RideSTTemplateRenderer >> newTemplateFrom: file [
 
@@ -37,7 +46,7 @@ RideSTTemplateRenderer >> render: aTemplateContext using: aTemplateName in: aLay
 	"Render the template found with aTemplateName embedded 
 	in the layout at aLayoutNameOrNil for aRidePresenter."
 
-	| templateToRender layoutWrapper wrappedTemplate missingTemplate partials targetedTemplate targetedTemplates |
+	| templateToRender layoutWrapper wrappedTemplate missingTemplate partials targetedTemplate targetedTemplates parts templateBasename |
 	"Prepare missing template handler just in case."
 	missingTemplate := [ :templateName | 
 	                   RideMissingTemplateError signal:
@@ -45,13 +54,29 @@ RideSTTemplateRenderer >> render: aTemplateContext using: aTemplateName in: aLay
 				                    templateName.
 				                    aRidePresenter class name }) ].
 
+	"Get the reference where the targeted template is"
+	parts := aTemplateName substrings: '/'.
+	targetedTemplates := parts size > 1
+		                     ifTrue: [ 
+			                     templateBasename := parts second.
+			                     self templates
+				                     at: parts first
+				                     ifAbsent: [ 
+				                     missingTemplate value: parts first ] ]
+		                     ifFalse: [ 
+			                     templateBasename := parts first.
+			                     (self templates at: #views)
+				                     at:
+				                     aRidePresenter class getNormalizedModelName
+				                     ifAbsent: [ 
+				                     missingTemplate value:
+					                     aRidePresenter class getNormalizedModelName ] ].
+
 	"Keep a reference to the template that is the actual main target of a rendering."
-	targetedTemplates := (self templates at: #views)
-		                     at: aRidePresenter class getNormalizedModelName
-		                     ifAbsent: [ 
-		                     missingTemplate value:
-			                     aRidePresenter class getNormalizedModelName ].
-	targetedTemplate := targetedTemplates at: aTemplateName.
+	targetedTemplate := targetedTemplates
+		                    at: templateBasename
+		                    ifAbsent: [ 
+		                    missingTemplate value: templateBasename ].
 
 	"Unless changed, make the targeted template to be the one to render"
 	templateToRender := targetedTemplate.

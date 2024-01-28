@@ -91,6 +91,14 @@ RidePresenter class >> getRenderSelector [
 ]
 
 { #category : #accessing }
+RidePresenter class >> getShowUrlFor: aRideModel [
+
+	"Answers the conventional URL for the given RideModel"
+
+	^ Ride service server router getShowUrlFor: aRideModel
+]
+
+{ #category : #accessing }
 RidePresenter class >> getSnakeCasedModelName [
 
 	^ self getModelName asSnakeCase
@@ -126,6 +134,13 @@ RidePresenter class >> partialYieldTargetName [
 	^ #yield
 ]
 
+{ #category : #adding }
+RidePresenter >> addNoticeSuccess: aString [
+
+	self flag: #todo.
+	[ 'Notice Success: ' , aString ] logInfo
+]
+
 { #category : #accessing }
 RidePresenter >> children [
 
@@ -136,6 +151,12 @@ RidePresenter >> children [
 RidePresenter >> currentRequest [
 
 	^ RideCurrentRequest value
+]
+
+{ #category : #accessing }
+RidePresenter >> currentResponse [
+
+	^ RideCurrentResponse value
 ]
 
 { #category : #accessing }
@@ -164,6 +185,12 @@ RidePresenter >> getRenderSelector [
 	^ self class getRenderSelector
 ]
 
+{ #category : #rendering }
+RidePresenter >> getRenderSelectorFor: aRenderContext [
+
+	^ aRenderContext getRenderSelector
+]
+
 { #category : #accessing }
 RidePresenter >> getRenderer [
 
@@ -171,6 +198,14 @@ RidePresenter >> getRenderer [
 
 	"In this version we're setting this by presenter class."
 	^ Ride service renderers at: self class defaultRendererSelector
+]
+
+{ #category : #actions }
+RidePresenter >> getShowUrlFor: aRideModel [
+
+	"Answers the conventional URL for the given RideModel"
+
+	^ self class getShowUrlFor: aRideModel
 ]
 
 { #category : #actions }
@@ -256,6 +291,16 @@ RidePresenter >> onBeforeAction [
 	"no-op is the default"
 ]
 
+{ #category : #actions }
+RidePresenter >> redirectFor: aRideModel [
+
+	| response destinationURL |
+	response := self currentResponse.
+	destinationURL := self getShowUrlFor: aRideModel.
+
+	RideRedirect signalFor: destinationURL
+]
+
 { #category : #rendering }
 RidePresenter >> render [
 
@@ -265,7 +310,9 @@ RidePresenter >> render [
 { #category : #rendering }
 RidePresenter >> render: aRenderContext [
 
-	^ self render: aRenderContext using: aRenderContext getRenderSelector
+	^ self
+		  render: aRenderContext
+		  using: (renderer getRenderSelectorOf: aRenderContext)
 ]
 
 { #category : #rendering }
