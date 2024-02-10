@@ -48,7 +48,7 @@ BaselineOfRide >> mapless: spec [
 	spec baseline: 'Mapless' with: [ 
 		spec
 			repository:
-				'github://sebastianconcept/Mapless:93-Support-for-SQLite/src';
+				'github://sebastianconcept/Mapless:v0.6.0/src';
 			loads: #( 'Core' 'Memory' 'SQLite' ) ]
 ]
 
