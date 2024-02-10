@@ -23,15 +23,6 @@ BaselineOfRide >> baseline: spec [
 			group: 'default' with: #( 'Core' ) ]
 ]
 
-{ #category : #dependencies }
-BaselineOfRide >> json: spec [
-
-	spec baseline: 'JSON' with: [ 
-		spec
-			loads: #( 'JSON' );
-			repository: 'github://sebastianconcept/JSON/src' ]
-]
-
 { #category : #actions }
 BaselineOfRide >> loadTaskIt [
 
@@ -65,7 +56,6 @@ BaselineOfRide >> mustache: spec [
 BaselineOfRide >> setUpDependencies: spec [
 
 	self sst: spec.
-	self json: spec.
 	self mapless: spec.	
 	self zinc: spec.
 	self mustache: spec.
@@ -83,7 +73,7 @@ BaselineOfRide >> setUpPackages: spec [
 
 	spec package: 'Ride' with: [ 
 		spec requires:
-			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'JSON' 'Ride-Pharo'
+			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'Ride-Pharo'
 			   'Mapless' 'SingularizePluralize' 'STTemplate' ) ].
 
 	spec package: 'Ride-Builder' with: [ spec requires: #( 'Ride' ) ].
