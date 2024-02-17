@@ -38,17 +38,10 @@ RideCRUDHelper class >> destroyMethodFor: aSymbol [
 
 	"DELETE /{2}/<id>"
 	
-	| id notFound |
-
-	notFound := [ :v | 
-	            RideNotFoundError signal:
-		            (''No \{1\} found at \{2\}'' format: \{ v asString. id asString \}) ].
-
-	id := self currentRequest at: #id ifAbsent: notFound.
+	model := {1} findId: (self currentRequestParam: #id).
+	model ifNil: self modelNotFoundHandler.
 		
-	model 
-		ifNotNil: [ model destroyOrSignal ] 
-		ifNil:[ notFound value: {1} name ].
+	model destroyOrSignal.
 
 	self addNoticeSuccess: ''{1} was successfully deleted.''.		
 
@@ -65,18 +58,8 @@ RideCRUDHelper class >> editMethodFor: aSymbol [
 
 	"GET /{2}/<id>/edit"
 
-	| id notFound |
-
-	notFound := [ :v | 
-	            RideNotFoundError signal:
-		            (''No \{1\} found at \{2\}'' format: \{ v asString. id asString \}) ].
-
-	id := self currentRequest at: #id ifAbsent: notFound.
-
-	model := {1} findId: id.
-
-	model ifNil:[ 
-		notFound value: {1} name ].
+	model := {1} findId: (self currentRequestParam: #id).
+	model ifNil: self modelNotFoundHandler.
 	
 	^ self renderUsing: ''edit.html''	
 ' format: { 
@@ -123,18 +106,8 @@ RideCRUDHelper class >> showMethodFor: aSymbol [
 
 	"GET /{2}/<id>"
 
-	| id notFound |
-
-	notFound := [ :v | 
-	            RideNotFoundError signal:
-		            (''No \{1\} found at \{2\}'' format: \{ v asString. id asString \}) ].
-
-	id := self currentRequest at: #id ifAbsent: notFound.
-
-	model := {1} findId: id.
-
-	model ifNil:[ 
-		notFound value: {1} name ].	
+	model := {1} findId: (self currentRequestParam: #id).
+	model ifNil: self modelNotFoundHandler.
 	
 	^ self renderUsing: ''show.html''	
 ' format: { 
@@ -147,9 +120,12 @@ RideCRUDHelper class >> updateMethodFor: aSymbol [
 
 	^ 'update
 
-	"PATCH/PUT /{2}/<id>"
+	"POST/PATCH/PUT /{2}/<id>"
 
-	model updateFromRequest: self currentRequest.
+	model := {1} findId: (self currentRequestParam: #id).
+	model ifNil: self modelNotFoundHandler.
+	
+	self updateModelFromRequest: self currentRequest.
 
 	model saveOrSignal.
 	

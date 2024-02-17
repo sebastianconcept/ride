@@ -11,7 +11,7 @@ Class {
 RideSTTemplateHelper class >> defaultViewTemplate [
 
 	^ '<div>
-  <p>Find the source of the <st= self class name> template in</p><p><code><st= (Ride resource viewsDirectory / self class getModelName asSnakeCase) pathString ></code></p>
+  <p>Find the source of the <%= self class name%> template in</p><p><code><%= (Ride resource viewsDirectory / self class getModelName asSnakeCase) pathString %></code></p>
 </div>'
 ]
 
@@ -19,19 +19,19 @@ RideSTTemplateHelper class >> defaultViewTemplate [
 RideSTTemplateHelper class >> defaultViewTemplateWithJs [
 
 	^ self defaultViewTemplate
-	  , '<script type="text/javascript" src="<st= self>"></script>'
+	  , '<script type="text/javascript" src="<%= self%>"></script>'
 ]
 
 { #category : #accessing }
 RideSTTemplateHelper class >> editContentFor: aSymbol [
 
-	^ '<st STT yield: self using: ''shared/feedback.html'' >
+	^ '<% STT yield: self using: ''shared/feedback.html'' %>
 <div class="container">
 	<h1>Editing {3}</h1>
 	<div>
-		<st= self render: model using: ''formEdit.html''>	
+		<%= self render: self using: ''formEdit.html''%>	
 	</div>
-	<a href="/{4}/<st= model id>">Show this {3}</a>
+	<a href="/{4}/<%= model id%>">Show this {3}</a>
 	<a href="/{4}">Back to {2}</a>
 </div>	
 ' format: { 
@@ -42,27 +42,12 @@ RideSTTemplateHelper class >> editContentFor: aSymbol [
 ]
 
 { #category : #accessing }
-RideSTTemplateHelper class >> formContentFor: aSymbol [
-
-	self deprecated: 'use either formNew or formEdit'.
-	^ '<form action="/{4}/">
-	<label for="title">{3}</label>
-	<input type="text" name="{3}" id="{3}" autocomplete="{3}" placeholder="{5}">
-	<button type="submit">Submit</button>
-</form>
-' format: { 
-			  aSymbol asPlural.
-			  aSymbol asPlural uncapitalized.
-			  aSymbol uncapitalized.
-			  aSymbol asPlural asSnakeCase.
-			  aSymbol }
-]
-
-{ #category : #accessing }
 RideSTTemplateHelper class >> formEditContentFor: aSymbol [
 
-	^ '<form action="/{4}/<st= model id>" method="PUT">
-	<st= self render: model using: ''formFields.html''>
+	^ '<form action="/{4}/<%= model id%>" accept-charset="UTF-8" method="POST">
+	<input type="hidden" name="_method" value="PATCH" autocomplete="off">
+	<input type="hidden" name="authenticity_token" value="<st= self newAuthToken>" autocomplete="off">
+	<%= self render: model using: ''formFields.html''%>
 	<button type="submit">Submit</button>
 </form>
 ' format: { 
@@ -78,7 +63,7 @@ RideSTTemplateHelper class >> formFieldsContentFor: aSymbol [
 
 	^ '
 	<label for="title">{3}</label>
-	<input type="text" name="title" id="title" autocomplete="title" placeholder="{5}" value="<st= self title>">
+	<input type="text" name="title" id="title" autocomplete="title" placeholder="{5}" value="<%= self title>"%>
 ' format: { 
 			  aSymbol asPlural.
 			  aSymbol asPlural uncapitalized.
@@ -90,8 +75,9 @@ RideSTTemplateHelper class >> formFieldsContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> formNewContentFor: aSymbol [
 
-	^ '<form action="/{4}/" method="POST">
-	<st= self render: model using: ''formFields.html''>
+	^ '<form action="/{4}/" accept-charset="UTF-8" method="POST">
+	<input type="hidden" name="method" value="POST">
+	<%= self render: model using: ''formFields.html''%>
 	<button type="submit">Submit</button>
 </form>
 ' format: { 
@@ -105,28 +91,28 @@ RideSTTemplateHelper class >> formNewContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> indexContentFor: aSymbol [
 
-	^ '<st STT yield: self using: ''shared/feedback.html'' >
+	^ '<% STT yield: self using: ''shared/feedback.html'' %>
 <div class="container">
 	<h1>{1}</h1>
 	<div>
 		<a href="/{2}/new">New {3}</a>
 		<ul>
-			<st self {2} do: [ :{3} | >
+			<% self {2} do: [ :{3} | %>
 				<li>
-					<st= self render: {3}>
+					<%= self render: {3}%>
 					<ul>
 						<li>
 							<a href="/{4}/<st= {3} id>">Show this {3}</a>
 						</li>
 						<li>
-							<a href="/{4}/<st= {3} id>/edit">Edit this {3}</a>
+							<a href="/{4}/<%= {3} id%>/edit">Edit this {3}</a>
 						</li>
 						<li>
 							<a href="/{4}/<st= {3} id>/delete">Delete this {3}</a>
 						</li>
 					</ul>
 				</li>
-			<st ] >
+			<% ] %>
 		</ul>
 	</div>
 </div>
@@ -141,7 +127,7 @@ RideSTTemplateHelper class >> indexContentFor: aSymbol [
 RideSTTemplateHelper class >> modelDisplayContentFor: aSymbol [
 
 	^ '
-	<h2><div>Title:</div><div><st= self title></div></h2>
+	<h2><div>Title:</div><div><%= self title%></div></h2>
 ' format: { 
 			  aSymbol asPlural.
 			  aSymbol asPlural uncapitalized.
@@ -153,11 +139,11 @@ RideSTTemplateHelper class >> modelDisplayContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> newContentFor: aSymbol [
 
-	^ '<st STT yield: self using: ''shared/feedback.html'' >
+	^ '<% STT yield: self using: ''shared/feedback.html'' %>
 <div class="container">
 	<h1>New {3}</h1>
 	<div>
-		<st= self renderUsing: ''formNew.html'' >	
+		<%= self renderUsing: ''formNew.html'' %>	
 	</div>
 	<a href="/{4}">Back to {2}</a>
 </div>	
@@ -171,17 +157,19 @@ RideSTTemplateHelper class >> newContentFor: aSymbol [
 { #category : #accessing }
 RideSTTemplateHelper class >> showContentFor: aSymbol [
 
-	^ '<st= self render: self using: ''shared/feedback.html'' >
+	^ '<%= self render: self using: ''shared/feedback.html'' %>
 <div class="container">
 	<h1>{1}</h1>
-	<st= self render: model>
+	<%= self render: model %>
 	<div>
 		<ul>
 			<li>
-				<a href="/{4}/<st= model id>/edit">Edit this {3}</a>
+				<a href="/{4}/<%= model id %>/edit">Edit this {3}</a>
 			</li>
 			<li>
-				<form action="/{4}/<st= model id>" method="DELETE">
+				<form action="/{4}/<%= model id>" method="POST" %>
+					<input type="hidden" name="_method" value="delete" autocomplete="off">
+					<input type="hidden" name="authenticity_token" value="<%= self newAuthToken %>" autocomplete="off">
 					<button type="submit">Delete this {3}</button>
 				</form>
 			</li>
@@ -232,18 +220,6 @@ RideSTTemplateHelper >> crudFormFieldsFor: aSymbol [
 		template: #formFields
 		for: aSymbol
 		contents: (self class formFieldsContentFor: aSymbol)
-]
-
-{ #category : #actions }
-RideSTTemplateHelper >> crudFormFor: aSymbol [
-
-	"Creates the template file for the view showing the form on a model named aSymbol.
-	Find it as form.html.stt"
-	self deprecated: 'use either formNew or formEdit'.
-	self
-		template: #form
-		for: aSymbol
-		contents: (self class formContentFor: aSymbol)
 ]
 
 { #category : #actions }

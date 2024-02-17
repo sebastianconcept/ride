@@ -40,15 +40,6 @@ RideMVPCRUDHelper >> addFormNewTemplateFor: aSymbol [
 ]
 
 { #category : #adding }
-RideMVPCRUDHelper >> addFormTemplateFor: aSymbol [
-
-	self deprecated: 'use either formNew or formEdit'.
-	builder view stt
-		js: js;
-		crudFormFor: aSymbol
-]
-
-{ #category : #adding }
 RideMVPCRUDHelper >> addIndexTemplateFor: aSymbol [
 
 	builder view stt

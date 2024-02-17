@@ -154,6 +154,16 @@ RidePresenter >> currentRequest [
 ]
 
 { #category : #accessing }
+RidePresenter >> currentRequestParam: aSymbol [
+	"Answers the value of the given paramenter.
+	Signals the corresponding exception if that parameter is missing."
+
+	^ self currentRequest
+		  at: aSymbol
+		  ifAbsent: [ self missingParameterHandler value: aSymbol ]
+]
+
+{ #category : #accessing }
 RidePresenter >> currentResponse [
 
 	^ RideCurrentResponse value
@@ -163,6 +173,24 @@ RidePresenter >> currentResponse [
 RidePresenter >> currentSession [
 
 	^ RideCurrentSession value
+]
+
+{ #category : #actions }
+RidePresenter >> formAction [
+
+	| req restfulAction |
+	req := self currentRequest.
+	restfulAction := req entity
+		                 at: #_method
+		                 ifAbsent: [
+		                 RideError signal: 'Missing form action' ].
+	self halt
+]
+
+{ #category : #accessing }
+RidePresenter >> getAllDataKeysOf: aMapless [
+
+	^ aMapless maplessData keys reject: [ :e | e = '_c' or: [ e = 'id' ] ]
 ]
 
 { #category : #accessing }
@@ -236,6 +264,15 @@ RidePresenter >> maitre [
 ]
 
 { #category : #accessing }
+RidePresenter >> missingParameterHandler [
+	" Answers a handler to react when an expected parameter was not found."
+
+	^ [ :symbol |
+	  RideNotFoundError signal:
+		  ('Expected parameter not found: {1}' format: { symbol asString }) ]
+]
+
+{ #category : #accessing }
 RidePresenter >> model [
 
 	^ model
@@ -246,6 +283,18 @@ RidePresenter >> model: aModel [
 
 	model := aModel.
 	self setObservers	
+]
+
+{ #category : #accessing }
+RidePresenter >> modelNotFoundHandler [
+	" Answers a handler to react when an expected model instance wasn't found."
+
+	^ [
+	  | id |
+	  id := self currentRequest at: #id.
+	  RideNotFoundError signal: ('No {1} found at {2}' format: {
+				   self class getModelName.
+				   id asString }) ]
 ]
 
 { #category : #accessing }
@@ -269,6 +318,12 @@ RidePresenter >> mustacheTemplateModel [
 					  at: ('{1}Js' format: { key })
 					  put: ('/assets/js/{1}' format: { value }) ].
 			  template ]
+]
+
+{ #category : #actions }
+RidePresenter >> newAuthToken [
+
+	^ self currentSession newAuthToken
 ]
 
 { #category : #actions }
@@ -434,4 +489,17 @@ RidePresenter >> templateContext [
 					  at: ('{1}Js' format: { key })
 					  put: ('/assets/js/{1}' format: { value }) ].
 			  template ]
+]
+
+{ #category : #actions }
+RidePresenter >> updateModelFromRequest: aRequest [
+	"Updates the model data following the convention of expecting for all its data keys,
+	parameters in the given request with their corresponding new value."
+
+	| allModelDataKeys |
+	allModelDataKeys := self getAllDataKeysOf: model.
+	allModelDataKeys do: [ :key |
+		| value |
+		value := aRequest entity at: key ifAbsent: [ nil ].
+		value ifNotNil: [ model at: key put: value ] ]
 ]

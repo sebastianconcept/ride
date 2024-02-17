@@ -38,7 +38,7 @@ BaselineOfRide >> mapless: spec [
 	spec baseline: 'Mapless' with: [ 
 		spec
 			repository:
-				'github://sebastianconcept/Mapless:v0.6.0/src';
+				'github://sebastianconcept/Mapless:v0.7.0/src';
 			loads: #( 'Core' 'Memory' 'SQLite' ) ]
 ]
 
@@ -97,7 +97,7 @@ BaselineOfRide >> sst: spec [
 
 	spec baseline: 'STTemplate' with: [ 
 		spec
-			repository: 'github://sebastianconcept/STTemplate:v0.0.5';
+			repository: 'github://sebastianconcept/STTemplate:v0.1.0';
 			loads: #( 'Core' ) ]
 ]
 
@@ -106,7 +106,7 @@ BaselineOfRide >> teapot: spec [
 
 	spec baseline: 'Teapot' with: [ 
 		spec
-			repository: 'github://zeroflag/Teapot/source';
+			repository: 'github://zeroflag/Teapot:v2.7.0/source';
 			loads: #( 'Deployment' ) ]
 ]
 
@@ -115,6 +115,6 @@ BaselineOfRide >> zinc: spec [
 
 	spec baseline: 'ZincHTTPComponents' with: [ 
 		spec
-			repository: 'github://svenvc/zinc/repository';
+			repository: 'github://svenvc/zinc:v5/repository';
 			loads: #( 'default' 'WebSocket' ) ]
 ]
