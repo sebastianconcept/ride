@@ -19,7 +19,7 @@ BaselineOfRide >> baseline: spec [
 			group: 'Builder' with: #( 'Ride-Builder' );
 			group: 'Tests' with: #( 'Ride-Tests' );
 			group: 'Examples' with: #( 'Ride-Examples' );
-			group: 'default' with: #( 'Core' ) ]
+			group: 'default' with: #( 'Core' 'Builder' ) ]
 ]
 
 { #category : #actions }
