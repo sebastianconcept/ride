@@ -46,7 +46,7 @@ RideSTTemplateHelper class >> formEditContentFor: aSymbol [
 
 	^ '<form action="/{4}/<%= model id%>" accept-charset="UTF-8" method="POST">
 	<input type="hidden" name="_method" value="PATCH" autocomplete="off">
-	<input type="hidden" name="authenticity_token" value="<st= self newAuthToken>" autocomplete="off">
+	<input type="hidden" name="authenticity_token" value="<%= self newAuthToken%>" autocomplete="off">
 	<%= self render: model using: ''formFields.html''%>
 	<button type="submit">Submit</button>
 </form>
@@ -63,7 +63,7 @@ RideSTTemplateHelper class >> formFieldsContentFor: aSymbol [
 
 	^ '
 	<label for="title">{3}</label>
-	<input type="text" name="title" id="title" autocomplete="title" placeholder="{5}" value="<%= self title>"%>
+	<input type="text" name="title" id="title" autocomplete="title" placeholder="{5}" value="<%= self title%>">
 ' format: { 
 			  aSymbol asPlural.
 			  aSymbol asPlural uncapitalized.
@@ -76,7 +76,9 @@ RideSTTemplateHelper class >> formFieldsContentFor: aSymbol [
 RideSTTemplateHelper class >> formNewContentFor: aSymbol [
 
 	^ '<form action="/{4}/" accept-charset="UTF-8" method="POST">
-	<input type="hidden" name="method" value="POST">
+	<input type="hidden" name="_method" value="POST" autocomplete="off">
+	<input type="hidden" name="authenticity_token" value="<st= self newAuthToken>" autocomplete="off">
+
 	<%= self render: model using: ''formFields.html''%>
 	<button type="submit">Submit</button>
 </form>
@@ -102,13 +104,13 @@ RideSTTemplateHelper class >> indexContentFor: aSymbol [
 					<%= self render: {3}%>
 					<ul>
 						<li>
-							<a href="/{4}/<st= {3} id>">Show this {3}</a>
+							<a href="/{4}/<%= {3} id%>">Show this {3}</a>
 						</li>
 						<li>
 							<a href="/{4}/<%= {3} id%>/edit">Edit this {3}</a>
 						</li>
 						<li>
-							<a href="/{4}/<st= {3} id>/delete">Delete this {3}</a>
+							<a href="/{4}/<%= {3} id%>/delete">Delete this {3}</a>
 						</li>
 					</ul>
 				</li>
@@ -167,7 +169,7 @@ RideSTTemplateHelper class >> showContentFor: aSymbol [
 				<a href="/{4}/<%= model id %>/edit">Edit this {3}</a>
 			</li>
 			<li>
-				<form action="/{4}/<%= model id>" method="POST" %>
+				<form action="/{4}/<%= model id%>" method="POST">
 					<input type="hidden" name="_method" value="delete" autocomplete="off">
 					<input type="hidden" name="authenticity_token" value="<%= self newAuthToken %>" autocomplete="off">
 					<button type="submit">Delete this {3}</button>

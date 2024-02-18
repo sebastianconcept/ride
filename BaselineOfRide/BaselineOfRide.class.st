@@ -97,7 +97,7 @@ BaselineOfRide >> sst: spec [
 
 	spec baseline: 'STTemplate' with: [ 
 		spec
-			repository: 'github://sebastianconcept/STTemplate:v0.1.0';
+			repository: 'github://sebastianconcept/STTemplate:v0.2.0';
 			loads: #( 'Core' ) ]
 ]
 
