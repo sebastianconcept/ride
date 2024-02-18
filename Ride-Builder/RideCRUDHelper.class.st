@@ -25,7 +25,7 @@ RideCRUDHelper class >> createMethodFor: aSymbol [
 
 	self addNoticeSuccess: ''{1} was successfully created.''.
 
-	self redirectFor: model	
+	self redirectToIndex
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
