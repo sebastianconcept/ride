@@ -20,6 +20,9 @@ Class {
 		'subpresenters',
 		'renderer'
 	],
+	#classInstVars : [
+		'restfulActions'
+	],
 	#category : #'Ride-Presenters'
 }
 
@@ -104,6 +107,17 @@ RidePresenter class >> getSnakeCasedModelName [
 	^ self getModelName asSnakeCase
 ]
 
+{ #category : #initializing }
+RidePresenter class >> intializeResfulActions [
+
+	^ restfulActions := SmallDictionary new
+		                    at: #POST put: #create;
+		                    at: #PUT put: #update;
+		                    at: #PATCH put: #update;
+		                    at: #DELETE put: #destroy;
+		                    yourself
+]
+
 { #category : #accessing }
 RidePresenter class >> layoutName [
 
@@ -132,6 +146,18 @@ RidePresenter class >> partialYieldTargetName [
 	"This is the name used when rendering the contents of the receiver in a layout."
 
 	^ #yield
+]
+
+{ #category : #actions }
+RidePresenter class >> reset [
+
+	restfulActions := nil
+]
+
+{ #category : #accessing }
+RidePresenter class >> restfulActions [
+
+	^ restfulActions ifNil: [ self intializeResfulActions ]
 ]
 
 { #category : #adding }
@@ -177,14 +203,22 @@ RidePresenter >> currentSession [
 
 { #category : #actions }
 RidePresenter >> formAction [
+	"Makes the receiver perform the action corresponding to a RESTful convention
+	and defined by the expected hidden field in its _method value.
+	Signals an exception if no value is found for _method 
+	or when is found but it doesn't follow the REST convention."
 
-	| req restfulAction |
+	| req restfulAction selector |
 	req := self currentRequest.
 	restfulAction := req entity
 		                 at: #_method
 		                 ifAbsent: [
 		                 RideError signal: 'Missing form action' ].
-	self halt
+	selector := self class restfulActions at: restfulAction ifAbsent: [
+		            RideError signal:
+			            ('Unsupported form action: {1}' format:
+				             { restfulAction asString }) ].
+	^ self perform: selector
 ]
 
 { #category : #accessing }
@@ -348,9 +382,9 @@ RidePresenter >> onBeforeAction [
 
 { #category : #actions }
 RidePresenter >> redirectFor: aRideModel [
+	"Signal a redirect poiting to what will show the given RideModel."
 
-	| response destinationURL |
-	response := self currentResponse.
+	| destinationURL |
 	destinationURL := self getShowUrlFor: aRideModel.
 
 	RideRedirect signalFor: destinationURL
