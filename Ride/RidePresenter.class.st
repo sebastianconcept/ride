@@ -67,10 +67,9 @@ RidePresenter class >> getModelClass [
 
 { #category : #accessing }
 RidePresenter class >> getModelName [
-
 	"Answers the conventional model name for this presenter."
 
-	^ self name copyFrom: 1 to: self name size - 'Presener' size - 1
+	^ self getRootWordName asSingular
 ]
 
 { #category : #accessing }
@@ -91,6 +90,13 @@ RidePresenter class >> getRenderSelector [
 	"Answer the selector that detemines the rendered aspect defined for the receiver."
 
 	^ 'index.html'
+]
+
+{ #category : #accessing }
+RidePresenter class >> getRootWordName [
+	"Answers the root word used to refer the model name for this presenter."
+
+	^ self name copyFrom: 1 to: self name size - 'Presener' size - 1
 ]
 
 { #category : #accessing }
@@ -386,6 +392,17 @@ RidePresenter >> redirectFor: aRideModel [
 
 	| destinationURL |
 	destinationURL := self getShowUrlFor: aRideModel.
+
+	RideRedirect signalFor: destinationURL
+]
+
+{ #category : #actions }
+RidePresenter >> redirectToIndex [
+	"Signal a redirect pointing to what will show the index of the receiver."
+
+	| destinationURL |
+	destinationURL := '/{1}' format:
+		                  { self class getModelName asLowercase asPlural }.
 
 	RideRedirect signalFor: destinationURL
 ]

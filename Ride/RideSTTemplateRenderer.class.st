@@ -47,6 +47,7 @@ RideSTTemplateRenderer >> render: aTemplateContext using: aTemplateName in: aLay
 	in the layout at aLayoutNameOrNil for aRidePresenter."
 
 	| templateToRender layoutWrapper wrappedTemplate missingTemplate partials targetedTemplate targetedTemplates parts templateBasename |
+
 	"Prepare missing template handler just in case."
 	missingTemplate := [ :templateName | 
 	                   RideMissingTemplateError signal:
