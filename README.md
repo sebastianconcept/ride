@@ -5,14 +5,12 @@ The Smalltalk web application framework with productivity as a feature.
 [![Release](https://img.shields.io/github/v/tag/sebastianconcept/ride?label=release)](https://github.com/sebastianconcept/ride/releases)
 [![Unit Tests](https://github.com/sebastianconcept/ride/actions/workflows/build.yml/badge.svg)](https://github.com/sebastianconcept/ride/actions/workflows/build.yml)
 
-![Tests](https://img.shields.io/badge/tests-3-green)
 [![Coverage Status](https://codecov.io/github/sebastianconcept/ride/coverage.svg?branch=main)](https://codecov.io/gh/sebastianconcept/ride/branch/master)
 
-[![Pharo 10](https://img.shields.io/badge/Pharo-10-%23383932.svg)](https://pharo.org/download)
 [![Pharo 11](https://img.shields.io/badge/Pharo-11-%23383932.svg)](https://pharo.org/download)
+[![Pharo 10](https://img.shields.io/badge/Pharo-10-%23383932.svg)](https://pharo.org/download)
 
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE.txt)
-[![Forks](https://img.shields.io/github/forks/sebastianconcept/ride?style=sociall)]()
 [![Social](https://img.shields.io/github/stars/sebastianconcept/ride?style=social)]()
 
 [![Commits](https://img.shields.io/github/commit-activity/m/sebastianconcept/ride)](https://github.com/sebastianconcept/ride/graphs/commit-activity)
