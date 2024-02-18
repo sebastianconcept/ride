@@ -77,7 +77,7 @@ RideSTTemplateHelper class >> formNewContentFor: aSymbol [
 
 	^ '<form action="/{4}/" accept-charset="UTF-8" method="POST">
 	<input type="hidden" name="_method" value="POST" autocomplete="off">
-	<input type="hidden" name="authenticity_token" value="<st= self newAuthToken>" autocomplete="off">
+	<input type="hidden" name="authenticity_token" value="<%= self newAuthToken %>" autocomplete="off">
 
 	<%= self render: model using: ''formFields.html''%>
 	<button type="submit">Submit</button>
