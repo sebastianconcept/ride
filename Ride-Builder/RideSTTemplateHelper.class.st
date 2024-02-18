@@ -106,12 +106,6 @@ RideSTTemplateHelper class >> indexContentFor: aSymbol [
 						<li>
 							<a href="/{4}/<%= {3} id%>">Show this {3}</a>
 						</li>
-						<li>
-							<a href="/{4}/<%= {3} id%>/edit">Edit this {3}</a>
-						</li>
-						<li>
-							<a href="/{4}/<%= {3} id%>/delete">Delete this {3}</a>
-						</li>
 					</ul>
 				</li>
 			<% ] %>
@@ -170,7 +164,7 @@ RideSTTemplateHelper class >> showContentFor: aSymbol [
 			</li>
 			<li>
 				<form action="/{4}/<%= model id%>" method="POST">
-					<input type="hidden" name="_method" value="delete" autocomplete="off">
+					<input type="hidden" name="_method" value="DELETE" autocomplete="off">
 					<input type="hidden" name="authenticity_token" value="<%= self newAuthToken %>" autocomplete="off">
 					<button type="submit">Delete this {3}</button>
 				</form>
