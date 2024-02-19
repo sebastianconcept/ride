@@ -23,6 +23,15 @@ RideSTTemplateRenderer class >> templatesValueSelector [
 	^ #sttTemplates
 ]
 
+{ #category : #accessing }
+RideSTTemplateRenderer >> getTemplatesFor: aTemplateName ifAbsent: aBlock [
+
+"(self templates at: #views)
+		                     at: aRidePresenter class getNormalizedModelName
+		                     ifAbsent: ."
+	
+]
+
 { #category : #actions }
 RideSTTemplateRenderer >> newTemplateFrom: file [
 
@@ -32,25 +41,77 @@ RideSTTemplateRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideSTTemplateRenderer >> render: aTemplateName inLayout: aLayoutNameOrNil on: aTemplateContext for: aRidePresenter [
+RideSTTemplateRenderer >> render: aTemplateContext using: aTemplateName in: aLayoutNameOrNil for: aRidePresenter [
 
 	"Render the template found with aTemplateName embedded 
 	in the layout at aLayoutNameOrNil for aRidePresenter."
 
-	| layoutWrapper wrappedTemplate missingTemplate |
-	missingTemplate := [ :templateName | 
-	                   RideMissingTemplateError signal: templateName ].
-	layoutWrapper := (self templates at: #layouts)
-		                 at: aLayoutNameOrNil
-		                 ifAbsent: [ 
-		                 missingTemplate value: aLayoutNameOrNil ].
-	wrappedTemplate := ((self templates at: #views)
-		                    at: aRidePresenter class getNormalizedModelName
-		                    ifAbsent: [ 
-		                    missingTemplate value:
-			                    aRidePresenter class getNormalizedModelName ])
-		                   at: aTemplateName
-		                   ifAbsent: [ missingTemplate value: aTemplateName ].
+	| templateToRender layoutWrapper wrappedTemplate missingTemplate partials targetedTemplate targetedTemplates parts templateBasename |
 
-	^ layoutWrapper renderOn: aTemplateContext partial: wrappedTemplate
+	"Prepare missing template handler just in case."
+	missingTemplate := [ :templateName | 
+	                   RideMissingTemplateError signal:
+		                   ('{2} >> {1}' format: { 
+				                    templateName.
+				                    aRidePresenter class name }) ].
+
+	"Get the reference where the targeted template is"
+	parts := aTemplateName substrings: '/'.
+	targetedTemplates := parts size > 1
+		                     ifTrue: [ 
+			                     templateBasename := parts second.
+			                     self templates
+				                     at: parts first
+				                     ifAbsent: [ 
+				                     missingTemplate value: parts first ] ]
+		                     ifFalse: [ 
+			                     templateBasename := parts first.
+			                     (self templates at: #views)
+				                     at:
+				                     aRidePresenter class getNormalizedRootWord
+				                     ifAbsent: [ 
+				                     missingTemplate value:
+					                     aRidePresenter class getNormalizedModelName ] ].
+
+	"Keep a reference to the template that is the actual main target of a rendering."
+	targetedTemplate := targetedTemplates
+		                    at: templateBasename
+		                    ifAbsent: [ 
+		                    missingTemplate value: templateBasename ].
+
+	"Unless changed, make the targeted template to be the one to render"
+	templateToRender := targetedTemplate.
+
+	"Initialize the partials dictionary with the shared ones 
+	that are usually needed to complete a rendering."
+	partials := {  } asDictionary
+		            at: #shared put: self templates shared;
+		            yourself.
+
+	"If it's a case to wrap the targeted template 
+	in a layout then prepare that accordingly"
+	aLayoutNameOrNil ifNotNil: [ 
+		layoutWrapper := (self templates at: #layouts)
+			                 at: aLayoutNameOrNil
+			                 ifAbsent: [ 
+			                 missingTemplate value: aLayoutNameOrNil ].
+		wrappedTemplate := targetedTemplate.
+		partials at: #_yield put: wrappedTemplate.
+		templateToRender := layoutWrapper ].
+
+	"Complete the rendering"
+	^ templateToRender renderOn: aTemplateContext partials: partials
+]
+
+{ #category : #rendering }
+RideSTTemplateRenderer >> renderUsing: aTemplateName for: aRidePresenter [
+
+	"Render the template found with aTemplateName for aRidePresenter
+	using the layout and context that the presenter itself provides."
+
+	^ self
+		  render: aRidePresenter getRenderContext
+		  using: aTemplateName
+		  in: aRidePresenter getLayoutName
+		  for: aRidePresenter
 ]

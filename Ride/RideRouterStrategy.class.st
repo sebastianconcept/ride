@@ -17,3 +17,19 @@ RideRouterStrategy class >> presenterClassFor: aModelClass [
 		  ifAbsent: [ 
 		  RideError signal: presenterClassName , ' was not found' ]
 ]
+
+{ #category : #accessing }
+RideRouterStrategy >> getShowPathFor: aRideModel [
+
+	^ aRideModel class name asPlural asSnakeCase
+]
+
+{ #category : #accessing }
+RideRouterStrategy >> getShowUrlFor: aRideModel [
+
+	"Answers the conventional URL for the given RideModel"
+
+	^ '/{1}/{2}' format: { 
+			  (self getShowPathFor: aRideModel).
+			  aRideModel id asString }
+]

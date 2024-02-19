@@ -18,7 +18,7 @@ RideAppHomePresenterClassHelper class >> indexMethodFor: aSymbol [
 
 	^ 'index
 
-	^ self render: ''index.html''
+	^ self render
 	' format: { aSymbol }
 ]
 
@@ -121,7 +121,7 @@ RideAppHomePresenterClassHelper >> targetPackageNameTag [
 RideAppHomePresenterClassHelper >> targetedSuperclassFor: aSymbol [
 
 	| targetClassName |
-	targetClassName := '{1}WebApplicationPresenter' format: { aSymbol }.
+	targetClassName := '{1}Presenter' format: { aSymbol }.
 	^ Smalltalk at: targetClassName asSymbol ifAbsent: [ 
 		  RideBoilerplateError signal:
 			  ('{1} was not found in the image' format: { targetClassName }) ]

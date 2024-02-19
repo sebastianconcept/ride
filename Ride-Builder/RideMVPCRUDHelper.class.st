@@ -7,19 +7,90 @@ Class {
 	#category : #'Ride-Builder'
 }
 
-{ #category : #actions }
-RideMVPCRUDHelper >> for: aSymbol [
+{ #category : #adding }
+RideMVPCRUDHelper >> addEditTemplateFor: aSymbol [
 
-	super for: aSymbol.
-	doer presenter for: aSymbol.
-	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
-	doer view stt
+	builder view stt
 		js: js;
-		crudIndexFor: aSymbol;
-		crudModelFor: aSymbol;
-		crudShowFor: aSymbol;
-		crudNewModelFor: aSymbol;
-		crudEditFor: aSymbol;
-		crudFormFor: aSymbol;
-		yourself
+		crudEditFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addFormEditTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudFormEditFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addFormFieldsTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudFormFieldsFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addFormNewTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudFormNewFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addIndexTemplateFor: aSymbol [
+self deprecated: 'singular or plural'.
+	builder view stt
+		js: js;
+		crudIndexFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addModelDisplayContentFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudModelDisplayContentFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addNewTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudNewFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addPluralIndexTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudPluralIndexFor: aSymbol asPlural 
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addPluralModelDisplayContentFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudPluralModelDisplayContentFor: aSymbol 
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addShowTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudShowFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addSingularIndexTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudIndexFor: aSymbol
 ]

@@ -395,15 +395,8 @@ RideServer >> setExceptionHandlers [
 
 	| origin response sharedTemplates |
 	sharedTemplates := Ride service templates shared.
-	self teapot exception: TeaAbort -> [ :abort :req | 
-		origin := req headers at: 'origin' ifAbsent: [ '*' ].
 
-		abort response headers
-			at: 'Access-Control-Allow-Credentials' put: 'true';
-			at: 'Access-Control-Allow-Origin' put: origin;
-			yourself.
-		abort response teaTransform: [ :same | same ] request: req ].
-
+	"First handler is to prevent further processing in case of being under maintenance."
 	self teapot
 		exception: RideMaintenanceException -> [ :ex :req | 
 				response := TeaResponse ok.
@@ -415,7 +408,36 @@ RideServer >> setExceptionHandlers [
 					yourself.
 				response ];
 		output: #html.
+		
+	"Second for redirecting to wherever the app said it should."
+	self teapot
+		exception: RideRedirect -> [ :ex :req | 
+				response := TeaResponse redirect.
+				response location: ex location.
+				origin := req headers at: 'origin' ifAbsent: [ '*' ].
+				response body: 'OK'.
+				response headers
+					at: 'Access-Control-Allow-Credentials' put: 'true';
+					at: 'Access-Control-Allow-Origin' put: origin;
+					yourself.
+				response ];
+		output: #html.
+		
+	"Hanlder for any abort exception. It answers accordingly in HTTP.
+	The process that signals this is expected to had loaded 
+	the current response with the content of this response."
+	self teapot exception: TeaAbort -> [ :abort :req | 
+		origin := req headers at: 'origin' ifAbsent: [ '*' ].
 
+		abort response headers
+			at: 'Access-Control-Allow-Credentials' put: 'true';
+			at: 'Access-Control-Allow-Origin' put: origin;
+			yourself.
+		abort response teaTransform: [ :same | same ] request: req ].
+
+	"Hanlder for validation issues reponds with an HTTP 400.
+	If the signaler process wants to add details to the response it will
+	have done that already by using the value of RideCurrentResponse."
 	self teapot exception: RideValidationError -> [ :ex :req | 
 		response := TeaResponse badRequest.
 		origin := req headers at: 'origin' ifAbsent: [ '*' ].
@@ -427,6 +449,20 @@ RideServer >> setExceptionHandlers [
 			yourself.
 		response ].
 
+	"Hanlder for request that end up signaling an unprocessable exception.
+	This one responds with HTTP 422 Unprocessable Content."
+	self teapot exception: RideUnprocessableEntity -> [ :ex :req | 
+		response := TeaResponse code: 422.
+		origin := req headers at: 'origin' ifAbsent: [ '*' ].
+		response body: (ex describeOn:
+				 { (#status -> response code) } asDictionary asJsonObject).
+		response headers
+			at: 'Access-Control-Allow-Credentials' put: 'true';
+			at: 'Access-Control-Allow-Origin' put: origin;
+			yourself.
+		response ].
+
+	"Handle the not found exception to answer an HTTP 404"
 	self teapot
 		exception: RideNotFoundError -> [ :ex :req | 
 				| templateContext |
@@ -450,6 +486,7 @@ RideServer >> setExceptionHandlers [
 				response ];
 		output: #html.
 
+	"General Exception/Error handler hence anwering an HTTP 500"
 	self teapot
 		exception: Error -> [ :ex :req | 
 				response := TeaResponse serverError.

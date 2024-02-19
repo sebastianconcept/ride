@@ -1,3 +1,9 @@
+Jan 23, 2024
+===================================
+- Added smalltalkCI
+- Added Codecov
+- Added which Pharo versions are supported (currently only Pharo10)
+
 Jan 2, 2024
 ===================================
 - Added more extensions to `BockClosure` based on `logLevel:` so the application can log content that will be computed only if the log level is allowing that. This is specially convenient for cases when you want to do some handy but costly log in debug mode: `[ 'Prints only when LOGLEVEL=#DEBUG'  ] logDebug`.

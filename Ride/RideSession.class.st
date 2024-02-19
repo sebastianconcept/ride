@@ -101,6 +101,7 @@ RideSession >> initializeWith: anId url: anUrl [
 	super initialize.
 
 	id := anId.
+	self initializeCache.
 	self initialUrl: anUrl
 ]
 
@@ -116,6 +117,19 @@ RideSession >> invalidateAndRedirectTo: url [
 		code: 302;
 		location: url.
 	(TeaAbort response: response) signal
+]
+
+{ #category : #actions }
+RideSession >> newAuthToken [
+	"Adds a new auth token"
+
+	^ cache at: #authenticity_token put: self newUUIDAsString36
+]
+
+{ #category : #actions }
+RideSession >> newUUIDAsString36 [
+
+	^ UUID new asString36
 ]
 
 { #category : #handlers }

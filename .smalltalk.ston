@@ -1,0 +1,13 @@
+SmalltalkCISpec {
+  #loading : [
+    SCIMetacelloLoadSpec {
+      #baseline : 'Ride',
+      #directory : '',
+      #load : [ 'Core',
+        'Tests'
+      ],
+      #platforms : [ #pharo
+      ]
+    }
+  ]
+}

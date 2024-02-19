@@ -32,6 +32,12 @@ RideRouter >> domain [
 		  systemValueAt: #domain
 ]
 
+{ #category : #accessing }
+RideRouter >> getShowUrlFor: aRideModel [
+
+	^ strategy getShowUrlFor: aRideModel
+]
+
 { #category : #initialization }
 RideRouter >> setRoutesOn: aRideServer [
 

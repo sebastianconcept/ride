@@ -11,7 +11,7 @@ Class {
 RideMVPHelper >> crud [
 
 	^ RideMVPCRUDHelper new
-		  doer: doer;
+		  doer: builder;
 		  yourself
 ]
 
@@ -19,9 +19,9 @@ RideMVPHelper >> crud [
 RideMVPHelper >> for: aSymbol [
 
 	| view |
-	doer model for: aSymbol.
-	doer presenter for: aSymbol.
-	view := doer view stt.
+	builder model for: aSymbol.
+	builder presenter for: aSymbol.
+	view := builder view stt.
 	view js: js.
 	view for: aSymbol
 ]

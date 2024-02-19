@@ -11,7 +11,7 @@ Class {
 BaselineOfRide >> baseline: spec [
 
 	<baseline>
-	spec for: #common do: [ 
+	spec for: #common do: [
 		self setUpDependencies: spec.
 		self setUpPackages: spec.
 		spec
@@ -19,8 +19,7 @@ BaselineOfRide >> baseline: spec [
 			group: 'Builder' with: #( 'Ride-Builder' );
 			group: 'Tests' with: #( 'Ride-Tests' );
 			group: 'Examples' with: #( 'Ride-Examples' );
-			group: 'Tools' with: #( 'Ride-Tools' );
-			group: 'default' with: #( 'Core' ) ]
+			group: 'default' with: #( 'Core' 'Builder' ) ]
 ]
 
 { #category : #actions }
@@ -39,7 +38,7 @@ BaselineOfRide >> mapless: spec [
 	spec baseline: 'Mapless' with: [ 
 		spec
 			repository:
-				'github://sebastianconcept/Mapless:v0.6.0/src';
+				'github://sebastianconcept/Mapless:v0.7.0/src';
 			loads: #( 'Core' 'Memory' 'SQLite' ) ]
 ]
 
@@ -77,9 +76,11 @@ BaselineOfRide >> setUpPackages: spec [
 			   'Mapless' 'SingularizePluralize' 'STTemplate' ) ].
 
 	spec package: 'Ride-Builder' with: [ spec requires: #( 'Ride' ) ].
-	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
+	spec
+		package: 'Ride-Tests'
+		with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
-	spec package: 'Ride-Tools' with: [ spec requires: #( 'Ride' ) ]
+	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ]
 ]
 
 { #category : #dependencies }
@@ -96,7 +97,7 @@ BaselineOfRide >> sst: spec [
 
 	spec baseline: 'STTemplate' with: [ 
 		spec
-			repository: 'github://sebastianconcept/STTemplate:v0.0.3';
+			repository: 'github://sebastianconcept/STTemplate:v0.2.0';
 			loads: #( 'Core' ) ]
 ]
 
@@ -105,7 +106,7 @@ BaselineOfRide >> teapot: spec [
 
 	spec baseline: 'Teapot' with: [ 
 		spec
-			repository: 'github://zeroflag/Teapot/source';
+			repository: 'github://zeroflag/Teapot:v2.7.0/source';
 			loads: #( 'Deployment' ) ]
 ]
 
@@ -114,6 +115,6 @@ BaselineOfRide >> zinc: spec [
 
 	spec baseline: 'ZincHTTPComponents' with: [ 
 		spec
-			repository: 'github://svenvc/zinc/repository';
+			repository: 'github://svenvc/zinc:v5/repository';
 			loads: #( 'default' 'WebSocket' ) ]
 ]

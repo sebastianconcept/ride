@@ -6,7 +6,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'js',
-		'doer'
+		'builder'
 	],
 	#category : #'Ride-Builder'
 }
@@ -14,13 +14,13 @@ Class {
 { #category : #accessing }
 RideCompositeHelper >> builder [
 
-	^ doer
+	^ builder
 ]
 
 { #category : #accessing }
 RideCompositeHelper >> doer: anObject [
 
-	doer := anObject
+	builder := anObject
 ]
 
 { #category : #actions }
@@ -41,22 +41,28 @@ RideCompositeHelper >> initialize [
 RideCompositeHelper >> mustacheTemplateFor: aSymbol [
 
 	| view |
-	view := doer view mustache.
+	view := builder view mustache.
 	view js: js.
 	view for: aSymbol
 ]
 
 { #category : #accessing }
+RideCompositeHelper >> pluralPresenterForModel: aSymbol [
+
+	^ Smalltalk at: (builder pluralPresenter classNameFor: aSymbol) asSymbol
+]
+
+{ #category : #accessing }
 RideCompositeHelper >> presenterForModel: aSymbol [
 
-	^ Smalltalk at: (doer presenter classNameFor: aSymbol) asSymbol
+	^ Smalltalk at: (builder presenter classNameFor: aSymbol) asSymbol
 ]
 
 { #category : #actions }
 RideCompositeHelper >> sttTemplateFor: aSymbol [
 
 	| view |
-	view := doer view stt.
+	view := builder view stt.
 	view js: js.
 	view for: aSymbol
 ]

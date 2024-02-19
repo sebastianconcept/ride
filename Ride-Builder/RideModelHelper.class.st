@@ -30,8 +30,7 @@ RideModelHelper >> targetedSuperclassFor: aSymbol [
 
 	| className |
 	className := '{1}Model' format: { RideBuilder defaultPackageName }.
-	^ Smalltalk
-		  at: className asSymbol
-		  ifAbsent: [ 
-		  RideBoilerplateError signal: '{1} class is missing in this image' ]
+	^ Smalltalk at: className asSymbol ifAbsent: [ 
+		  RideBoilerplateError signal:
+			  ('{1} class is missing in this image' format: { className }) ]
 ]

@@ -24,6 +24,15 @@ RideTemplateBasedRenderer class >> templatesValueSelector [
 ]
 
 { #category : #accessing }
+RideTemplateBasedRenderer >> getRenderSelectorOf: aRenderContext [
+
+	^ (aRenderContext class inheritsFrom: RidePresenter)
+		  ifTrue: [ aRenderContext getRenderSelector ]
+		  ifFalse: [ 
+		  '{1}.html' format: { aRenderContext class name asSnakeCase } ]
+]
+
+{ #category : #accessing }
 RideTemplateBasedRenderer >> getTemplates [
 
 	"Returns a dictionary with keys being view names (views/ subirectory names) 
@@ -125,7 +134,7 @@ RideTemplateBasedRenderer >> newTemplateFrom: file [
 ]
 
 { #category : #rendering }
-RideTemplateBasedRenderer >> render: aTemplateName for: aRidePresenter [
+RideTemplateBasedRenderer >> renderUsing: aTemplateName for: aRidePresenter [
 
 	"Render the template found with aTemplateName for aRidePresenter."
 
