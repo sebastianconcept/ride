@@ -12,8 +12,15 @@ RidePresenterHelper class >> indexMethodFor: aSymbol [
 
 	^ 'index
 
+	"GET /{1}/<id>"
+
+	model := {2} findId: (self currentRequestParam: #id).
+	model ifNil: self modelNotFoundHandler.
+	
 	^ self render
-	' format: { aSymbol }
+	' format: {
+			  aSymbol asPlural asSnakeCase.
+			  aSymbol }
 ]
 
 { #category : #accessing }
@@ -26,7 +33,7 @@ RidePresenterHelper >> addIndexMethodTo: aClass for: aSymbol [
 { #category : #accessing }
 RidePresenterHelper >> classNameFor: aSymbol [
 
-	^ '{1}Presenter' format: { aSymbol asPlural }
+	^ '{1}Presenter' format: { aSymbol }
 ]
 
 { #category : #actions }

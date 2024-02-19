@@ -41,7 +41,7 @@ RideMVPCRUDHelper >> addFormNewTemplateFor: aSymbol [
 
 { #category : #adding }
 RideMVPCRUDHelper >> addIndexTemplateFor: aSymbol [
-
+self deprecated: 'singular or plural'.
 	builder view stt
 		js: js;
 		crudIndexFor: aSymbol
@@ -64,9 +64,33 @@ RideMVPCRUDHelper >> addNewTemplateFor: aSymbol [
 ]
 
 { #category : #adding }
+RideMVPCRUDHelper >> addPluralIndexTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudPluralIndexFor: aSymbol asPlural 
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addPluralModelDisplayContentFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudPluralModelDisplayContentFor: aSymbol 
+]
+
+{ #category : #adding }
 RideMVPCRUDHelper >> addShowTemplateFor: aSymbol [
 
 	builder view stt
 		js: js;
 		crudShowFor: aSymbol
+]
+
+{ #category : #adding }
+RideMVPCRUDHelper >> addSingularIndexTemplateFor: aSymbol [
+
+	builder view stt
+		js: js;
+		crudIndexFor: aSymbol
 ]

@@ -68,7 +68,7 @@ RideSTTemplateRenderer >> render: aTemplateContext using: aTemplateName in: aLay
 			                     templateBasename := parts first.
 			                     (self templates at: #views)
 				                     at:
-				                     aRidePresenter class getNormalizedModelName
+				                     aRidePresenter class getNormalizedRootWord
 				                     ifAbsent: [ 
 				                     missingTemplate value:
 					                     aRidePresenter class getNormalizedModelName ] ].

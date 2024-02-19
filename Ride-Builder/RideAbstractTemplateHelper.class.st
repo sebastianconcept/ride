@@ -13,7 +13,7 @@ Class {
 { #category : #accessing }
 RideAbstractTemplateHelper class >> getPathFor: aSymbol [
 
-	^ Ride resource viewsDirectory / aSymbol asPlural asSnakeCase
+	^ Ride resource viewsDirectory / aSymbol asSnakeCase
 ]
 
 { #category : #initialization }

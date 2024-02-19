@@ -8,6 +8,17 @@ Class {
 }
 
 { #category : #accessing }
+RideCRUDHelper class >> allowedParamsMethodFor: aSymbol [
+
+	^ 'allowedParams
+
+	"Answer the names of the parameters that are allowed to be read from the current request."
+	
+	^ #()
+'
+]
+
+{ #category : #accessing }
 RideCRUDHelper class >> createMethodFor: aSymbol [
 
 	^ 'create
@@ -19,7 +30,7 @@ RideCRUDHelper class >> createMethodFor: aSymbol [
 
 	model := {1} new.
 
-	request entity fields keysAndValuesDo: [ :k :v | model at: k put: v ].
+	self allowedFields keysAndValuesDo: [ :k :v | model at: k put: v ].
 
 	model saveOrSignal.
 
@@ -100,16 +111,33 @@ RideCRUDHelper class >> newModelMethodFor: aSymbol [
 ]
 
 { #category : #accessing }
-RideCRUDHelper class >> showMethodFor: aSymbol [
+RideCRUDHelper class >> pluralIndexMethodFor: aSymbol [
 
-	^ 'show
+	^ 'index
+
+	"GET /{2}"
+	
+	model := self {3}.
+	
+	^ self render
+	
+' format: { 
+			  aSymbol.
+			  aSymbol asLowercase asPlural asSnakeCase.
+			  aSymbol uncapitalized asPlural }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> singularIndexMethodFor: aSymbol [
+
+	^ 'index
 
 	"GET /{2}/<id>"
 
 	model := {1} findId: (self currentRequestParam: #id).
 	model ifNil: self modelNotFoundHandler.
 	
-	^ self renderUsing: ''show.html''	
+	^ self renderUsing: ''index.html''	
 ' format: { 
 			  aSymbol.
 			  aSymbol asLowercase asPlural asSnakeCase }
@@ -138,8 +166,15 @@ RideCRUDHelper class >> updateMethodFor: aSymbol [
 ]
 
 { #category : #actions }
-RideCRUDHelper >> addCRUDMethodsTo: aClass for: aSymbol [
+RideCRUDHelper >> addAllowedParamsMethodTo: aClass for: aSymbol [
 
+	aClass compile: (self class allowedParamsMethodFor: aSymbol).
+	aClass organization classify: #allowedParams under: 'accessing'	
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addCRUDMethodsTo: aClass for: aSymbol [
+self deprecated: 'singular or plural'.
 	self addIndexMethodTo: aClass for: aSymbol.
 	self addModelsAccessorMethodTo: aClass for: aSymbol.
 	self addShowMethodTo: aClass for: aSymbol.
@@ -152,7 +187,7 @@ RideCRUDHelper >> addCRUDMethodsTo: aClass for: aSymbol [
 
 { #category : #actions }
 RideCRUDHelper >> addCRUDTemplatesTo: aClass for: aSymbol [
-
+self deprecated: 'silgular or plural'.
 	self addIndexTemplateFor: aSymbol.
 	self addShowTemplateFor: aSymbol.
 	self addNewTemplateFor: aSymbol.
@@ -217,7 +252,7 @@ RideCRUDHelper >> addFormTemplateFor: aSymbol [
 
 { #category : #actions }
 RideCRUDHelper >> addIndexMethodTo: aClass for: aSymbol [
-
+	self deprecated: ' plural or singular'.
 	aClass compile: (self class indexMethodFor: aSymbol).
 	aClass organization classify: #index under: 'actions'	
 ]
@@ -268,16 +303,102 @@ RideCRUDHelper >> addNewTemplateFor: aSymbol [
 ]
 
 { #category : #actions }
-RideCRUDHelper >> addShowMethodTo: aClass for: aSymbol [
+RideCRUDHelper >> addPluralCRUDMethodsTo: aClass for: aSymbol [
 
-	aClass compile: (self class showMethodFor: aSymbol).
-	aClass organization classify: #show under: 'actions'	
+	self addPluralIndexMethodTo: aClass for: aSymbol.
+	"self addIndexMethodTo: aClass for: aSymbol."
+	self addModelsAccessorMethodTo: aClass for: aSymbol.
+	"self addShowMethodTo: aClass for: aSymbol.
+	self addNewModelMethodTo: aClass for: aSymbol.
+	self addEditMethodTo: aClass for: aSymbol.
+	self addCreateMethodTo: aClass for: aSymbol.
+	self addUpdateMethodTo: aClass for: aSymbol.
+	self addDestroyMethodTo: aClass for: aSymbol"
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addPluralCRUDTemplatesTo: aClass for: aSymbol [
+
+	self addPluralIndexTemplateFor: aSymbol.
+	"self addShowTemplateFor: aSymbol.
+	self addNewTemplateFor: aSymbol.
+	self addEditTemplateFor: aSymbol.
+	self addFormNewTemplateFor: aSymbol.
+	self addFormEditTemplateFor: aSymbol.
+	self addFormFieldsTemplateFor: aSymbol."
+	self addPluralModelDisplayContentFor: aSymbol
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addPluralIndexMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class pluralIndexMethodFor: aSymbol).
+	aClass organization classify: #index under: 'actions'
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addPluralIndexTemplateFor: aClass for: aSymbol [
+
+	aClass compile: (self class pluralIndexMethodFor: aSymbol).
+	aClass organization classify: #index under: 'actions'	
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addPluralModelDisplayContentFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addShowMethodTo: aClass for: aSymbol [
+self deprecated: 'no'.
+	aClass compile: (self class singularIndexMethodFor: aSymbol).
+	aClass organization classify: #index under: 'actions'	
 ]
 
 { #category : #actions }
 RideCRUDHelper >> addShowTemplateFor: aSymbol [
-
+self deprecated: 'no'.
 	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addSingularCRUDMethodsTo: aClass for: aSymbol [
+
+	self addAllowedParamsMethodTo: aClass for: aSymbol.
+	self addSingularIndexMethodTo: aClass for: aSymbol.
+	self addNewModelMethodTo: aClass for: aSymbol.
+	self addEditMethodTo: aClass for: aSymbol.
+	self addCreateMethodTo: aClass for: aSymbol.
+	self addUpdateMethodTo: aClass for: aSymbol.
+	self addDestroyMethodTo: aClass for: aSymbol
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addSingularCRUDTemplatesTo: aClass for: aSymbol [
+
+	self addSingularIndexTemplateFor: aSymbol.
+	"self addShowTemplateFor: aSymbol."
+	self addNewTemplateFor: aSymbol.
+	self addEditTemplateFor: aSymbol.
+	self addFormNewTemplateFor: aSymbol.
+	self addFormEditTemplateFor: aSymbol.
+	self addFormFieldsTemplateFor: aSymbol.
+	self addModelDisplayContentFor: aSymbol
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addSingularIndexMethodTo: aClass for: aSymbol [
+
+	aClass compile: (self class singularIndexMethodFor: aSymbol).
+	aClass organization classify: #index under: 'actions'	
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addSingularIndexTemplateFor: aClass for: aSymbol [
+
+	aClass compile: (self class singularIndexMethodFor: aSymbol).
+	aClass organization classify: #index under: 'actions'	
 ]
 
 { #category : #actions }
@@ -292,7 +413,12 @@ RideCRUDHelper >> for: aSymbol [
 
 	builder model for: aSymbol.
 	builder presenter for: aSymbol.
-	self addCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
-	self addCRUDTemplatesTo: (self presenterForModel: aSymbol) for: aSymbol
+	self addSingularCRUDMethodsTo: (self presenterForModel: aSymbol) for: aSymbol.
+	self addSingularCRUDTemplatesTo: (self presenterForModel: aSymbol) for: aSymbol.
+
+	builder pluralPresenter for: aSymbol.
+	self addPluralCRUDMethodsTo: (self pluralPresenterForModel: aSymbol) for: aSymbol.
+	self addPluralCRUDTemplatesTo: (self pluralPresenterForModel: aSymbol) for: aSymbol
+
 	
 ]

@@ -123,6 +123,12 @@ RideBuilder >> packageName: anObject [
 ]
 
 { #category : #accessing }
+RideBuilder >> pluralPresenter [
+
+	^ RidePluralPresenterHelper new
+]
+
+{ #category : #accessing }
 RideBuilder >> presenter [
 
 	^ RidePresenterHelper new

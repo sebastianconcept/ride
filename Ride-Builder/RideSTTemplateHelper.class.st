@@ -96,24 +96,25 @@ RideSTTemplateHelper class >> indexContentFor: aSymbol [
 	^ '<% STT yield: self using: ''shared/feedback.html'' %>
 <div class="container">
 	<h1>{1}</h1>
+	<%= self render: model using: ''{3}.html''%>
 	<div>
-		<a href="/{2}/new">New {3}</a>
 		<ul>
-			<% self {2} do: [ :{3} | %>
-				<li>
-					<%= self render: {3}%>
-					<ul>
-						<li>
-							<a href="/{4}/<%= {3} id%>">Show this {3}</a>
-						</li>
-					</ul>
-				</li>
-			<% ] %>
+			<li>
+				<a href="/{4}/<%= model id %>/edit">Edit this {3}</a>
+			</li>
+			<li>
+				<form action="/{4}/<%= model id%>" method="POST">
+					<input type="hidden" name="_method" value="DELETE" autocomplete="off">
+					<input type="hidden" name="authenticity_token" value="<%= self newAuthToken %>" autocomplete="off">
+					<button type="submit">Delete this {3}</button>
+				</form>
+			</li>
 		</ul>
 	</div>
+	<a href="/{4}">Back to {2}</a>
 </div>
 ' format: { 
-			  aSymbol asPlural.
+			  aSymbol.
 			  aSymbol asPlural uncapitalized.
 			  aSymbol uncapitalized.
 			  aSymbol asPlural asSnakeCase }
@@ -151,8 +152,36 @@ RideSTTemplateHelper class >> newContentFor: aSymbol [
 ]
 
 { #category : #accessing }
-RideSTTemplateHelper class >> showContentFor: aSymbol [
+RideSTTemplateHelper class >> pluralIndexContentFor: aSymbol [
 
+	^ '<% STT yield: self using: ''shared/feedback.html'' %>
+<div class="container">
+	<h1>{1}</h1>
+	<div>
+		<a href="/{2}/new">New {3}</a>
+		<ul>
+			<% self {2} do: [ :{3} | %>
+				<li>
+					<%= self render: {3} using: ''{3}.html''%>
+					<ul>
+						<li>
+							<a href="/{2}/<%= {3} id%>">Show this {3}</a>
+						</li>
+					</ul>
+				</li>
+			<% ] %>
+		</ul>
+	</div>
+</div>
+' format: {
+			  aSymbol.
+			  aSymbol asSnakeCase.
+			  aSymbol uncapitalized asSingular }
+]
+
+{ #category : #accessing }
+RideSTTemplateHelper class >> showContentFor: aSymbol [
+self deprecated: 'no used anymore'.
 	^ '<%= self render: self using: ''shared/feedback.html'' %>
 <div class="container">
 	<h1>{1}</h1>
@@ -267,6 +296,37 @@ RideSTTemplateHelper >> crudNewFor: aSymbol [
 ]
 
 { #category : #actions }
+RideSTTemplateHelper >> crudPluralIndexFor: aSymbol [
+
+	"Creates the template file for the default view of the model named aSymbol.
+	Find it as index.html.stt"
+
+	self
+		template: #index
+		for: aSymbol
+		contents: (self class pluralIndexContentFor: aSymbol)
+]
+
+{ #category : #actions }
+RideSTTemplateHelper >> crudPluralModelDisplayContentFor: aSymbol [
+
+	"Creates the template file for the view showing
+	one model named with the value of aSymbol.
+	Find it as <aSymbol asSnakeCase>.html.stt"
+
+
+	| targetPath |
+	"Find the right path for the view template"
+	targetPath := (self class getPathFor: aSymbol asPlural)
+		              asFileReference
+	              / ('{1}.html.stt' format: { aSymbol asSnakeCase }).
+	self
+		template: aSymbol asSnakeCase
+		path: targetPath
+		contents: (self class modelDisplayContentFor: aSymbol)
+]
+
+{ #category : #actions }
 RideSTTemplateHelper >> crudShowFor: aSymbol [
 
 	"Creates the template file for the view showing many models named aSymbol.
@@ -286,9 +346,9 @@ RideSTTemplateHelper >> for: aSymbol [
 	targetPath := (self class getPathFor: aSymbol) asFileReference.
 
 	"Verify lack of preexistence to protect possible existing work."
-	targetPath exists ifTrue: [ 
+	targetPath exists ifTrue: [
 		RideBoilerplateError signal:
-			('The template for {1} already exists in {2}' format: { 
+			('The template for {1} already exists in {2}' format: {
 					 aSymbol.
 					 targetPath pathString }) ].
 
@@ -297,46 +357,55 @@ RideSTTemplateHelper >> for: aSymbol [
 		            ifTrue: [ self class defaultViewTemplateWithJs ]
 		            ifFalse: [ self class defaultViewTemplate ].
 
-	(targetPath / 'index.html.stt') ensureCreateFile writeStreamDo: [ 
+	(targetPath / 'index.html.stt') ensureCreateFile writeStreamDo: [
 		:stream | stream nextPutAll: rendered ].
 
-	js ifTrue: [ 
-		(targetPath / 'index.js') ensureCreateFile writeStreamDo: [ :stream | 
+	js ifTrue: [
+		(targetPath / 'index.js') ensureCreateFile writeStreamDo: [ :stream |
 			stream nextPutAll: (self class defaultJavaScriptFor: aSymbol) ] ]
 ]
 
 { #category : #actions }
 RideSTTemplateHelper >> template: aTemplateSelectorName for: aSymbol contents: aString [
 
-	| targetPath templateContentString |
+	| targetPath |
 	"Find the right path for the view template"
 	targetPath := (self class getPathFor: aSymbol) asFileReference
 	              / ('{1}.html.stt' format: { aTemplateSelectorName }).
 
+	self
+		template: aTemplateSelectorName
+		path: targetPath
+		contents: aString
+]
+
+{ #category : #actions }
+RideSTTemplateHelper >> template: aTemplateSelectorName path: targetPath contents: aString [
+
+	| templateContentString |
 	"Verify lack of preexistence to protect possible existing work."
-	targetPath exists ifTrue: [ 
+	targetPath exists ifTrue: [
 		RideBoilerplateError signal:
-			('The template {1} for {2} already exists in {3}' format: { 
+			('The template {1} already exists in {2}' format: {
 					 aTemplateSelectorName.
-					 aSymbol.
 					 targetPath pathString }) ].
 
 	"Create the template file adding js if it has a related one and asked for it."
 	templateContentString := aString.
-	js ifTrue: [ 
-		templateContentString := String streamContents: [ :s | 
+	js ifTrue: [
+		templateContentString := String streamContents: [ :s |
 			                         s
 				                         nextPutAll: templateContentString;
 				                         cr;
 				                         nextPutAll:
 					                         self class loadCustomJsScriptElement ] ].
 
-	targetPath ensureCreateFile writeStreamDo: [ :stream | 
+	targetPath ensureCreateFile writeStreamDo: [ :stream |
 		stream nextPutAll: templateContentString ].
 
-	js ifTrue: [ 
+	js ifTrue: [
 		(targetPath / ('{1}.js' format: { aTemplateSelectorName }))
-			ensureCreateFile writeStreamDo: [ :stream | 
+			ensureCreateFile writeStreamDo: [ :stream |
 			stream nextPutAll:
 				(self class defaultJavaScriptFor: aTemplateSelectorName) ] ]
 ]

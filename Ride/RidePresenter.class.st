@@ -69,7 +69,7 @@ RidePresenter class >> getModelClass [
 RidePresenter class >> getModelName [
 	"Answers the conventional model name for this presenter."
 
-	^ self getRootWordName asSingular
+	^ self getRootWord asSingular
 ]
 
 { #category : #accessing }
@@ -85,6 +85,12 @@ RidePresenter class >> getNormalizedModelNameForURLs [
 ]
 
 { #category : #accessing }
+RidePresenter class >> getNormalizedRootWord [
+
+	^ self getRootWord asSnakeCase
+]
+
+{ #category : #accessing }
 RidePresenter class >> getRenderSelector [
 
 	"Answer the selector that detemines the rendered aspect defined for the receiver."
@@ -93,7 +99,7 @@ RidePresenter class >> getRenderSelector [
 ]
 
 { #category : #accessing }
-RidePresenter class >> getRootWordName [
+RidePresenter class >> getRootWord [
 	"Answers the root word used to refer the model name for this presenter."
 
 	^ self name copyFrom: 1 to: self name size - 'Presener' size - 1
@@ -171,6 +177,28 @@ RidePresenter >> addNoticeSuccess: aString [
 
 	self flag: #todo.
 	[ 'Notice Success: ' , aString ] logInfo
+]
+
+{ #category : #accessing }
+RidePresenter >> allowedFields [
+	"Answers the current request fields that are allowed
+	to be used in this presenter."
+
+	| request allowed |
+	request := self currentRequest.
+	allowed := self allowedParams.
+	^ request entity fields associationsSelect: [ :field |
+		  allowed includes: field key ]
+]
+
+{ #category : #accessing }
+RidePresenter >> allowedParams [
+
+	"Answer the names of the parameters that are allowed to be read from the current request."
+	
+	"None by default"
+	^ #()
+
 ]
 
 { #category : #accessing }
@@ -397,12 +425,19 @@ RidePresenter >> redirectFor: aRideModel [
 ]
 
 { #category : #actions }
+RidePresenter >> redirectTo: destinationURI [
+	"Signal a redirect poiting to the given destinationURI."
+
+	RideRedirect signalFor: destinationURI
+]
+
+{ #category : #actions }
 RidePresenter >> redirectToIndex [
-	"Signal a redirect pointing to what will show the index of the receiver."
+	"Signal a redirect pointing to the root word of the receiver in plural and normalized."
 
 	| destinationURL |
 	destinationURL := '/{1}' format:
-		                  { self class getModelName asLowercase asPlural }.
+		                  { self class getRootWord asLowercase asPlural asSnakeCase }.
 
 	RideRedirect signalFor: destinationURL
 ]

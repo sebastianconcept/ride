@@ -47,6 +47,12 @@ RideCompositeHelper >> mustacheTemplateFor: aSymbol [
 ]
 
 { #category : #accessing }
+RideCompositeHelper >> pluralPresenterForModel: aSymbol [
+
+	^ Smalltalk at: (builder pluralPresenter classNameFor: aSymbol) asSymbol
+]
+
+{ #category : #accessing }
 RideCompositeHelper >> presenterForModel: aSymbol [
 
 	^ Smalltalk at: (builder presenter classNameFor: aSymbol) asSymbol
