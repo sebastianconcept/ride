@@ -29,12 +29,12 @@ RideService class >> applicationResourceClass [
 { #category : #accessing }
 RideService class >> getSessionGetter [
 
-	^ [ :request | 
+	^ [ :request |
 	  | sessionId |
 	  sessionId := self sessionIdFromCookieOrNewFrom: request.
 	  Ride service sessions
 		  at: sessionId
-		  ifAbsentPut: [ self newSessionWith: sessionId url: request url ] ]
+		  ifAbsentPut: [ self newSessionWith: sessionId request: request ] ]
 ]
 
 { #category : #accessing }
@@ -61,9 +61,11 @@ RideService class >> log: aString level: aSymbol [
 RideService class >> newResetSessionCookie [
 
 	| expires cookieString domain |
+	self deprecated: 'using this from the session'.
 	domain := Ride service server router domain.
 	expires := ZnUtils httpDate: DateAndTime now - 10 years.
-	cookieString := 'id={1}; expires={2}; path=/; domain={3}' format: { 
+	cookieString := '{1}={2}; expires={3}; path=/; domain={4}' format: {
+			                Ride service sessionClass cookieName.
 			                String new.
 			                expires.
 			                domain }.
@@ -76,9 +78,15 @@ RideService class >> newSessionId [
 	^ UUID new asString36
 ]
 
+{ #category : #actions }
+RideService class >> newSessionWith: sessionId request: aRequest [
+
+	^ self sessionClass newWith: sessionId request: aRequest
+]
+
 { #category : #accessing }
 RideService class >> newSessionWith: sessionId url: anUrl [
-
+	self deprecated: 'not used'.
 	self subclassResponsibility
 ]
 
@@ -98,13 +106,21 @@ RideService class >> restart [
 ]
 
 { #category : #accessing }
-RideService class >> sessionIdFromCookieOrNewFrom: aRequest [
+RideService class >> sessionClass [
 
+	^ self subclassResponsibility
+]
+
+{ #category : #accessing }
+RideService class >> sessionIdFromCookieOrNewFrom: aRequest [
 	"Answers the session ID taken from the cookie of the given aRequest.
 	Answers a new one if the cookie is absent "
 
+	| cookieName |
+	cookieName := Ride service sessionClass cookieName.
+
 	^ (aRequest cookies
-		   detect: [ :each | each name = 'id' ]
+		   detect: [ :each | each name = cookieName ]
 		   ifNone: [ ^ self newSessionId ]) value
 ]
 
@@ -240,6 +256,13 @@ RideService >> invalidateSession: aRideSession [
 		put: Ride service class newResetSessionCookie fullString
 ]
 
+{ #category : #actions }
+RideService >> invalidateSessionId: aRideSessionId [
+	"Remove the given session from the cache"
+
+	sessions removeKey: aRideSessionId ifAbsent: [  ]
+]
+
 { #category : #accessing }
 RideService >> locator [
 	self deprecated: 'use Ride resource instead'.
@@ -369,6 +392,12 @@ RideService >> server [
 RideService >> server: anObject [
 
 	server := anObject
+]
+
+{ #category : #accessing }
+RideService >> sessionClass [
+
+	^ self class sessionClass
 ]
 
 { #category : #accessing }

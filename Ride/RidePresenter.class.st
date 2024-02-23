@@ -236,6 +236,15 @@ RidePresenter >> currentSession [
 ]
 
 { #category : #actions }
+RidePresenter >> ensureSessionCookie [
+
+	| response sessionCookie |
+	response := RideCurrentResponse value.
+	sessionCookie := self currentSession sessionCookie.
+	response headers at: 'Set-Cookie' put: sessionCookie fullString
+]
+
+{ #category : #actions }
 RidePresenter >> formAction [
 	"Makes the receiver perform the action corresponding to a RESTful convention
 	and defined by the expected hidden field in its _method value.
@@ -397,7 +406,7 @@ RidePresenter >> newAuthToken [
 { #category : #actions }
 RidePresenter >> onAboutToRespond [
 
-	"no-op is the default"
+	self ensureSessionCookie
 ]
 
 { #category : #actions }
@@ -521,7 +530,7 @@ RidePresenter >> renderUsing: aSelector [
 { #category : #actions }
 RidePresenter >> resetSession [
 
-	Ride service invalidateSession: self currentSession
+	Ride service invalidateSessionId: self currentSession
 ]
 
 { #category : #accessing }
@@ -575,6 +584,13 @@ RidePresenter >> templateContext [
 					  at: ('{1}Js' format: { key })
 					  put: ('/assets/js/{1}' format: { value }) ].
 			  template ]
+]
+
+{ #category : #accessing }
+RidePresenter >> unauthorizedHandler [
+	"Answers a handler to react when the auth token is missing or was not found."
+
+	^ [ RideUnauthorizedError signal: 'Authorization not found' ]
 ]
 
 { #category : #actions }
