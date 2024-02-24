@@ -176,6 +176,31 @@ RideAppHelper class >> fourZeroFourContentFor: aSymbol [
 ]
 
 { #category : #accessing }
+RideAppHelper class >> fourZeroOneContentFor: aSymbol [
+
+	^ '<!DOCTYPE html>
+<html>
+  <head>
+    <title>Unauthorized (401)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+  </head>
+
+  <body class="ride-default-error-page">
+    <div class="dialog">
+      <div>
+        <h1>Unauthorized</h1>
+        <p>The authorization for the requested content was found to be invalid.</p>
+      </div>
+      <p>
+        If you are the {1} application owner check the logs for more information.
+      </p>
+    </div>
+  </body>
+</html>
+' format: { aSymbol }
+]
+
+{ #category : #accessing }
 RideAppHelper class >> gitignoreContent [
 
 	^ 'pharo*
@@ -580,6 +605,9 @@ RideAppHelper >> ensureTemplatesLayoutsOn: directory for: aSymbol [
 RideAppHelper >> ensureTemplatesSharedOn: directory for: aSymbol [
 
 	directory ensureCreateDirectory.
+
+	directory / '401.html.stt' writeStreamDo: [ :stream | 
+		stream nextPutAll: (self class fourZeroOneContentFor: aSymbol) ].
 
 	directory / '404.html.stt' writeStreamDo: [ :stream | 
 		stream nextPutAll: (self class fourZeroFourContentFor: aSymbol) ].

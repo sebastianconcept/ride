@@ -9,21 +9,86 @@ Class {
 		'id',
 		'webSocket',
 		'cache',
-		'values'
+		'values',
+		'authenticityTokens',
+		'cookie'
+	],
+	#classInstVars : [
+		'authenticityTokenGenerator'
 	],
 	#category : #'Ride-Core'
 }
 
+{ #category : #accessing }
+RideSession class >> authenticityTokenGenerator [
+
+	^ authenticityTokenGenerator := UUIDGenerator new
+]
+
+{ #category : #actions }
+RideSession class >> cookieName [
+	"Answers the session cookie name."
+
+	^ self name asString
+]
+
+{ #category : #actions }
+RideSession class >> newSessionCookieId: anId expiring: aDateAndTime [
+
+	| domain expires cookieString |
+	domain := Ride service server router domain.
+	expires := ZnUtils httpDate: aDateAndTime.
+	cookieString := '{1}={2}; expires={3}; path=/; domain={4}' format: {
+			                Ride service sessionClass cookieName.
+			                anId.
+			                expires.
+			                domain }.
+
+	^ ZnCookie fromString: cookieString for: ('http://' , domain) asZnUrl
+]
+
+{ #category : #'instance creation' }
+RideSession class >> newWith: anId request: aRequest [
+
+	^ self new initializeWith: anId request: aRequest
+]
+
 { #category : #'instance creation' }
 RideSession class >> newWith: anId url: anUrl [
-
+	self deprecated: 'not used'.
 	^ self new initializeWith: anId url: anUrl
 ]
 
 { #category : #actions }
-RideSession >> add: routeKey presenter: aRidePresenter [
+RideSession class >> nextAuthenticityTokenValue [
 
+	^ self authenticityTokenGenerator next asString36
+]
+
+{ #category : #actions }
+RideSession class >> reset [
+
+	authenticityTokenGenerator := nil
+]
+
+{ #category : #accessing }
+RideSession class >> sessionDuration [
+
+	^ (Smalltalk os environment
+		   at: #SESSION_DURATION
+		   ifAbsent: [ 20 years asSeconds ]) asInteger seconds
+]
+
+{ #category : #actions }
+RideSession >> add: routeKey presenter: aRidePresenter [
+self deprecated: ' not used'.
 	^ self presenters at: routeKey put: aRidePresenter
+]
+
+{ #category : #accessing }
+RideSession >> authenticityTokens [
+
+	^ authenticityTokens ifNil: [ self initializeAuthenticityTokens ]
 ]
 
 { #category : #accessing }
@@ -84,9 +149,31 @@ RideSession >> initialUrl: anUrl [
 ]
 
 { #category : #initialization }
+RideSession >> initializeAuthenticityTokens [
+
+	^ authenticityTokens := TTLCache new beThreadSafe
+]
+
+{ #category : #initialization }
 RideSession >> initializeCache [
 
-	^ cache := TTLCache new
+	^ cache := TTLCache new beThreadSafe
+]
+
+{ #category : #initialization }
+RideSession >> initializeCookieUsing: aRequest [
+
+	| newCookie |
+
+	newCookie := [
+	             self class
+		             newSessionCookieId:
+		             self class nextAuthenticityTokenValue
+		             expiring: DateAndTime now + self class sessionDuration ].
+
+	^ cookie := aRequest cookies
+		            detect: [ :e | e name = self class cookieName ]
+		            ifNone: [ newCookie value ]
 ]
 
 { #category : #initialization }
@@ -96,12 +183,26 @@ RideSession >> initializeValues [
 ]
 
 { #category : #initialization }
-RideSession >> initializeWith: anId url: anUrl [
+RideSession >> initializeWith: anId request: aRequest [
 
 	super initialize.
 
 	id := anId.
+	self initializeCookieUsing: aRequest.
 	self initializeCache.
+	self initializeAuthenticityTokens.
+	self initialUrl: aRequest url
+]
+
+{ #category : #initialization }
+RideSession >> initializeWith: anId url: anUrl [
+	self deprecated: 'not in use'.
+	super initialize.
+
+	id := anId.
+	self initializeCookie.
+	self initializeCache.
+	self initializeAuthenticityTokens.
 	self initialUrl: anUrl
 ]
 
@@ -109,10 +210,17 @@ RideSession >> initializeWith: anId url: anUrl [
 RideSession >> invalidateAndRedirectTo: url [
 
 	| response |
-	Ride service invalidateSession: self.
+	Ride service invalidateSessionId: self id.
 	response := RideCurrentResponse value.
 
-	"Redirect"
+	"Reset the session cookie"
+	response headers
+		at: 'Set-Cookie'
+		put:
+			(self class newSessionCookieExpiring: DateAndTime now - 10 years)
+				fullString.
+
+	"and redirect"
 	response
 		code: 302;
 		location: url.
@@ -121,9 +229,14 @@ RideSession >> invalidateAndRedirectTo: url [
 
 { #category : #actions }
 RideSession >> newAuthToken [
-	"Adds a new auth token"
+	"Adds a new auth token.
+	The authenticity tokens are stored by value with its own TTL
+	so request can be considered unauthorized when a request doesn't
+	include an existing one for this session."
 
-	^ cache at: #authenticity_token put: self newUUIDAsString36
+	| value |
+	value := self class nextAuthenticityTokenValue.
+	^ authenticityTokens at: value ifAbsentPut: [ value ]
 ]
 
 { #category : #actions }
@@ -142,6 +255,12 @@ RideSession >> onWebSocketMessage: aJsonObject [
 RideSession >> remove: routeKey [
 
 	^ self presenters removeKey: routeKey ifAbsent: [ nil ]
+]
+
+{ #category : #accessing }
+RideSession >> sessionCookie [
+
+	^ cookie 
 ]
 
 { #category : #accessing }

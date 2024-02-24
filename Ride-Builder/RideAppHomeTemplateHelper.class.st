@@ -11,9 +11,9 @@ Class {
 RideAppHomeTemplateHelper class >> indexHTMLTemplateFor: aSymbol [
 
 	^ '<div>
-  <h1>Welcome to <st= self webAppName ></h1>
-  <p>This page was rendered by a STTemplate generated for <st= self webAppName >.</p>
-  <p>Find my source in <code><st= self templatePath ></code></p>
+  <h1>Welcome to <%= self webAppName %></h1>
+  <p>This page was rendered by a STTemplate generated for <%= self webAppName %>.</p>
+  <p>Find my source in <code><%= self templatePath %></code></p>
 </div>' format: { aSymbol }
 ]
 
