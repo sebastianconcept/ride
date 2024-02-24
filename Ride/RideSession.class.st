@@ -151,13 +151,13 @@ RideSession >> initialUrl: anUrl [
 { #category : #initialization }
 RideSession >> initializeAuthenticityTokens [
 
-	^ authenticityTokens := TTLCache new
+	^ authenticityTokens := TTLCache new beThreadSafe
 ]
 
 { #category : #initialization }
 RideSession >> initializeCache [
 
-	^ cache := TTLCache new
+	^ cache := TTLCache new beThreadSafe
 ]
 
 { #category : #initialization }

@@ -184,10 +184,17 @@ RidePresenter >> allowedFields [
 	"Answers the current request fields that are allowed
 	to be used in this presenter."
 
-	| request allowed |
-	request := self currentRequest.
+	^ self allowedFieldsFrom: self currentRequest
+]
+
+{ #category : #accessing }
+RidePresenter >> allowedFieldsFrom: aRequest [
+	"Answers the given request fields that are allowed
+	to be used in this presenter."
+
+	| allowed |
 	allowed := self allowedParams.
-	^ request entity fields associationsSelect: [ :field |
+	^ aRequest entity fields associationsSelect: [ :field |
 		  allowed includes: field key ]
 ]
 
@@ -251,8 +258,17 @@ RidePresenter >> formAction [
 	Signals an exception if no value is found for _method 
 	or when is found but it doesn't follow the REST convention."
 
-	| req restfulAction selector |
+	| req restfulAction selector unauthorized authenticityToken session |
 	req := self currentRequest.
+	unauthorized := self unauthorizedHandler.
+	authenticityToken := req entity
+		                     at: #authenticity_token
+		                     ifAbsent: unauthorized.
+	session := self currentSession.
+
+	(session authenticityTokens includesKey: authenticityToken) ifFalse:
+		unauthorized.
+
 	restfulAction := req entity
 		                 at: #_method
 		                 ifAbsent: [
@@ -262,12 +278,6 @@ RidePresenter >> formAction [
 			            ('Unsupported form action: {1}' format:
 				             { restfulAction asString }) ].
 	^ self perform: selector
-]
-
-{ #category : #accessing }
-RidePresenter >> getAllDataKeysOf: aMapless [
-
-	^ aMapless maplessData keys reject: [ :e | e = '_c' or: [ e = 'id' ] ]
 ]
 
 { #category : #accessing }
@@ -598,10 +608,9 @@ RidePresenter >> updateModelFromRequest: aRequest [
 	"Updates the model data following the convention of expecting for all its data keys,
 	parameters in the given request with their corresponding new value."
 
-	| allModelDataKeys |
-	allModelDataKeys := self getAllDataKeysOf: model.
-	allModelDataKeys do: [ :key |
-		| value |
-		value := aRequest entity at: key ifAbsent: [ nil ].
-		value ifNotNil: [ model at: key put: value ] ]
+	| allDataFields |
+	allDataFields := self allowedFieldsFrom: aRequest.
+
+	allDataFields keysAndValuesDo: [ :key :value |
+		model at: key put: value ]
 ]

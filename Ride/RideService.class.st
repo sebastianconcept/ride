@@ -190,7 +190,7 @@ RideService >> getSessionFrom: request [
 { #category : #initialization }
 RideService >> initializeCache [
 
-	^ cache := TTLCache new
+	^ cache := TTLCache new beThreadSafe
 ]
 
 { #category : #initialization }
@@ -241,7 +241,7 @@ RideService >> initializeServer [
 { #category : #initialization }
 RideService >> initializeSessions [
 
-	^ sessions := TTLCache new
+	^ sessions := TTLCache new beThreadSafe
 ]
 
 { #category : #actions }
