@@ -194,13 +194,6 @@ RideService >> initializeCache [
 ]
 
 { #category : #initialization }
-RideService >> initializeLocator [
-
-	self deprecated: 'use Ride resource instead'.
-	^ locator := RideViewPresenterLocator new
-]
-
-{ #category : #initialization }
 RideService >> initializeMaitre [
 
 	^ maitre := RideMaitre new
@@ -261,12 +254,6 @@ RideService >> invalidateSessionId: aRideSessionId [
 	"Remove the given session from the cache"
 
 	sessions removeKey: aRideSessionId ifAbsent: [  ]
-]
-
-{ #category : #accessing }
-RideService >> locator [
-	self deprecated: 'use Ride resource instead'.
-	^ locator ifNil: [ self initializeLocator ]
 ]
 
 { #category : #accessing }

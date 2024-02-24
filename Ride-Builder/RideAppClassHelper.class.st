@@ -98,13 +98,6 @@ RideAppClassHelper >> addInstallMethodTo: aClass for: aSymbol [
 ]
 
 { #category : #actions }
-RideAppClassHelper >> addNewSessionWith_UrlMethodTo: aClass for: aSymbol [
-	self deprecated: 'not used'.
-	aClass class compile: (self class newSessionWith_UrlMethodFor: aSymbol).
-	aClass class organization classify: #'newSessionWith:url:' under: 'actions'
-]
-
-{ #category : #actions }
 RideAppClassHelper >> addSessionClassMethodTo: aClass for: aSymbol [
 
 	aClass class compile: (self class sessionClassMethodFor: aSymbol).
@@ -131,7 +124,6 @@ RideAppClassHelper >> for: aSymbol [
 	appClass := super for: aSymbol.
 
 	self addSessionClassMethodTo: appClass for: aSymbol.
-	"self addNewSessionWith_UrlMethodTo: appClass for: aSymbol."
 	self addInstallMethodTo: appClass for: aSymbol.
 	self addApplicationResourceClassMethodTo: appClass for: aSymbol.
 	self addInitializeServerMethodTo: appClass for: aSymbol.

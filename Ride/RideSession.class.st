@@ -53,12 +53,6 @@ RideSession class >> newWith: anId request: aRequest [
 	^ self new initializeWith: anId request: aRequest
 ]
 
-{ #category : #'instance creation' }
-RideSession class >> newWith: anId url: anUrl [
-	self deprecated: 'not used'.
-	^ self new initializeWith: anId url: anUrl
-]
-
 { #category : #actions }
 RideSession class >> nextAuthenticityTokenValue [
 
@@ -77,12 +71,6 @@ RideSession class >> sessionDuration [
 	^ (Smalltalk os environment
 		   at: #SESSION_DURATION
 		   ifAbsent: [ 20 years asSeconds ]) asInteger seconds
-]
-
-{ #category : #actions }
-RideSession >> add: routeKey presenter: aRidePresenter [
-self deprecated: ' not used'.
-	^ self presenters at: routeKey put: aRidePresenter
 ]
 
 { #category : #accessing }
@@ -192,18 +180,6 @@ RideSession >> initializeWith: anId request: aRequest [
 	self initializeCache.
 	self initializeAuthenticityTokens.
 	self initialUrl: aRequest url
-]
-
-{ #category : #initialization }
-RideSession >> initializeWith: anId url: anUrl [
-	self deprecated: 'not in use'.
-	super initialize.
-
-	id := anId.
-	self initializeCookie.
-	self initializeCache.
-	self initializeAuthenticityTokens.
-	self initialUrl: anUrl
 ]
 
 { #category : #actions }
