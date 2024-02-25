@@ -6,15 +6,3 @@ Class {
 	#superclass : #Mapless,
 	#category : #'Ride-Models'
 }
-
-{ #category : #converting }
-RideMaplessModel >> asMustacheTemplateModel [
-	self deprecated: 'use asTemplateModel'.
-	^ { (#name -> self class name) } asDictionary
-]
-
-{ #category : #converting }
-RideMaplessModel >> asTemplateModel [
-
-	^ { (#name -> self class name) } asDictionary
-]

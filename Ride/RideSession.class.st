@@ -33,6 +33,20 @@ RideSession class >> cookieName [
 ]
 
 { #category : #actions }
+RideSession class >> newSessionCookieExpiring: aDateAndTime [
+
+	| domain expires cookieString |
+	domain := Ride service server router domain.
+	expires := ZnUtils httpDate: aDateAndTime.
+	cookieString := '{1}=invalid; expires={2}; path=/; domain={3}' format: {
+			                Ride service sessionClass cookieName.
+			                expires.
+			                domain }.
+
+	^ ZnCookie fromString: cookieString for: ('http://' , domain) asZnUrl
+]
+
+{ #category : #actions }
 RideSession class >> newSessionCookieId: anId expiring: aDateAndTime [
 
 	| domain expires cookieString |
@@ -53,12 +67,6 @@ RideSession class >> newWith: anId request: aRequest [
 	^ self new initializeWith: anId request: aRequest
 ]
 
-{ #category : #'instance creation' }
-RideSession class >> newWith: anId url: anUrl [
-	self deprecated: 'not used'.
-	^ self new initializeWith: anId url: anUrl
-]
-
 { #category : #actions }
 RideSession class >> nextAuthenticityTokenValue [
 
@@ -77,12 +85,6 @@ RideSession class >> sessionDuration [
 	^ (Smalltalk os environment
 		   at: #SESSION_DURATION
 		   ifAbsent: [ 20 years asSeconds ]) asInteger seconds
-]
-
-{ #category : #actions }
-RideSession >> add: routeKey presenter: aRidePresenter [
-self deprecated: ' not used'.
-	^ self presenters at: routeKey put: aRidePresenter
 ]
 
 { #category : #accessing }
@@ -194,16 +196,10 @@ RideSession >> initializeWith: anId request: aRequest [
 	self initialUrl: aRequest url
 ]
 
-{ #category : #initialization }
-RideSession >> initializeWith: anId url: anUrl [
-	self deprecated: 'not in use'.
-	super initialize.
+{ #category : #actions }
+RideSession >> invalidate [
 
-	id := anId.
-	self initializeCookie.
-	self initializeCache.
-	self initializeAuthenticityTokens.
-	self initialUrl: anUrl
+	self invalidateAndRedirectTo: '/'
 ]
 
 { #category : #actions }

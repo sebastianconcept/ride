@@ -50,7 +50,7 @@ RideMustacheRenderer >> render: aTemplateName in: aLayoutNameOrNil for: aRidePre
 
 	"Render the template found with aTemplateName embedded 
 	in the layout at aLayoutNameOrNil for aRidePresenter."
-
+	self flag: #review.
 	^ self
 		  render: aRidePresenter mustacheTemplateModel
 		  using: aTemplateName
@@ -134,7 +134,7 @@ RideMustacheRenderer >> render: aTemplateContext using: aTemplateName in: aLayou
 RideMustacheRenderer >> renderUsing: aTemplateName for: aRidePresenter [
 
 	"Render the template found with aTemplateName for aRidePresenter."
-
+	self flag: #review.
 	^ self
 		  render: aRidePresenter mustacheTemplateModel
 		  using: aTemplateName

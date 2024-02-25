@@ -180,78 +180,6 @@ RideResource class >> getJavaScriptAssets [
 	^ assets asJsonObject
 ]
 
-{ #category : #accessing }
-RideResource class >> getMustacheTemplatesIn: aPath [
-
-	"Returns only the .mustache template files in aPath"
-
-	| accepted |
-		self deprecated: 'this is done by the right renderer now'.
-	accepted := #( mustache mst ms tmpl ).
-	^ aPath files select: [ :file | accepted includes: file extension ]
-]
-
-{ #category : #accessing }
-RideResource class >> getTemplates [
-
-	"Returns a dictionary with keys being view names (views/ subirectory names) 
-	and as value, a dictionary with mustache templates for every file found."
-
-	| newTemplates newViewTemplates newEmailTemplates |
-		self deprecated: 'this is done by the right renderer now'.
-	newTemplates := JsonObject new.
-	newViewTemplates := JsonObject new.
-	self viewTemplatesDirectory asFileReference directories do: [ :path | 
-		newViewTemplates
-			at: path basenameWithoutExtension
-			put: (self getTemplatesFrom: path) ].
-	newTemplates
-		at: self viewTemplatesDirectory basenameWithoutExtension
-		put: newViewTemplates.
-	self layoutTemplatesDirectory asFileReference files do: [ :file | 
-		(newTemplates
-			 at:
-			 self layoutTemplatesDirectory basenameWithoutExtension
-			 ifAbsentPut: [ JsonObject new ])
-			at: file basenameWithoutExtension
-			put: file contents asMustacheTemplate ].
-	self sharedTemplatesDirectory asFileReference files do: [ 
-		:file | 
-		(newTemplates
-			 at:
-			 self sharedTemplatesDirectory basenameWithoutExtension
-			 ifAbsentPut: [ JsonObject new ])
-			at: file basenameWithoutExtension
-			put: file contents asMustacheTemplate ].
-	newEmailTemplates := JsonObject new.
-	self emailTemplatesDirectory asFileReference directories 
-		do: [ :path | 
-			newEmailTemplates
-				at: path basenameWithoutExtension
-				put: (self getTemplatesFrom: path) ].
-	newTemplates
-		at: self emailTemplatesDirectory basenameWithoutExtension
-		put: newEmailTemplates.
-	^ newTemplates
-]
-
-{ #category : #accessing }
-RideResource class >> getTemplatesFrom: aPath [
-
-	"Returns a dictionary with keys being the filenames (without extension) of aPath
-	and as value, the mustache template based on its content."
-
-	| newTemplates |
-	self deprecated: 'this is done by the right renderer now'.
-	newTemplates := JsonObject new.
-	(self getMustacheTemplatesIn: aPath) do: [ :file | 
-		newTemplates
-			at: file basenameWithoutExtension
-			put: file contents asMustacheTemplate ].
-
-	^ newTemplates
-]
-
 { #category : #initialization }
 RideResource class >> initializeValues [
 
@@ -334,15 +262,6 @@ RideResource class >> resetAssetsMapFile [
 ]
 
 { #category : #accessing }
-RideResource class >> sharedTemplates [
-	self deprecated: 'use Ride service templates shared'.
-	^ self templates
-		  at: #shared
-		  ifAbsent: [ 
-		  RideMissingTemplateError signal: 'No shared templates were found' ]
-]
-
-{ #category : #accessing }
 RideResource class >> sharedTemplatesDirectory [
 
 	^ self templatesDirectory / 'shared'
@@ -355,35 +274,9 @@ RideResource class >> tempDirectory [
 ]
 
 { #category : #accessing }
-RideResource class >> templates [
-	self deprecated: 'this is done by the right renderer now'.
-	self halt.
-	^ [ self getTemplates ] systemValueAt: #templates
-]
-
-{ #category : #accessing }
 RideResource class >> templatesDirectory [
 
 	^ self appDirectory / 'templates'
-]
-
-{ #category : #accessing }
-RideResource class >> templatesFor: aPresenter [
-
-	"Answers the mustache templates that correspond to aPresenter.
-	The convention that followed by this resource helper is to find 
-	the presenter's model name in snake_case or kebab-case on disk."
-
-	| views modelName kebabized found |
-	self deprecated: 'this is done by the right renderer now'.
-	self halt.
-	views := self templates at: #views.
-	modelName := aPresenter class getModelName.
-	kebabized := '-' join: (modelName asSnakeCase substrings: '_').
-	found := views at: kebabized.
-	^ found
-		  ifNil: [ views at: modelName asSnakeCase ]
-		  ifNotNil: [ found ]
 ]
 
 { #category : #accessing }

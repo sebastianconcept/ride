@@ -27,14 +27,6 @@ Class {
 }
 
 { #category : #accessing }
-RidePresenter class >> basePath [
-
-	"Answers the view name of this presenter as snake case."
-	self deprecated: 'not in use'.
-	^ self getModelName asSnakeCase
-]
-
-{ #category : #accessing }
 RidePresenter class >> defaultModel [
 
 	^ nil
@@ -384,29 +376,6 @@ RidePresenter >> modelNotFoundHandler [
 				   id asString }) ]
 ]
 
-{ #category : #accessing }
-RidePresenter >> mustacheTemplateModel [
-
-	"Answers the model used for the template that 
-	will render only the HTML of this component (not the full page)."
-
-	| template presenterJsAssets |
-
-	template := model asMustacheTemplateModel.
-	presenterJsAssets := Ride resource assetsMap js
-		                     at: self class getNormalizedModelName
-		                     ifAbsent: [ nil ].
-
-	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
-		  ifFalse: [ template ]
-		  ifTrue: [ 
-			  presenterJsAssets keysAndValuesDo: [ :key :value | 
-				  template
-					  at: ('{1}Js' format: { key })
-					  put: ('/assets/js/{1}' format: { value }) ].
-			  template ]
-]
-
 { #category : #actions }
 RidePresenter >> newAuthToken [
 
@@ -476,36 +445,6 @@ RidePresenter >> render: aRenderContext [
 ]
 
 { #category : #rendering }
-RidePresenter >> render: aSelector inLayout: aLayoutNameOrNil on: aRenderContext [
-
-	self deprecated: 'use render:using:in:'.
-	^ renderer
-		  render: aSelector
-		  using: aLayoutNameOrNil
-		  in: aRenderContext
-		  for: self
-]
-
-{ #category : #rendering }
-RidePresenter >> render: aSelector model: aRideModel [
-
-	"Render the given model using aSelector to decide how it should be rendered."
-
-	self deprecated: 'use render:using:'.
-	^ renderer render: aSelector model: aRideModel for: self
-]
-
-{ #category : #rendering }
-RidePresenter >> render: aSelector on: aRenderContext [
-
-	self deprecated: 'use render:in:'.
-	^ self
-		  render: aSelector
-		  inLayout: self getLayoutName
-		  on: aRenderContext
-]
-
-{ #category : #rendering }
 RidePresenter >> render: aRenderContext using: aSelector [
 
 	^ self render: aRenderContext using: aSelector in: nil
@@ -519,16 +458,6 @@ RidePresenter >> render: aRenderContext using: aSelector in: aLayoutNameOrNil [
 		  using: aSelector
 		  in: aLayoutNameOrNil
 		  for: self
-]
-
-{ #category : #rendering }
-RidePresenter >> renderModel: aRideModel [
-
-	"Render the given model using its own default way to do it."
-	self deprecated: 'not used'.
-	aRideModel ifNil: [ RideNotFoundError signal: 'Model not found ' ].
-	self halt.
-	^ self render: aRideModel getDefaultRenderSelector model: aRideModel
 ]
 
 { #category : #rendering }

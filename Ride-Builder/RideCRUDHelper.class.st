@@ -173,32 +173,6 @@ RideCRUDHelper >> addAllowedParamsMethodTo: aClass for: aSymbol [
 ]
 
 { #category : #actions }
-RideCRUDHelper >> addCRUDMethodsTo: aClass for: aSymbol [
-self deprecated: 'singular or plural'.
-	self addIndexMethodTo: aClass for: aSymbol.
-	self addModelsAccessorMethodTo: aClass for: aSymbol.
-	self addShowMethodTo: aClass for: aSymbol.
-	self addNewModelMethodTo: aClass for: aSymbol.
-	self addEditMethodTo: aClass for: aSymbol.
-	self addCreateMethodTo: aClass for: aSymbol.
-	self addUpdateMethodTo: aClass for: aSymbol.
-	self addDestroyMethodTo: aClass for: aSymbol
-]
-
-{ #category : #actions }
-RideCRUDHelper >> addCRUDTemplatesTo: aClass for: aSymbol [
-self deprecated: 'silgular or plural'.
-	self addIndexTemplateFor: aSymbol.
-	self addShowTemplateFor: aSymbol.
-	self addNewTemplateFor: aSymbol.
-	self addEditTemplateFor: aSymbol.
-	self addFormNewTemplateFor: aSymbol.
-	self addFormEditTemplateFor: aSymbol.
-	self addFormFieldsTemplateFor: aSymbol.
-	self addModelDisplayContentFor: aSymbol
-]
-
-{ #category : #actions }
 RideCRUDHelper >> addCreateMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class createMethodFor: aSymbol).
@@ -239,26 +213,6 @@ RideCRUDHelper >> addFormFieldsTemplateFor: aSymbol [
 
 { #category : #actions }
 RideCRUDHelper >> addFormNewTemplateFor: aSymbol [
-
-	self subclassResponsibility
-]
-
-{ #category : #actions }
-RideCRUDHelper >> addFormTemplateFor: aSymbol [
-
-	self deprecated: 'use either formNew or formEdit'.
-	self subclassResponsibility
-]
-
-{ #category : #actions }
-RideCRUDHelper >> addIndexMethodTo: aClass for: aSymbol [
-	self deprecated: ' plural or singular'.
-	aClass compile: (self class indexMethodFor: aSymbol).
-	aClass organization classify: #index under: 'actions'	
-]
-
-{ #category : #actions }
-RideCRUDHelper >> addIndexTemplateFor: aSymbol [
 
 	self subclassResponsibility
 ]
@@ -346,19 +300,6 @@ RideCRUDHelper >> addPluralIndexTemplateFor: aClass for: aSymbol [
 { #category : #actions }
 RideCRUDHelper >> addPluralModelDisplayContentFor: aSymbol [
 
-	self subclassResponsibility
-]
-
-{ #category : #actions }
-RideCRUDHelper >> addShowMethodTo: aClass for: aSymbol [
-self deprecated: 'no'.
-	aClass compile: (self class singularIndexMethodFor: aSymbol).
-	aClass organization classify: #index under: 'actions'	
-]
-
-{ #category : #actions }
-RideCRUDHelper >> addShowTemplateFor: aSymbol [
-self deprecated: 'no'.
 	self subclassResponsibility
 ]
 

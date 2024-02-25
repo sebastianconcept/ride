@@ -13,17 +13,6 @@ Class {
 }
 
 { #category : #accessing }
-RideMaitre class >> assetsDirectory [
-
-	self deprecated: 'use locator'.
-	self halt.
-	^ (Smalltalk os environment
-		   at: 'ASSETS_PATH'
-		   ifAbsent: [ Smalltalk imageDirectory / 'app' / 'assets' ])
-		  asFileReference
-]
-
-{ #category : #accessing }
 RideMaitre class >> workersPoolSize [
 
 	^ (OSEnvironment current at: 'WORKER_POOL_SIZE' ifAbsent: [ 2 ])
