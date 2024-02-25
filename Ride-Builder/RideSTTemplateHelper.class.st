@@ -179,37 +179,6 @@ RideSTTemplateHelper class >> pluralIndexContentFor: aSymbol [
 			  aSymbol uncapitalized asSingular }
 ]
 
-{ #category : #accessing }
-RideSTTemplateHelper class >> showContentFor: aSymbol [
-self deprecated: 'no used anymore'.
-	^ '<%= self render: self using: ''shared/feedback.html'' %>
-<div class="container">
-	<h1>{1}</h1>
-	<%= self render: model %>
-	<div>
-		<ul>
-			<li>
-				<a href="/{4}/<%= model id %>/edit">Edit this {3}</a>
-			</li>
-			<li>
-				<form action="/{4}/<%= model id%>" method="POST">
-					<input type="hidden" name="_method" value="DELETE" autocomplete="off">
-					<input type="hidden" name="authenticity_token" value="<%= self newAuthToken %>" autocomplete="off">
-					<button type="submit">Delete this {3}</button>
-				</form>
-			</li>
-		</ul>
-	</div>
-	<a href="/{4}">Back to {2}</a>
-</div>
-' format: { 
-			  aSymbol.
-			  aSymbol asPlural uncapitalized.
-			  aSymbol uncapitalized.
-			  aSymbol asPlural asSnakeCase.
-			  aSymbol asPlural }
-]
-
 { #category : #actions }
 RideSTTemplateHelper >> crudEditFor: aSymbol [
 
@@ -324,18 +293,6 @@ RideSTTemplateHelper >> crudPluralModelDisplayContentFor: aSymbol [
 		template: aSymbol asSnakeCase
 		path: targetPath
 		contents: (self class modelDisplayContentFor: aSymbol)
-]
-
-{ #category : #actions }
-RideSTTemplateHelper >> crudShowFor: aSymbol [
-
-	"Creates the template file for the view showing many models named aSymbol.
-	Find it as show.html.stt"
-
-	self
-		template: #show
-		for: aSymbol
-		contents: (self class showContentFor: aSymbol)
 ]
 
 { #category : #'instance creation' }

@@ -47,17 +47,6 @@ RideAppClassHelper class >> installMethodFor: aSymbol [
 ]
 
 { #category : #accessing }
-RideAppClassHelper class >> newSessionWith_UrlMethodFor: aSymbol [
-
-	^ 'newSessionWith: sessionId url: anUrl
-	
-	"Answer a new {1}App session with the given sessionId and url."
-
-	^ self sessionClass newWith: sessionId url: anUrl
-' format: { aSymbol }
-]
-
-{ #category : #accessing }
 RideAppClassHelper class >> sessionClassMethodFor: aSymbol [
 
 	^ 'sessionClass

@@ -27,14 +27,6 @@ Class {
 }
 
 { #category : #accessing }
-RidePresenter class >> basePath [
-
-	"Answers the view name of this presenter as snake case."
-	self deprecated: 'not in use'.
-	^ self getModelName asSnakeCase
-]
-
-{ #category : #accessing }
 RidePresenter class >> defaultModel [
 
 	^ nil
@@ -382,29 +374,6 @@ RidePresenter >> modelNotFoundHandler [
 	  RideNotFoundError signal: ('No {1} found at {2}' format: {
 				   self class getModelName.
 				   id asString }) ]
-]
-
-{ #category : #accessing }
-RidePresenter >> mustacheTemplateModel [
-
-	"Answers the model used for the template that 
-	will render only the HTML of this component (not the full page)."
-
-	| template presenterJsAssets |
-
-	template := model asMustacheTemplateModel.
-	presenterJsAssets := Ride resource assetsMap js
-		                     at: self class getNormalizedModelName
-		                     ifAbsent: [ nil ].
-
-	^ (presenterJsAssets notNil and: [ presenterJsAssets notEmpty ])
-		  ifFalse: [ template ]
-		  ifTrue: [ 
-			  presenterJsAssets keysAndValuesDo: [ :key :value | 
-				  template
-					  at: ('{1}Js' format: { key })
-					  put: ('/assets/js/{1}' format: { value }) ].
-			  template ]
 ]
 
 { #category : #actions }

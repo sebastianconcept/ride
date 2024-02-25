@@ -58,21 +58,6 @@ RideService class >> log: aString level: aSymbol [
 ]
 
 { #category : #actions }
-RideService class >> newResetSessionCookie [
-
-	| expires cookieString domain |
-	self deprecated: 'using this from the session'.
-	domain := Ride service server router domain.
-	expires := ZnUtils httpDate: DateAndTime now - 10 years.
-	cookieString := '{1}={2}; expires={3}; path=/; domain={4}' format: {
-			                Ride service sessionClass cookieName.
-			                String new.
-			                expires.
-			                domain }.
-	^ ZnCookie fromString: cookieString for: ('http://' , domain) asZnUrl
-]
-
-{ #category : #actions }
 RideService class >> newSessionId [
 
 	^ UUID new asString36
@@ -82,12 +67,6 @@ RideService class >> newSessionId [
 RideService class >> newSessionWith: sessionId request: aRequest [
 
 	^ self sessionClass newWith: sessionId request: aRequest
-]
-
-{ #category : #accessing }
-RideService class >> newSessionWith: sessionId url: anUrl [
-	self deprecated: 'not used'.
-	self subclassResponsibility
 ]
 
 { #category : #actions }
@@ -235,18 +214,6 @@ RideService >> initializeServer [
 RideService >> initializeSessions [
 
 	^ sessions := TTLCache new beThreadSafe
-]
-
-{ #category : #actions }
-RideService >> invalidateSession: aRideSession [
-
-	"Remove the given session from the cache"
-	sessions removeKey: aRideSession id ifAbsent: [  ].
-
-	"Reset the session cookie"
-	RideCurrentResponse value headers
-		at: 'Set-Cookie'
-		put: Ride service class newResetSessionCookie fullString
 ]
 
 { #category : #actions }

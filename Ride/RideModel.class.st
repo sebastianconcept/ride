@@ -13,19 +13,6 @@ RideModel class >> getRepository [
 	^ Ride service repository
 ]
 
-{ #category : #converting }
-RideModel >> asMustacheTemplateModel [
-
-	self deprecated: 'use asTemplateModel'.
-	^ { (#name -> self class name) } asDictionary
-]
-
-{ #category : #converting }
-RideModel >> asTemplateModel [
-
-	^ { (#name -> self class name) } asDictionary
-]
-
 { #category : #'as yet unclassified' }
 RideModel >> destroyOrSignal [
 

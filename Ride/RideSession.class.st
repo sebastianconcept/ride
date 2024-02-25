@@ -33,6 +33,20 @@ RideSession class >> cookieName [
 ]
 
 { #category : #actions }
+RideSession class >> newSessionCookieExpiring: aDateAndTime [
+
+	| domain expires cookieString |
+	domain := Ride service server router domain.
+	expires := ZnUtils httpDate: aDateAndTime.
+	cookieString := '{1}=invalid; expires={2}; path=/; domain={3}' format: {
+			                Ride service sessionClass cookieName.
+			                expires.
+			                domain }.
+
+	^ ZnCookie fromString: cookieString for: ('http://' , domain) asZnUrl
+]
+
+{ #category : #actions }
 RideSession class >> newSessionCookieId: anId expiring: aDateAndTime [
 
 	| domain expires cookieString |
@@ -180,6 +194,12 @@ RideSession >> initializeWith: anId request: aRequest [
 	self initializeCache.
 	self initializeAuthenticityTokens.
 	self initialUrl: aRequest url
+]
+
+{ #category : #actions }
+RideSession >> invalidate [
+
+	self invalidateAndRedirectTo: '/'
 ]
 
 { #category : #actions }
