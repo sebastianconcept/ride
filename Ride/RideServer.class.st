@@ -347,6 +347,30 @@ RideServer >> router [
 	^ router ifNil: [ self initializeRouter ]
 ]
 
+{ #category : #accessing }
+RideServer >> routesDeclaration [
+	"Answer all the route definitions for this service."
+
+	| all |
+	all := OrderedCollection new.
+
+	(self routesDeclarationFromPragma: #rideRoutes) do: [
+		:routeDefinitions | all addAll: routeDefinitions ].
+
+	all addAll: (self routesDeclarationFromPragma: #rideRoute).
+
+	^ all
+]
+
+{ #category : #accessing }
+RideServer >> routesDeclarationFromPragma: aSymbol [
+	"Collect all the routes definitions found using aSymbol as pragma."
+
+	^ (PragmaCollector filter: [ :prg | prg selector = aSymbol ]) reset
+		  collected collect: [ :pragma |
+		  pragma method origin soleInstance perform: pragma method selector ]
+]
+
 { #category : #actions }
 RideServer >> run: aWebSocket with: aBlock [
 	^ [ [ | message |
