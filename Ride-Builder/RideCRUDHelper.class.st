@@ -39,7 +39,35 @@ RideCRUDHelper class >> createMethodFor: aSymbol [
 	self redirectToIndex
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase }
+			  aSymbol asPlural asSnakeCase }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> createModelMethodFor: aSymbol [
+
+	^ 'create{1}
+
+	<rideRoute>
+	^ \{
+		  (#POST -> ''/{2}'').
+		  (self -> #create) \}
+' format: {
+			  aSymbol.
+			  aSymbol asPlural asSnakeCase }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> deleteModelClassMethodFor: aSymbol [
+
+	^ 'delete{1}
+
+	<rideRoute>
+	^ \{
+		  (#DELETE -> ''/{2}/<id>'').
+		  (self -> #delete) \}
+' format: {
+			  aSymbol.
+			  aSymbol asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -59,7 +87,7 @@ RideCRUDHelper class >> destroyMethodFor: aSymbol [
 	self redirectToIndex
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase }
+			  aSymbol asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -75,7 +103,35 @@ RideCRUDHelper class >> editMethodFor: aSymbol [
 	^ self renderUsing: ''edit.html''	
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase }
+			  aSymbol asPlural asSnakeCase }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> editModelByIdClassMethodFor: aSymbol [
+
+	^ 'edit{1}ById
+
+	<rideRoute>
+	^ \{
+		  (#GET -> ''/{2}/<id>/edit'').
+		  (self -> #edit) \}
+' format: {
+			  aSymbol.
+			  aSymbol asPlural asSnakeCase }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> formActionClassMethodFor: aSymbol [
+
+	^ 'formActionOn{1}ById
+
+	<rideRoute>
+	^ \{
+		  (#POST -> ''/{2}/<id>'').
+		  (self -> #formAction) \}
+' format: {
+			  aSymbol.
+			  aSymbol asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -91,7 +147,7 @@ RideCRUDHelper class >> indexMethodFor: aSymbol [
 	
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase.
+			  aSymbol asPlural asSnakeCase.
 			  aSymbol uncapitalized asPlural }
 ]
 
@@ -107,7 +163,7 @@ RideCRUDHelper class >> newModelMethodFor: aSymbol [
 	^ self renderUsing: ''new.html''
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase }
+			  aSymbol asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -123,8 +179,48 @@ RideCRUDHelper class >> pluralIndexMethodFor: aSymbol [
 	
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase.
+			  aSymbol asPlural asSnakeCase.
 			  aSymbol uncapitalized asPlural }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> showModelByIdClassMethodFor: aSymbol [
+
+	^ 'show{1}ById
+
+	<rideRoute>
+	^ \{
+		  (#GET -> ''/{2}/<id>'').
+		  (self -> #index) \}
+' format: {
+			  aSymbol.
+			  aSymbol asPlural asSnakeCase }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> showModelsMethodFor: aSymbol [
+
+	^ 'show{1}
+
+	<rideRoute>
+	^ \{
+		  (#GET -> ''/{2}'').
+		  (self -> #index) \}
+' format: {
+			  aSymbol asPlural.
+			  aSymbol asPlural asSnakeCase }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> showNewOneClassMethodFor: aSymbol [
+
+	^ 'showNewOne
+
+	<rideRoute>
+	^ \{
+		  (#GET -> ''/{1}/new'').
+		  (self -> #newModel) \}
+' format: { aSymbol asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -138,9 +234,9 @@ RideCRUDHelper class >> singularIndexMethodFor: aSymbol [
 	model ifNil: self modelNotFoundHandler.
 	
 	^ self renderUsing: ''index.html''	
-' format: { 
+' format: {
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase }
+			  aSymbol asPlural asSnakeCase }
 ]
 
 { #category : #accessing }
@@ -162,7 +258,25 @@ RideCRUDHelper class >> updateMethodFor: aSymbol [
 	self redirectFor: model
 ' format: { 
 			  aSymbol.
-			  aSymbol asLowercase asPlural asSnakeCase }
+			  aSymbol asPlural asSnakeCase }
+]
+
+{ #category : #accessing }
+RideCRUDHelper class >> updateModelClassMethodFor: aSymbol [
+
+	^ 'update{1}
+
+	<rideRoutes>
+	^ \{
+		  \{
+			  (#PUT -> ''/{2}/<id>'').
+			  (self -> #update) \}.
+		  \{
+			  (#PATCH -> ''/{2}/<id>'').
+			  (self -> #update) \} \}
+' format: {
+			  aSymbol.
+			  aSymbol asPlural asSnakeCase }
 ]
 
 { #category : #actions }
@@ -180,6 +294,28 @@ RideCRUDHelper >> addCreateMethodTo: aClass for: aSymbol [
 ]
 
 { #category : #actions }
+RideCRUDHelper >> addCreateModelClassMethodTo: aClass for: aSymbol [
+
+	| selector |
+	aClass class compile: (self class createModelMethodFor: aSymbol).
+	selector := 'create{1}' format: { aSymbol }.
+	aClass class organization
+		classify: selector asSymbol
+		under: 'accessing'
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addDeleteModelClassMethodTo: aClass for: aSymbol [
+
+	| selector |
+	aClass class compile: (self class deleteModelClassMethodFor: aSymbol).
+	selector := 'delete{1}' format: { aSymbol }.
+	aClass class organization
+		classify: selector asSymbol
+		under: 'accessing'
+]
+
+{ #category : #actions }
 RideCRUDHelper >> addDestroyMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class destroyMethodFor: aSymbol).
@@ -194,9 +330,32 @@ RideCRUDHelper >> addEditMethodTo: aClass for: aSymbol [
 ]
 
 { #category : #actions }
+RideCRUDHelper >> addEditModelByIdClassMethodTo: aClass for: aSymbol [
+
+	| selector |
+	aClass class compile:
+		(self class editModelByIdClassMethodFor: aSymbol).
+	selector := 'edit{1}ById' format: { aSymbol }.
+	aClass class organization
+		classify: selector asSymbol
+		under: 'accessing'
+]
+
+{ #category : #actions }
 RideCRUDHelper >> addEditTemplateFor: aSymbol [
 
 	self subclassResponsibility
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addFormActionClassMethodTo: aClass for: aSymbol [
+
+	| selector |
+	aClass class compile: (self class formActionClassMethodFor: aSymbol).
+	selector := 'formActionOn{1}ById' format: { aSymbol }.
+	aClass class organization
+		classify: selector asSymbol
+		under: 'accessing'
 ]
 
 { #category : #actions }
@@ -260,26 +419,15 @@ RideCRUDHelper >> addNewTemplateFor: aSymbol [
 RideCRUDHelper >> addPluralCRUDMethodsTo: aClass for: aSymbol [
 
 	self addPluralIndexMethodTo: aClass for: aSymbol.
-	"self addIndexMethodTo: aClass for: aSymbol."
 	self addModelsAccessorMethodTo: aClass for: aSymbol.
-	"self addShowMethodTo: aClass for: aSymbol.
-	self addNewModelMethodTo: aClass for: aSymbol.
-	self addEditMethodTo: aClass for: aSymbol.
-	self addCreateMethodTo: aClass for: aSymbol.
-	self addUpdateMethodTo: aClass for: aSymbol.
-	self addDestroyMethodTo: aClass for: aSymbol"
+	self addShowModelsMethodTo: aClass for: aSymbol.
+
 ]
 
 { #category : #actions }
 RideCRUDHelper >> addPluralCRUDTemplatesTo: aClass for: aSymbol [
 
 	self addPluralIndexTemplateFor: aSymbol.
-	"self addShowTemplateFor: aSymbol.
-	self addNewTemplateFor: aSymbol.
-	self addEditTemplateFor: aSymbol.
-	self addFormNewTemplateFor: aSymbol.
-	self addFormEditTemplateFor: aSymbol.
-	self addFormFieldsTemplateFor: aSymbol."
 	self addPluralModelDisplayContentFor: aSymbol
 ]
 
@@ -288,6 +436,12 @@ RideCRUDHelper >> addPluralIndexMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class pluralIndexMethodFor: aSymbol).
 	aClass organization classify: #index under: 'actions'
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addPluralIndexTemplateFor: aSymbol [
+
+	self subclassResponsibility
 ]
 
 { #category : #actions }
@@ -304,6 +458,34 @@ RideCRUDHelper >> addPluralModelDisplayContentFor: aSymbol [
 ]
 
 { #category : #actions }
+RideCRUDHelper >> addShowModelByIdClassMethodTo: aClass for: aSymbol [
+
+	| selector |
+	aClass class compile:
+		(self class showModelByIdClassMethodFor: aSymbol).
+	selector := 'show{1}ById' format: { aSymbol }.
+	aClass class organization
+		classify: selector asSymbol
+		under: 'accessing'
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addShowModelsMethodTo: aClass for: aSymbol [
+
+	| selector |
+	aClass class compile: (self class showModelsMethodFor: aSymbol).
+	selector := 'show{1}' format: { aSymbol asPlural }.
+	aClass class organization classify: selector under: 'accessing'
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addShowNewOneClassMethodTo: aClass for: aSymbol [
+
+	aClass class compile: (self class showNewOneClassMethodFor: aSymbol).
+	aClass class organization classify: #showNewOne under: 'accessing'
+]
+
+{ #category : #actions }
 RideCRUDHelper >> addSingularCRUDMethodsTo: aClass for: aSymbol [
 
 	self addAllowedParamsMethodTo: aClass for: aSymbol.
@@ -311,6 +493,13 @@ RideCRUDHelper >> addSingularCRUDMethodsTo: aClass for: aSymbol [
 	self addNewModelMethodTo: aClass for: aSymbol.
 	self addEditMethodTo: aClass for: aSymbol.
 	self addCreateMethodTo: aClass for: aSymbol.
+	self addCreateModelClassMethodTo: aClass for: aSymbol.
+	self addDeleteModelClassMethodTo: aClass for: aSymbol.
+	self addEditModelByIdClassMethodTo: aClass for: aSymbol.
+	self addFormActionClassMethodTo: aClass for: aSymbol.
+	self addShowNewOneClassMethodTo: aClass for: aSymbol.
+	self addShowModelByIdClassMethodTo: aClass for: aSymbol.
+	self addUpdateModelClassMethodTo: aClass for: aSymbol.
 	self addUpdateMethodTo: aClass for: aSymbol.
 	self addDestroyMethodTo: aClass for: aSymbol
 ]
@@ -319,7 +508,6 @@ RideCRUDHelper >> addSingularCRUDMethodsTo: aClass for: aSymbol [
 RideCRUDHelper >> addSingularCRUDTemplatesTo: aClass for: aSymbol [
 
 	self addSingularIndexTemplateFor: aSymbol.
-	"self addShowTemplateFor: aSymbol."
 	self addNewTemplateFor: aSymbol.
 	self addEditTemplateFor: aSymbol.
 	self addFormNewTemplateFor: aSymbol.
@@ -336,6 +524,12 @@ RideCRUDHelper >> addSingularIndexMethodTo: aClass for: aSymbol [
 ]
 
 { #category : #actions }
+RideCRUDHelper >> addSingularIndexTemplateFor: aSymbol [
+
+	self subclassResponsibility
+]
+
+{ #category : #actions }
 RideCRUDHelper >> addSingularIndexTemplateFor: aClass for: aSymbol [
 
 	aClass compile: (self class singularIndexMethodFor: aSymbol).
@@ -347,6 +541,17 @@ RideCRUDHelper >> addUpdateMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class updateMethodFor: aSymbol).
 	aClass organization classify: #update under: 'actions'	
+]
+
+{ #category : #actions }
+RideCRUDHelper >> addUpdateModelClassMethodTo: aClass for: aSymbol [
+
+	| selector |
+	aClass class compile: (self class updateModelClassMethodFor: aSymbol).
+	selector := 'update{1}' format: { aSymbol }.
+	aClass class organization
+		classify: selector asSymbol
+		under: 'accessing'
 ]
 
 { #category : #actions }

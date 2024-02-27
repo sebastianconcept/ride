@@ -23,6 +23,18 @@ RideAppHomePresenterClassHelper class >> indexMethodFor: aSymbol [
 ]
 
 { #category : #initialization }
+RideAppHomePresenterClassHelper class >> showHomeMethodFor: aSymbol [
+
+	^ 'showHome
+
+	<rideRoute>
+	^ {
+		  (#GET -> ''/'').
+		  (self -> #index) }
+	'
+]
+
+{ #category : #initialization }
 RideAppHomePresenterClassHelper class >> templatePathMethodFor: aSymbol [
 
 	| viewName |
@@ -53,6 +65,13 @@ RideAppHomePresenterClassHelper >> addIndexMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class indexMethodFor: aSymbol).
 	aClass organization classify: #index under: 'accessing'
+]
+
+{ #category : #actions }
+RideAppHomePresenterClassHelper >> addShowHomeMethodTo: aClass for: aSymbol [
+
+	aClass class compile: (self class showHomeMethodFor: aSymbol).
+	aClass class organization classify: #showHome under: 'accessing'
 ]
 
 { #category : #actions }
@@ -87,6 +106,8 @@ RideAppHomePresenterClassHelper >> for: aSymbol [
 
 	| appClass |
 	appClass := super for: aSymbol.
+
+	self addShowHomeMethodTo: appClass for: aSymbol.
 
 	self addIndexMethodTo: appClass for: aSymbol.
 	self addTemplatePathMethodTo: appClass for: aSymbol.
