@@ -186,6 +186,19 @@ RideServer class >> webSockerPort [
 ]
 
 { #category : #accessing }
+RideServer >> addRouteDefinition: routeDefinition to: someRouteDefinitions [
+	"Adds the given route to someRouteDefinitions."
+
+	"Signal an exception if the route is already defined."
+
+	(someRouteDefinitions anySatisfy: [ :each |
+		 each first = routeDefinition first ]) ifTrue: [
+		RideAlreadyDefinedRouteError signal: self asString ].
+
+	someRouteDefinitions add: routeDefinition
+]
+
+{ #category : #accessing }
 RideServer >> debugMode [
 
 	^ self class debugMode
@@ -355,9 +368,12 @@ RideServer >> routesDeclaration [
 	all := OrderedCollection new.
 
 	(self routesDeclarationFromPragma: #rideRoutes) do: [
-		:routeDefinitions | all addAll: routeDefinitions ].
+		:routeDefinitions |
+		routeDefinitions do: [ :routeDefinition |
+			self addRouteDefinition: routeDefinition to: all ] ].
 
-	all addAll: (self routesDeclarationFromPragma: #rideRoute).
+	(self routesDeclarationFromPragma: #rideRoute) do: [ :routeDefinition |
+		self addRouteDefinition: routeDefinition to: all ].
 
 	^ all
 ]
