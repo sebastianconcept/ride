@@ -475,7 +475,7 @@ RideCRUDHelper >> addShowModelsMethodTo: aClass for: aSymbol [
 	| selector |
 	aClass class compile: (self class showModelsMethodFor: aSymbol).
 	selector := 'show{1}' format: { aSymbol asPlural }.
-	aClass class organization classify: selector under: 'accessing'
+	aClass class organization classify: selector asSymbol under: 'accessing'
 ]
 
 { #category : #actions }
