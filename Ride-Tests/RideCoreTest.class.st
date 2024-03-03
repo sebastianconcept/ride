@@ -92,3 +92,13 @@ RideCoreTest >> testSnakeCaseRouteToCamelCasePresenterName [
 			 'some_thing_modeled')
 		equals: 'SomeThingModeledPresenter'
 ]
+
+{ #category : #tests }
+RideCoreTest >> testStartStop [
+
+	| server |
+	server := RideServer new.
+	server router beDeclarative.
+	server start.
+	server stop.
+]
