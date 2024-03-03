@@ -131,6 +131,28 @@ RideResource class >> buildJavaScriptAssetsFor: assetsMap [
 	[ 'JavaScript assets ready.' ] logInfo
 ]
 
+{ #category : #accessing }
+RideResource class >> databaseDirectory [
+
+	^ (Smalltalk os environment
+		   at: 'DATABASE_DIR'
+		   ifAbsent: [ FileSystem workingDirectory / 'db' ]) asFileReference
+]
+
+{ #category : #accessing }
+RideResource class >> databaseFile [
+
+	^ self databaseDirectory / self databaseName
+]
+
+{ #category : #accessing }
+RideResource class >> databaseName [
+
+	^ Smalltalk os environment
+		  at: 'DATABASE_NAME'
+		  ifAbsent: [ 'ride.dev.db' ]
+]
+
 { #category : #defaults }
 RideResource class >> defaultAssetsDirectoryString [
 

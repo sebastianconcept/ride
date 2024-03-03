@@ -104,10 +104,6 @@ RideCoreTest >> testSnakeCaseRouteToCamelCasePresenterName [
 { #category : #tests }
 RideCoreTest >> testStartStop [
 
-	| server |
-
-	server := RideServer new.
-	server router beDeclarative.
-	server start.
-	server stop.
+	RideService start.
+	RideService stop
 ]
