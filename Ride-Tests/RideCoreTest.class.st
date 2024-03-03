@@ -5,6 +5,14 @@ Class {
 }
 
 { #category : #tests }
+RideCoreTest >> setUp [
+
+	super setUp.
+
+	Ride resource: RideResource
+]
+
+{ #category : #tests }
 RideCoreTest >> testCamelCaseToSnakeCase [
 
 	self assert: 'Some' asSnakeCase equals: 'some'.
@@ -97,6 +105,7 @@ RideCoreTest >> testSnakeCaseRouteToCamelCasePresenterName [
 RideCoreTest >> testStartStop [
 
 	| server |
+
 	server := RideServer new.
 	server router beDeclarative.
 	server start.
