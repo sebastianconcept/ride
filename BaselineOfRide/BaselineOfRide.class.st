@@ -33,6 +33,15 @@ BaselineOfRide >> loadTaskIt [
 ]
 
 { #category : #dependencies }
+BaselineOfRide >> magritte: spec [
+
+	spec baseline: 'Magritte' with: [
+		spec
+			repository: 'github://magritte-metamodel/magritte:v3.8';
+			loads: #( Core ) ]
+]
+
+{ #category : #dependencies }
 BaselineOfRide >> mapless: spec [
 
 	spec baseline: 'Mapless' with: [ 
@@ -60,7 +69,8 @@ BaselineOfRide >> setUpDependencies: spec [
 	self mustache: spec.
 	self teapot: spec.
 	self singularizePluralize: spec.
-	
+	self magritte: spec.
+
 	"In Ride-Pharo we install some general extensions 
 	needed for Pharo, plus extensions for Zinc and Teapot."
 	spec package: 'Ride-Pharo'.
@@ -70,15 +80,13 @@ BaselineOfRide >> setUpDependencies: spec [
 { #category : #actions }
 BaselineOfRide >> setUpPackages: spec [
 
-	spec package: 'Ride' with: [ 
+	spec package: 'Ride' with: [
 		spec requires:
 			#( 'Mustache' 'ZincHTTPComponents' 'Teapot' 'Ride-Pharo'
-			   'Mapless' 'SingularizePluralize' 'STTemplate' ) ].
+			   'Mapless' 'SingularizePluralize' 'STTemplate' 'Magritte' ) ].
 
 	spec package: 'Ride-Builder' with: [ spec requires: #( 'Ride' ) ].
-	spec
-		package: 'Ride-Tests'
-		with: [ spec requires: #( 'Ride' ) ].
+	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Examples' with: [ spec requires: #( 'Ride' ) ].
 	spec package: 'Ride-Tests' with: [ spec requires: #( 'Ride' ) ]
 ]
