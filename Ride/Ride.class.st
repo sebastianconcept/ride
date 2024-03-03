@@ -23,9 +23,9 @@ Ride class >> allowsLoglevel: aSymbol [
 
 { #category : #actions }
 Ride class >> beDevEnvironment [
-
 	"Sets the OS environment to be in #DEVELOPMENT mode"
 
+	<script>
 	Smalltalk os environment at: 'MODE' put: #DEVELOPMENT
 ]
 
@@ -134,24 +134,25 @@ Ride class >> mode [
 
 { #category : #actions }
 Ride class >> purgeUploadsDirectory [
-
 	"Removes all files from the uploads directory"
 
-	RideDirectoryResolver uploadsDirectory files do: [ :each | 
+	<script>
+	self resource uploadsDirectory asFileReference files do: [ :each |
 		each delete ]
 ]
 
 { #category : #actions }
 Ride class >> reset [
 
+	<script>
 	| released |
-	service ifNotNil: [ 
+	service ifNotNil: [
 		released := service.
 		service := nil ].
 	logLevelSymbols := nil.
 	isMaintenance := nil.
 	RideDeclarativeRouting reset.
-	resource ifNotNil: [ 
+	resource ifNotNil: [
 		Ride isDevelopment ifTrue: [ resource resetAssetsMapFile ].
 		resource reset ]
 ]
@@ -202,6 +203,7 @@ Ride class >> shutDown [
 { #category : #actions }
 Ride class >> start [
 
+	<script>
 	service start
 ]
 
@@ -222,5 +224,6 @@ Ride class >> startUp [
 { #category : #actions }
 Ride class >> stop [
 
+	<script>
 	service ifNotNil: [ service stop ]
 ]

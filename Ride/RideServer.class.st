@@ -186,6 +186,19 @@ RideServer class >> webSockerPort [
 ]
 
 { #category : #accessing }
+RideServer >> addRouteDefinition: routeDefinition to: someRouteDefinitions [
+	"Adds the given route to someRouteDefinitions."
+
+	"Signal an exception if the route is already defined."
+
+	(someRouteDefinitions anySatisfy: [ :each |
+		 each first = routeDefinition first ]) ifTrue: [
+		RideAlreadyDefinedRouteError signal: self asString ].
+
+	someRouteDefinitions add: routeDefinition
+]
+
+{ #category : #accessing }
 RideServer >> debugMode [
 
 	^ self class debugMode
@@ -345,6 +358,33 @@ RideServer >> reset [
 RideServer >> router [
 
 	^ router ifNil: [ self initializeRouter ]
+]
+
+{ #category : #accessing }
+RideServer >> routesDeclaration [
+	"Answer all the route definitions for this service."
+
+	| all |
+	all := OrderedCollection new.
+
+	(self routesDeclarationFromPragma: #rideRoutes) do: [
+		:routeDefinitions |
+		routeDefinitions do: [ :routeDefinition |
+			self addRouteDefinition: routeDefinition to: all ] ].
+
+	(self routesDeclarationFromPragma: #rideRoute) do: [ :routeDefinition |
+		self addRouteDefinition: routeDefinition to: all ].
+
+	^ all
+]
+
+{ #category : #accessing }
+RideServer >> routesDeclarationFromPragma: aSymbol [
+	"Collect all the routes definitions found using aSymbol as pragma."
+
+	^ (PragmaCollector filter: [ :prg | prg selector = aSymbol ]) reset
+		  collected collect: [ :pragma |
+		  pragma method origin soleInstance perform: pragma method selector ]
 ]
 
 { #category : #actions }

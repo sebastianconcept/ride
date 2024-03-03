@@ -16,30 +16,11 @@ RideServerClassHelper class >> initializeMethodFor: aSymbol [
 	self router beDeclarative'
 ]
 
-{ #category : #initialization }
-RideServerClassHelper class >> routesDeclarationMethodFor: aSymbol [
-
-	^ 'routesDeclaration
-	^ \{ 
-		  \{ 
-			  (#GET -> ''/'').
-			  ({1}HomePresenter -> #index) \}.
-		\}
-	' format: { aSymbol }
-]
-
 { #category : #actions }
 RideServerClassHelper >> addInitializeMethodTo: aClass for: aSymbol [
 
 	aClass compile: (self class initializeMethodFor: aSymbol).
 	aClass organization classify: #initialize under: 'initialization'
-]
-
-{ #category : #actions }
-RideServerClassHelper >> addRoutesDeclarationMethodTo: aClass for: aSymbol [
-
-	aClass compile: (self class routesDeclarationMethodFor: aSymbol).
-	aClass organization classify: #routesDeclaration under: 'accessing'
 ]
 
 { #category : #accessing }
@@ -61,8 +42,7 @@ RideServerClassHelper >> for: aSymbol [
 	| appClass |
 	appClass := super for: aSymbol.
 
-	self addInitializeMethodTo: appClass for: aSymbol.
-	self addRoutesDeclarationMethodTo: appClass for: aSymbol
+	self addInitializeMethodTo: appClass for: aSymbol
 ]
 
 { #category : #accessing }
